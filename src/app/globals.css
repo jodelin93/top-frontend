@@ -1,26 +1,137 @@
 @import "tailwindcss";
 
+/* Design tokens used by the shadcn-style UI components (bg-primary, text-muted-foreground, ...) */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #111827;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --accent: #f3f4f6;
+  --accent-foreground: #111827;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e5e7eb;
+  --input: #d1d5db;
+  --ring: #2563eb;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: var(--border);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Receipt printing: only the receipt is printed, sized for 80mm thermal paper */
+@media print {
+  @page {
+    size: 80mm auto;
+    margin: 4mm;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .print-receipt,
+  .print-receipt * {
+    visibility: visible;
+  }
+  .print-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 72mm;
+  }
+  /* Receipts are usually printed from a dialog: undo its centring transform so the
+     receipt lands at the top-left of the page instead of offset with the dialog */
+  [role="dialog"] {
+    transform: none !important;
+    left: 0 !important;
+    top: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
+
+/* Receipt formats (store setting receiptFormat). 80mm is the default page above;
+   58mm thermal paper and A4 invoices get their own named pages. */
+@page receipt-58mm {
+  size: 58mm auto;
+  margin: 2mm;
+}
+@page receipt-a4 {
+  size: A4;
+  margin: 15mm;
+}
+@page receipt-letter {
+  size: letter;
+  margin: 0.6in;
+}
+@media print {
+  body:has(.print-receipt.receipt-58mm) {
+    page: receipt-58mm;
+  }
+  body:has(.print-receipt.receipt-a4) {
+    page: receipt-a4;
+  }
+  body:has(.print-receipt.receipt-letter) {
+    page: receipt-letter;
+  }
+  .print-receipt.receipt-58mm {
+    width: 54mm;
+  }
+  .print-receipt.receipt-a4 {
+    width: 180mm;
+    max-width: none;
+  }
+  .print-receipt.receipt-letter {
+    width: 7.3in;
+    max-width: none;
+  }
+}
+
+/* Several receipt copies in one print job (Settings → Receipts & printing → copies) */
+@media print {
+  .print-copies {
+    display: block !important;
+  }
+  .print-copies .print-copy {
+    break-after: page;
+  }
+  .print-copies .print-copy:last-child {
+    break-after: auto;
+  }
 }
