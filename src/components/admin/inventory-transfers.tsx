@@ -11,6 +11,13 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
 import {
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -45,6 +52,7 @@ import { StockTransfer, TransferEvent, TransferStatus, transfersApi } from '@/li
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { plural, t } from '@/i18n';
 import { QUANTITY_TEXT } from '@/lib/pos/quantity';
+import { randomId } from '@/lib/uuid';
 
 export const transferStatusLabels: Record<TransferStatus, string> = {
   draft: 'Draft',
@@ -77,9 +85,7 @@ const eventLabels: Record<TransferEvent['kind'], string> = {
 
 // A fresh key per dispatch / receive dialog: a retry or double-click posts nothing twice
 const newIdempotencyKey = () =>
-  typeof crypto !== 'undefined' && 'randomUUID' in crypto
-    ? crypto.randomUUID()
-    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  randomId();
 
 /**
  * Stock transfers between locations: draft → (approval) → dispatched, possibly
@@ -94,6 +100,7 @@ export function TransfersTab() {
   const [status, setStatus] = useState<TransferStatus | ''>('');
   const [editing, setEditing] = useState<StockTransfer | 'new' | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const {
     data: transfers = [],
@@ -110,7 +117,7 @@ export function TransfersTab() {
         <p className="text-sm text-gray-500">
           {t('Move stock between locations. Dispatched units are in transit until the destination receives them.')}
         </p>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {canManageSettings && (
             <Button variant="outline" onClick={() => setSettingsOpen(true)}>
               <Settings2 className="h-4 w-4" />
@@ -150,6 +157,42 @@ export function TransfersTab() {
         </div>
       )}
 
+      {smallScreen ? (
+        // Phones: one card per transfer
+        <DataCards
+          items={transfers}
+          getKey={(transfer) => transfer.id}
+          onItemClick={(transfer) => setOpenId(transfer.id)}
+          loading={isLoading}
+          loadingText={t('Loading transfers...')}
+          emptyText={t('No transfers yet.')}
+        >
+          {(transfer) => (
+            <>
+              <DataCardHeader
+                title={<span className="font-mono text-xs">{transfer.transferNumber}</span>}
+                onTitleClick={() => setOpenId(transfer.id)}
+                badge={
+                  <Badge variant={transferStatusVariant[transfer.status]}>
+                    {t(transferStatusLabels[transfer.status])}
+                  </Badge>
+                }
+              />
+              <DataCardFields>
+                <DataCardField label={t('From → to')} full>
+                  {labelFor(transfer.fromLocationId)} <ArrowRight className="inline h-3 w-3" />{' '}
+                  {labelFor(transfer.toLocationId)}
+                </DataCardField>
+                <DataCardField label={t('Lines')}>{transfer.items?.length ?? 0}</DataCardField>
+                <DataCardField label={t('Created')}>{formatDateTime(transfer.createdAt)}</DataCardField>
+                {transfer.dispatchedAt && (
+                  <DataCardField label={t('Dispatched')}>{formatDateTime(transfer.dispatchedAt)}</DataCardField>
+                )}
+              </DataCardFields>
+            </>
+          )}
+        </DataCards>
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -187,6 +230,7 @@ export function TransfersTab() {
           )}
         </TBody>
       </Table>
+      )}
 
       {settingsOpen && <TransferSettingsDialog onClose={() => setSettingsOpen(false)} />}
       {editing && (
@@ -366,6 +410,7 @@ function TransferDetailDialog({
   const [error, setError] = useState<string | null>(null);
   // Write-offs, approvals and over-receipts: a manager's approval when the user lacks the permission
   const { withApproval, approvalDialog } = useApproval();
+  const smallScreen = useSmallScreen();
 
   const { data: transfer, error: loadError } = useQuery({
     queryKey: ['inventory', 'transfers', 'detail', id],
@@ -494,6 +539,17 @@ function TransferDetailDialog({
   const skuOf = new Map(items.map((item) => [item.id, item.variant?.sku ?? '']));
   const skuByVariant = new Map(items.map((item) => [item.variantId, item.variant?.sku ?? '']));
 
+  // Units for the step being prepared (the same box in the table and the phone cards)
+  const quantityInput = (item: (typeof items)[number], className?: string) => (
+    <Input
+      inputMode="numeric"
+      value={quantities[item.id] ?? ''}
+      onChange={(e) => setQuantities((prev) => ({ ...prev, [item.id]: e.target.value }))}
+      aria-label={t('Quantity for {sku}', { sku: item.variant?.sku })}
+      className={className}
+    />
+  );
+
   return (
     <>
       <Dialog open onOpenChange={(o) => !o && !busy && onClose()}>
@@ -571,6 +627,48 @@ function TransferDetailDialog({
               onChange={setReceipt}
               tolerancePercent={settings.transferOverReceiptTolerancePercent}
             />
+          ) : smallScreen ? (
+            // Phones: one card per line, the quantity box in view
+            <div className="space-y-2">
+              {items.map((item) => {
+                const figures: [string, React.ReactNode, boolean][] = [
+                  [t('Requested'), item.quantityRequested, true],
+                  [t('Dispatched'), item.quantityDispatched, true],
+                  [t('In transit'), inTransit(item) || '—', true],
+                  [t('Received'), item.quantityReceived, true],
+                  [t('Damaged'), item.quantityDamaged ?? 0, showDamaged],
+                  [t('Missing'), item.quantityMissing ?? 0, showMissing],
+                  [t('Written off'), item.quantityWrittenOff, true],
+                  [t('Returned'), item.quantityReturned ?? 0, showReturned],
+                  [t('Over-received'), item.quantityOverReceived ?? 0, showOver],
+                  [t('Unit cost'), item.unitCost == null ? '—' : formatMoney(item.unitCost, currency), true],
+                ];
+                return (
+                  <div key={item.id} className="space-y-2 rounded-md border p-3 text-sm">
+                    <div>
+                      <div className="font-medium">{itemLabel(item)}</div>
+                      <div className="font-mono text-xs text-gray-500">{item.variant?.sku}</div>
+                    </div>
+                    <dl className="grid grid-cols-3 gap-x-3 gap-y-1">
+                      {figures
+                        .filter(([, , shown]) => shown)
+                        .map(([label, value]) => (
+                          <div key={label} className="min-w-0">
+                            <dt className="text-xs text-gray-500">{label}</dt>
+                            <dd>{value}</dd>
+                          </div>
+                        ))}
+                    </dl>
+                    {step && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">{t('Now')}</span>
+                        {quantityInput(item, 'h-10 w-28 text-right')}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           ) : (
             <div className="overflow-x-auto rounded-md border">
               <table className="w-full text-sm">
@@ -609,16 +707,7 @@ function TransferDetailDialog({
                       <td className="px-3 py-2 text-right text-gray-600">
                         {item.unitCost == null ? '—' : formatMoney(item.unitCost, currency)}
                       </td>
-                      {step && (
-                        <td className="px-3 py-2">
-                          <Input
-                            inputMode="numeric"
-                            value={quantities[item.id] ?? ''}
-                            onChange={(e) => setQuantities((prev) => ({ ...prev, [item.id]: e.target.value }))}
-                            aria-label={t('Quantity for {sku}', { sku: item.variant?.sku })}
-                          />
-                        </td>
-                      )}
+                      {step && <td className="px-3 py-2">{quantityInput(item)}</td>}
                     </tr>
                   ))}
                 </tbody>

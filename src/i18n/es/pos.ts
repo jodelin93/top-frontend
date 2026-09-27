@@ -583,4 +583,18 @@ export const pos: Record<string, string> = {
   'Keep cart and go back': 'Conservar el carrito y volver',
   'Continue with the new prices': 'Continuar con los nuevos precios',
   'New prices applied: {before} → {after}.': 'Nuevos precios aplicados: {before} → {after}.',
+  // Till on phones
+  '{count} item': '{count} artículo',
+  '{count} items': '{count} artículos',
+  'More actions': 'Más acciones',
+  'Till views': 'Vistas de la caja',
+  'Cart ({count})': 'Carrito ({count})',
+  'Added: {product}': 'Añadido: {product}',
+  'Search or scan a barcode...': 'Buscar o escanear un código de barras...',
+  'View cart: {items}, {total}': 'Ver carrito: {items}, {total}',
+  'Group discount ({name}, {percent}%)': 'Descuento de grupo ({name}, {percent}%)',
+  'Group discount ({percent}%)': 'Descuento de grupo ({percent}%)',
+  'Group {name}: group prices and a {percent}% group discount apply.': 'Grupo {name}: se aplican los precios del grupo y un descuento de grupo del {percent}%.',
+  'Group {name}: group prices apply.': 'Grupo {name}: se aplican los precios del grupo.',
+  'Could not load the customer group prices. They are applied at checkout.': 'No se pudieron cargar los precios del grupo del cliente. Se aplicarán al cobrar.',
 };

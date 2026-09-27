@@ -14,7 +14,7 @@ import { t } from '@/i18n';
  * Till header: clock the signed-in user's employee in or out. Hidden when the
  * account is not linked to an employee (or the API is unreachable).
  */
-export function ClockButton({ branchId }: { branchId?: string | null }) {
+export function ClockButton({ branchId, className }: { branchId?: string | null; className?: string }) {
   const queryClient = useQueryClient();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +44,7 @@ export function ClockButton({ branchId }: { branchId?: string | null }) {
     <Button
       size="sm"
       variant="outline"
-      className={cn('h-7 text-xs', clockedIn && 'border-green-300 text-green-700', error && 'border-red-300')}
+      className={cn('h-7 text-xs', clockedIn && 'border-green-300 text-green-700', error && 'border-red-300', className)}
       onClick={toggle}
       disabled={busy}
       title={

@@ -28,6 +28,33 @@ export function parseDateValue(value: string | Date): Date {
   return day ? new Date(Number(day[1]), Number(day[2]) - 1, Number(day[3])) : new Date(value);
 }
 
+/**
+ * Calendar date of a moment in the device's time zone (YYYY-MM-DD, as used by
+ * <input type="date">). toISOString().slice(0, 10) would give the UTC date: the
+ * next day in Haiti from 7–8 pm.
+ */
+export function localIsoDate(date: Date = new Date()): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/** Today in the device's (the store's) time zone */
+export function todayLocalIso(): string {
+  return localIsoDate(new Date());
+}
+
+/** Today plus a number of days, as YYYY-MM-DD (local calendar) */
+export function addDaysLocalIso(days: number, from: Date = new Date()): string {
+  const date = new Date(from.getFullYear(), from.getMonth(), from.getDate() + days);
+  return localIsoDate(date);
+}
+
+/** Now as a value for <input type="datetime-local"> (local time, minutes) */
+export function nowLocalInput(date: Date = new Date()): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${localIsoDate(date)}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 export function formatDate(value: string | Date | null | undefined): string {
   if (!value) return '—';
   return new Intl.DateTimeFormat(currentLocale(), { dateStyle: 'medium' }).format(parseDateValue(value));

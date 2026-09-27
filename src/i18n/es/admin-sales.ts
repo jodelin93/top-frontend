@@ -330,6 +330,7 @@ export const adminSales: Record<string, string> = {
   'Provider for {name}': 'Proveedor para {name}',
   'Detailed reports for any period, with CSV and Excel export, plus a reconciliation check.':
     'Informes detallados para cualquier período, con exportación a CSV y Excel, además de una verificación de conciliación.',
+  Report: 'Informe',
   Reconciliation: 'Conciliación',
   'Loading reports...': 'Cargando informes...',
   'Shows the current state; the date range does not apply.':

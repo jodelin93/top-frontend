@@ -18,10 +18,11 @@ import {
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { VariantPicker, useDebouncedValue, variantLabel } from '@/components/admin/inventory-variant-picker';
 import { useApproval } from '@/components/approval-dialog';
+import { useSmallScreen } from '@/components/ui/data-cards';
 import { customerName, customersApi } from '@/lib/api/customers';
 import { Estimate, estimatesApi, EstimateInput } from '@/lib/api/estimates';
 import { getErrorMessage } from '@/lib/api/client';
-import { formatMoney } from '@/lib/format';
+import { formatMoney, todayLocalIso } from '@/lib/format';
 import { useCurrency } from '@/hooks/use-store-settings';
 import { t } from '@/i18n';
 
@@ -79,6 +80,11 @@ export function EstimateFormDialog({
   const [notes, setNotes] = useState('');
   const [terms, setTerms] = useState('');
   const [error, setError] = useState<string | null>(null);
+  // A new validity date can't already be over (an unchanged one is kept as is)
+  const validUntilError =
+    validUntil && validUntil !== (estimate?.validUntil ?? '') && validUntil < todayLocalIso()
+      ? t('The valid-until date cannot be in the past')
+      : null;
   const [saving, setSaving] = useState(false);
 
   // Reset the form each time the dialog opens
@@ -109,6 +115,57 @@ export function EstimateFormDialog({
 
   const setLine = (index: number, patch: Partial<Line>) =>
     setLines((current) => current.map((line, i) => (i === index ? { ...line, ...patch } : line)));
+  const smallScreen = useSmallScreen();
+
+  // Line inputs, shared by the table and the phone cards
+  const quantityInput = (line: Line, index: number, className: string) => (
+    <Input
+      value={line.quantity}
+      onChange={(e) => setLine(index, { quantity: e.target.value })}
+      inputMode="decimal"
+      className={className}
+      aria-label={t('Quantity')}
+    />
+  );
+  const unitPriceInput = (line: Line, index: number, className: string) => (
+    <Input
+      value={line.unitPrice}
+      onChange={(e) => setLine(index, { unitPrice: e.target.value })}
+      inputMode="decimal"
+      placeholder={line.catalogPrice.toFixed(2)}
+      className={className}
+      aria-label={t('Unit price')}
+    />
+  );
+  const discountInput = (line: Line, index: number, className: string) => (
+    <Input
+      value={line.discountPercent}
+      onChange={(e) => setLine(index, { discountPercent: e.target.value })}
+      inputMode="decimal"
+      placeholder="0"
+      className={className}
+      aria-label={t('Discount percent')}
+    />
+  );
+  const noteInput = (line: Line, index: number, className: string) => (
+    <Input
+      value={line.note}
+      onChange={(e) => setLine(index, { note: e.target.value })}
+      className={className}
+      aria-label={t('Line note')}
+    />
+  );
+  const removeButton = (index: number, className: string) => (
+    <Button
+      variant="ghost"
+      size="icon"
+      className={className}
+      onClick={() => setLines(lines.filter((_, i) => i !== index))}
+      aria-label={t('Remove line')}
+    >
+      <Trash2 className="h-4 w-4" />
+    </Button>
+  );
 
   // Before tax and order-level discount; the server returns the exact total
   const roughSubtotal = lines.reduce((sum, line) => {
@@ -126,6 +183,10 @@ export function EstimateFormDialog({
     // Measured items (kg, m, l) take decimals; the server checks each unit's precision
     if (lines.some((l) => !(Number(l.quantity.replace(',', '.')) > 0))) {
       setError(t('Every line needs a quantity above 0'));
+      return;
+    }
+    if (validUntilError) {
+      setError(validUntilError);
       return;
     }
     setSaving(true);
@@ -222,68 +283,103 @@ export function EstimateFormDialog({
                   <Input id="est-prospect" value={prospectName} onChange={(e) => setProspectName(e.target.value)} />
                 </Field>
               )}
-              <Field label={t('Valid until')} htmlFor="est-valid" hint={t('Default: 30 days from today')}>
-                <Input id="est-valid" type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} />
+              <Field
+                label={t('Valid until')}
+                htmlFor="est-valid"
+                hint={t('Default: 30 days from today')}
+                error={validUntilError ?? undefined}
+              >
+                <Input
+                  id="est-valid"
+                  type="date"
+                  min={todayLocalIso()}
+                  value={validUntil}
+                  onChange={(e) => setValidUntil(e.target.value)}
+                />
               </Field>
             </div>
 
-            <div className="rounded-md border">
-              <table className="w-full text-sm">
-                <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
-                  <tr>
-                    <th className="px-3 py-2">{t('Product')}</th>
-                    <th className="px-3 py-2 text-right">{t('Qty')}</th>
-                    <th className="px-3 py-2 text-right">{t('Unit price')}</th>
-                    <th className="px-3 py-2 text-right">{t('Disc. %')}</th>
-                    <th className="px-3 py-2">{t('Note')}</th>
-                    <th className="px-3 py-2" />
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {lines.length === 0 && (
-                    <tr>
-                      <td colSpan={6} className="px-3 py-6 text-center text-gray-400">
-                        {t('Add products below.')}
-                      </td>
-                    </tr>
-                  )}
-                  {lines.map((line, index) => (
-                    <tr key={`${line.variantId}-${index}`}>
-                      <td className="px-3 py-1.5">
+            {smallScreen ? (
+              // Phones: one card per line with every box in view (the table would scroll sideways)
+              <div className="space-y-2">
+                {lines.length === 0 && (
+                  <p className="rounded-md border px-3 py-6 text-center text-sm text-gray-400">{t('Add products below.')}</p>
+                )}
+                {lines.map((line, index) => (
+                  <div key={`${line.variantId}-${index}`} className="space-y-2 rounded-md border p-3 text-sm">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 break-words">
                         {line.label}
                         <div className="text-xs text-gray-500">
                           {line.sku} · {t('list {price}', { price: money(line.catalogPrice) })}
                         </div>
-                      </td>
-                      <td className="px-3 py-1.5">
-                        <Input value={line.quantity} onChange={(e) => setLine(index, { quantity: e.target.value })} inputMode="decimal" className="ml-auto h-8 w-16 text-right" aria-label={t('Quantity')} />
-                      </td>
-                      <td className="px-3 py-1.5">
-                        <Input
-                          value={line.unitPrice}
-                          onChange={(e) => setLine(index, { unitPrice: e.target.value })}
-                          inputMode="decimal"
-                          placeholder={line.catalogPrice.toFixed(2)}
-                          className="ml-auto h-8 w-24 text-right"
-                          aria-label={t('Unit price')}
-                        />
-                      </td>
-                      <td className="px-3 py-1.5">
-                        <Input value={line.discountPercent} onChange={(e) => setLine(index, { discountPercent: e.target.value })} inputMode="decimal" placeholder="0" className="ml-auto h-8 w-16 text-right" aria-label={t('Discount percent')} />
-                      </td>
-                      <td className="px-3 py-1.5">
-                        <Input value={line.note} onChange={(e) => setLine(index, { note: e.target.value })} className="h-8" aria-label={t('Line note')} />
-                      </td>
-                      <td className="px-3 py-1.5 text-right">
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setLines(lines.filter((_, i) => i !== index))} aria-label={t('Remove line')}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </td>
+                      </div>
+                      {removeButton(index, 'h-10 w-10 shrink-0')}
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <label className="space-y-1 text-xs text-gray-500">
+                        <span className="block">{t('Qty')}</span>
+                        {quantityInput(line, index, 'h-10 w-full text-right')}
+                      </label>
+                      <label className="space-y-1 text-xs text-gray-500">
+                        <span className="block">{t('Unit price')}</span>
+                        {unitPriceInput(line, index, 'h-10 w-full text-right')}
+                      </label>
+                      <label className="space-y-1 text-xs text-gray-500">
+                        <span className="block">{t('Disc. %')}</span>
+                        {discountInput(line, index, 'h-10 w-full text-right')}
+                      </label>
+                    </div>
+                    <label className="block space-y-1 text-xs text-gray-500">
+                      <span className="block">{t('Note')}</span>
+                      {noteInput(line, index, 'h-10 w-full')}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="overflow-x-auto rounded-md border">
+                <table className="w-full text-sm max-md:min-w-[32rem]">
+                  <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
+                    <tr>
+                      <th className="px-3 py-2">{t('Product')}</th>
+                      <th className="px-3 py-2 text-right">{t('Qty')}</th>
+                      <th className="px-3 py-2 text-right">{t('Unit price')}</th>
+                      <th className="px-3 py-2 text-right">{t('Disc. %')}</th>
+                      <th className="px-3 py-2">{t('Note')}</th>
+                      <th className="px-3 py-2" />
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y">
+                    {lines.length === 0 && (
+                      <tr>
+                        <td colSpan={6} className="px-3 py-6 text-center text-gray-400">
+                          {t('Add products below.')}
+                        </td>
+                      </tr>
+                    )}
+                    {lines.map((line, index) => (
+                      <tr key={`${line.variantId}-${index}`}>
+                        <td className="px-3 py-1.5">
+                          {line.label}
+                          <div className="text-xs text-gray-500">
+                            {line.sku} ·{' '}
+                            {t('list {price}', {
+                              price: money(line.catalogPrice),
+                            })}
+                          </div>
+                        </td>
+                        <td className="px-3 py-1.5">{quantityInput(line, index, 'ml-auto h-8 w-16 text-right')}</td>
+                        <td className="px-3 py-1.5">{unitPriceInput(line, index, 'ml-auto h-8 w-24 text-right')}</td>
+                        <td className="px-3 py-1.5">{discountInput(line, index, 'ml-auto h-8 w-16 text-right')}</td>
+                        <td className="px-3 py-1.5">{noteInput(line, index, 'h-8')}</td>
+                        <td className="px-3 py-1.5 text-right">{removeButton(index, 'h-8 w-8')}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
             <div className="rounded-md border p-3">
               <div className="mb-2 text-sm font-medium">{t('Add products')}</div>

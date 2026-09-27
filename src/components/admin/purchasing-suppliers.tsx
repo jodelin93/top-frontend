@@ -11,6 +11,14 @@ import { Badge, statusVariant } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
 import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -43,6 +51,7 @@ export function SuppliersTab() {
   const [editing, setEditing] = useState<Supplier | 'new' | null>(null);
   const [productsOf, setProductsOf] = useState<Supplier | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const remove = useMutation({
     mutationFn: (id: string) => suppliersApi.remove(id),
@@ -84,6 +93,80 @@ export function SuppliersTab() {
         </div>
       )}
 
+      {smallScreen ? (
+        // Phones: one card per supplier instead of a table that scrolls sideways
+        <DataCards
+          items={rows}
+          getKey={(supplier) => supplier.id}
+          loading={isLoading}
+          loadingText={t('Loading suppliers...')}
+          emptyText={term ? t('No supplier matches your search.') : t('No suppliers yet.')}
+        >
+          {(supplier) => {
+            const contact = supplier.contacts[0];
+            return (
+              <>
+                <DataCardHeader
+                  title={supplier.name}
+                  subtitle={<span className="font-mono">{supplier.code}</span>}
+                  badge={<Badge variant={statusVariant(supplier.status)}>{t(supplier.status)}</Badge>}
+                />
+                <DataCardFields>
+                  <DataCardField label={t('Main contact')} full>
+                    {contact ? (
+                      <>
+                        {contact.name}
+                        {contact.role && <span className="text-xs text-gray-400"> · {contact.role}</span>}
+                        {(contact.email ?? contact.phone) && (
+                          <div className="text-xs text-gray-600">{contact.email ?? contact.phone}</div>
+                        )}
+                      </>
+                    ) : (
+                      (supplier.email ?? '—')
+                    )}
+                  </DataCardField>
+                  <DataCardField label={t('Terms')}>
+                    {supplier.paymentTermDays != null ? t('Net {count}', { count: supplier.paymentTermDays }) : '—'}
+                    {supplier.leadTimeDays != null && (
+                      <div className="text-xs text-gray-500">
+                        {t('Lead time {count} d', { count: supplier.leadTimeDays })}
+                      </div>
+                    )}
+                  </DataCardField>
+                  <DataCardField label={t('Currency')}>{supplier.currencyCode ?? '—'}</DataCardField>
+                </DataCardFields>
+                {canManage && (
+                  <DataCardActions>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setProductsOf(supplier)}
+                      title={t('Supplier codes, costs and minimum order quantities')}
+                    >
+                      <PackageSearch className="h-4 w-4" />
+                      {t('Products')}
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => setEditing(supplier)}>
+                      {t('Edit')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-red-600 hover:text-red-700"
+                      aria-label={t('Delete {name}', { name: supplier.name })}
+                      onClick={() =>
+                        window.confirm(t('Delete supplier {name}?', { name: supplier.name })) && remove.mutate(supplier.id)
+                      }
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </DataCardActions>
+                )}
+              </>
+            );
+          }}
+        </DataCards>
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -166,6 +249,7 @@ export function SuppliersTab() {
           )}
         </TBody>
       </Table>
+      )}
 
       {editing && <SupplierFormDialog supplier={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />}
       {productsOf && <SupplierProductsDialog supplier={productsOf} onClose={() => setProductsOf(null)} />}
@@ -270,7 +354,7 @@ function SupplierFormDialog({ supplier, onClose }: { supplier: Supplier | null; 
               <Input id="supplier-email" type="email" value={form.email} onChange={set('email')} />
             </Field>
             <Field label={t('Phone')} htmlFor="supplier-phone">
-              <Input id="supplier-phone" value={form.phone} onChange={set('phone')} />
+              <Input id="supplier-phone" type="tel" value={form.phone} onChange={set('phone')} />
             </Field>
             <Field label={t('Tax number')} htmlFor="supplier-tax">
               <Input id="supplier-tax" value={form.taxNumber} onChange={set('taxNumber')} />

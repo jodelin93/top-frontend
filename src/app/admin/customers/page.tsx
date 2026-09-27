@@ -9,6 +9,14 @@ import { Select } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { Badge, statusVariant } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import { CustomerFormDialog } from '@/components/admin/customer-form-dialog';
 import { CustomerDetailDialog } from '@/components/admin/customer-detail-dialog';
@@ -49,6 +57,7 @@ export default function CustomersPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Customer | null>(null);
   const [viewing, setViewing] = useState<Customer | null>(null);
+  const smallScreen = useSmallScreen();
 
   // Debounce search typing
   useEffect(() => {
@@ -94,7 +103,7 @@ export default function CustomersPage() {
         }
       />
 
-      <div className="flex gap-1 border-b" role="tablist">
+      <div className="flex gap-1 overflow-x-auto border-b" role="tablist">
         {tabs
           .filter((item) => item.show)
           .map((item) => (
@@ -105,7 +114,7 @@ export default function CustomersPage() {
               aria-selected={tab === item.key}
               onClick={() => setTab(item.key)}
               className={cn(
-                '-mb-px border-b-2 px-3 py-2 text-sm',
+                '-mb-px shrink-0 whitespace-nowrap border-b-2 px-3 py-2 text-sm max-md:py-2.5',
                 tab === item.key ? 'border-blue-600 font-medium text-blue-700' : 'border-transparent text-gray-600 hover:text-gray-900'
               )}
             >
@@ -164,6 +173,65 @@ export default function CustomersPage() {
             </div>
           )}
 
+          {smallScreen ? (
+            <DataCards
+              items={customers}
+              getKey={(customer) => customer.id}
+              loading={isLoading}
+              loadingText={t('Loading customers...')}
+              emptyText={
+                debouncedSearch || status || groupId
+                  ? t('No customers match your filters.')
+                  : t('No customers yet. Create your first one.')
+              }
+            >
+              {(customer) => (
+                <>
+                  <DataCardHeader
+                    title={customerName(customer)}
+                    subtitle={<span className="font-mono">{customer.code}</span>}
+                    onTitleClick={() => setViewing(customer)}
+                    badge={
+                      <Badge variant={statusVariant(customer.status)}>
+                        {t(CUSTOMER_STATUS_LABELS[customer.status] ?? customer.status)}
+                      </Badge>
+                    }
+                  />
+                  <DataCardFields>
+                    <DataCardField label={t('Phone')}>{customer.phone ?? '—'}</DataCardField>
+                    <DataCardField label={t('Points')}>{Number(customer.loyaltyPoints).toLocaleString()}</DataCardField>
+                    {customer.email && (
+                      <DataCardField label={t('Email')} full>
+                        {customer.email}
+                      </DataCardField>
+                    )}
+                    <DataCardField label={t('Group')}>{customer.group?.name ?? '—'}</DataCardField>
+                    <DataCardField label={t('Last purchase')}>{formatDate(customer.lastPurchaseAt)}</DataCardField>
+                  </DataCardFields>
+                  <DataCardActions>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => setViewing(customer)}
+                      aria-label={t('View {code}', { code: customer.code })}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => openEdit(customer)}
+                      aria-label={t('Edit {code}', { code: customer.code })}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </DataCardActions>
+                </>
+              )}
+            </DataCards>
+          ) : (
           <Table>
             <THead>
               <tr>
@@ -237,6 +305,7 @@ export default function CustomersPage() {
               )}
             </TBody>
           </Table>
+          )}
         </Card>
       )}
 

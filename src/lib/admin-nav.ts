@@ -88,3 +88,14 @@ export const adminNav: { section: string; items: AdminNavItem[] }[] = [
     ],
   },
 ];
+
+/** Label of the admin page at this path (the longest matching menu entry) */
+export function adminNavLabel(pathname: string): string | null {
+  let best: AdminNavItem | null = null;
+  for (const { items } of adminNav) {
+    for (const item of items) {
+      if (pathname.startsWith(item.href) && (!best || item.href.length > best.href.length)) best = item;
+    }
+  }
+  return best?.label ?? null;
+}

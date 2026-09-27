@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import { DataCardField, DataCardFields, DataCardHeader, DataCards, useSmallScreen } from '@/components/ui/data-cards';
 import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import { ShiftDetailDialog, shiftStatusVariant } from '@/components/admin/shifts-detail-dialog';
 import { ShiftsDenominations } from '@/components/admin/shifts-denominations';
@@ -35,6 +36,7 @@ export default function ShiftsPage() {
   const [varianceOnly, setVarianceOnly] = useState(false);
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const { data: registers = [] } = useQuery({ queryKey: ['registers'], queryFn: () => registersApi.list() });
   const { data, isLoading, error } = useQuery({
@@ -100,6 +102,7 @@ export default function ShiftsPage() {
           </Select>
           <Input
             type="date"
+            max={to || undefined}
             value={from}
             onChange={(e) => {
               setFrom(e.target.value);
@@ -110,6 +113,7 @@ export default function ShiftsPage() {
           />
           <Input
             type="date"
+            min={from || undefined}
             value={to}
             onChange={(e) => {
               setTo(e.target.value);
@@ -137,90 +141,175 @@ export default function ShiftsPage() {
           </div>
         )}
 
-        <Table>
-          <THead>
-            <tr>
-              <Th>{t('Shift')}</Th>
-              <Th>{t('Register')}</Th>
-              <Th>{t('Opened')}</Th>
-              <Th>{t('Closed')}</Th>
-              <Th>{t('Status')}</Th>
-              <Th className="text-right">{t('Float')}</Th>
-              <Th className="text-right">{t('Expected')}</Th>
-              <Th className="text-right">{t('Counted')}</Th>
-              <Th className="text-right">{t('Variance')}</Th>
-            </tr>
-          </THead>
-          <TBody>
-            {isLoading ? (
-              <EmptyRow colSpan={9}>{t('Loading...')}</EmptyRow>
-            ) : rows.length === 0 ? (
-              <EmptyRow colSpan={9}>{t('No shifts match.')}</EmptyRow>
-            ) : (
-              rows.map((s) => (
-                <tr
-                  key={s.id}
-                  className={cn('cursor-pointer hover:bg-gray-50', s.overTolerance && 'bg-red-50/60')}
-                  onClick={() => setSelected(s.id)}
-                >
-                  <Td className="font-medium">{s.shiftNumber}</Td>
-                  <Td>
-                    {s.registerName ?? '—'}
-                    {(s.drawerName || s.businessDate) && (
-                      <span className="block text-xs text-gray-500">
-                        {[s.drawerName, s.businessDate && t('business date {date}', { date: s.businessDate })]
-                          .filter(Boolean)
-                          .join(' · ')}
-                      </span>
-                    )}
-                  </Td>
-                  <Td className="whitespace-nowrap">
+        {smallScreen ? (
+          // Phones: one card per shift, the variance in view
+          <DataCards
+            items={rows}
+            getKey={(s) => s.id}
+            onItemClick={(s) => setSelected(s.id)}
+            loading={isLoading}
+            loadingText={t('Loading...')}
+            emptyText={t('No shifts match.')}
+            itemClassName={(s) => (s.overTolerance ? 'border-red-200 bg-red-50/60' : undefined)}
+          >
+            {(s) => (
+              <>
+                <DataCardHeader
+                  title={s.shiftNumber}
+                  subtitle={[
+                    s.registerName ?? '—',
+                    s.drawerName,
+                    s.businessDate && t('business date {date}', { date: s.businessDate }),
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
+                  onTitleClick={() => setSelected(s.id)}
+                  badge={
+                    <>
+                      <Badge variant={shiftStatusVariant(s.status)}>{t(s.status === 'closing' ? 'counting' : s.status)}</Badge>
+                      {s.forceClosed && <span className="text-xs text-amber-700">{t('forced')}</span>}
+                      {!!s.lateSalesCount && (
+                        <Badge variant="warning" title={t('Sales uploaded after the shift closed')}>
+                          {plural(s.lateSalesCount, '{count} late sale', '{count} late sales')}
+                        </Badge>
+                      )}
+                    </>
+                  }
+                />
+                <DataCardFields>
+                  <DataCardField label={t('Opened')}>
                     {formatDateTime(s.openedAt)}
                     <span className="block text-xs text-gray-500">{s.openedByName}</span>
-                  </Td>
-                  <Td className="whitespace-nowrap">
+                  </DataCardField>
+                  <DataCardField label={t('Closed')}>
                     {formatDateTime(s.closedAt)}
                     {s.closedByName && <span className="block text-xs text-gray-500">{s.closedByName}</span>}
-                  </Td>
-                  <Td>
-                    <Badge variant={shiftStatusVariant(s.status)}>
-                      {t(s.status === 'closing' ? 'counting' : s.status)}
-                    </Badge>
-                    {s.forceClosed && <span className="ml-1 text-xs text-amber-700">{t('forced')}</span>}
-                    {!!s.lateSalesCount && (
-                      <Badge variant="warning" className="ml-1" title={t('Sales uploaded after the shift closed')}>
-                        {plural(s.lateSalesCount, '{count} late sale', '{count} late sales')}
-                      </Badge>
-                    )}
-                  </Td>
-                  <Td className="text-right tabular-nums">{formatMoney(s.openingFloat, s.currencyCode)}</Td>
-                  <Td className="text-right tabular-nums">
-                    {s.expectedCash === null ? '—' : formatMoney(s.expectedCash, s.currencyCode)}
-                  </Td>
-                  <Td className="text-right tabular-nums">
-                    {s.countedCash === null ? '—' : formatMoney(s.countedCash, s.currencyCode)}
-                  </Td>
-                  <Td
-                    className={cn(
-                      'text-right font-medium tabular-nums',
-                      s.variance !== null && s.variance !== 0 && (s.overTolerance ? 'text-red-600' : 'text-amber-700')
-                    )}
-                  >
-                    {s.variance === null ? (
-                      '—'
-                    ) : (
-                      <span className="inline-flex items-center gap-1">
-                        {s.overTolerance && <AlertTriangle className="h-3.5 w-3.5" />}
-                        {s.variance > 0 ? '+' : ''}
-                        {formatMoney(s.variance, s.currencyCode)}
-                      </span>
-                    )}
-                  </Td>
-                </tr>
-              ))
+                  </DataCardField>
+                  <DataCardField label={t('Float')}>
+                    <span className="tabular-nums">{formatMoney(s.openingFloat, s.currencyCode)}</span>
+                  </DataCardField>
+                  <DataCardField label={t('Expected')}>
+                    <span className="tabular-nums">
+                      {s.expectedCash === null ? '—' : formatMoney(s.expectedCash, s.currencyCode)}
+                    </span>
+                  </DataCardField>
+                  <DataCardField label={t('Counted')}>
+                    <span className="tabular-nums">
+                      {s.countedCash === null ? '—' : formatMoney(s.countedCash, s.currencyCode)}
+                    </span>
+                  </DataCardField>
+                  <DataCardField label={t('Variance')}>
+                    <span
+                      className={cn(
+                        'font-medium tabular-nums',
+                        s.variance !== null && s.variance !== 0 && (s.overTolerance ? 'text-red-600' : 'text-amber-700')
+                      )}
+                    >
+                      {s.variance === null ? (
+                        '—'
+                      ) : (
+                        <span className="inline-flex items-center gap-1">
+                          {s.overTolerance && <AlertTriangle className="h-3.5 w-3.5" />}
+                          {s.variance > 0 ? '+' : ''}
+                          {formatMoney(s.variance, s.currencyCode)}
+                        </span>
+                      )}
+                    </span>
+                  </DataCardField>
+                </DataCardFields>
+              </>
             )}
-          </TBody>
-        </Table>
+          </DataCards>
+        ) : (
+          <Table>
+            <THead>
+              <tr>
+                <Th>{t('Shift')}</Th>
+                <Th>{t('Register')}</Th>
+                <Th>{t('Opened')}</Th>
+                <Th>{t('Closed')}</Th>
+                <Th>{t('Status')}</Th>
+                <Th className="text-right">{t('Float')}</Th>
+                <Th className="text-right">{t('Expected')}</Th>
+                <Th className="text-right">{t('Counted')}</Th>
+                <Th className="text-right">{t('Variance')}</Th>
+              </tr>
+            </THead>
+            <TBody>
+              {isLoading ? (
+                <EmptyRow colSpan={9}>{t('Loading...')}</EmptyRow>
+              ) : rows.length === 0 ? (
+                <EmptyRow colSpan={9}>{t('No shifts match.')}</EmptyRow>
+              ) : (
+                rows.map((s) => (
+                  <tr
+                    key={s.id}
+                    className={cn('cursor-pointer hover:bg-gray-50', s.overTolerance && 'bg-red-50/60')}
+                    onClick={() => setSelected(s.id)}
+                  >
+                    <Td className="font-medium">{s.shiftNumber}</Td>
+                    <Td>
+                      {s.registerName ?? '—'}
+                      {(s.drawerName || s.businessDate) && (
+                        <span className="block text-xs text-gray-500">
+                          {[
+                            s.drawerName,
+                            s.businessDate &&
+                              t('business date {date}', {
+                                date: s.businessDate,
+                              }),
+                          ]
+                            .filter(Boolean)
+                            .join(' · ')}
+                        </span>
+                      )}
+                    </Td>
+                    <Td className="whitespace-nowrap">
+                      {formatDateTime(s.openedAt)}
+                      <span className="block text-xs text-gray-500">{s.openedByName}</span>
+                    </Td>
+                    <Td className="whitespace-nowrap">
+                      {formatDateTime(s.closedAt)}
+                      {s.closedByName && <span className="block text-xs text-gray-500">{s.closedByName}</span>}
+                    </Td>
+                    <Td>
+                      <Badge variant={shiftStatusVariant(s.status)}>{t(s.status === 'closing' ? 'counting' : s.status)}</Badge>
+                      {s.forceClosed && <span className="ml-1 text-xs text-amber-700">{t('forced')}</span>}
+                      {!!s.lateSalesCount && (
+                        <Badge variant="warning" className="ml-1" title={t('Sales uploaded after the shift closed')}>
+                          {plural(s.lateSalesCount, '{count} late sale', '{count} late sales')}
+                        </Badge>
+                      )}
+                    </Td>
+                    <Td className="text-right tabular-nums">{formatMoney(s.openingFloat, s.currencyCode)}</Td>
+                    <Td className="text-right tabular-nums">
+                      {s.expectedCash === null ? '—' : formatMoney(s.expectedCash, s.currencyCode)}
+                    </Td>
+                    <Td className="text-right tabular-nums">
+                      {s.countedCash === null ? '—' : formatMoney(s.countedCash, s.currencyCode)}
+                    </Td>
+                    <Td
+                      className={cn(
+                        'text-right font-medium tabular-nums',
+                        s.variance !== null && s.variance !== 0 && (s.overTolerance ? 'text-red-600' : 'text-amber-700')
+                      )}
+                    >
+                      {s.variance === null ? (
+                        '—'
+                      ) : (
+                        <span className="inline-flex items-center gap-1">
+                          {s.overTolerance && <AlertTriangle className="h-3.5 w-3.5" />}
+                          {s.variance > 0 ? '+' : ''}
+                          {formatMoney(s.variance, s.currencyCode)}
+                        </span>
+                      )}
+                    </Td>
+                  </tr>
+                ))
+              )}
+            </TBody>
+          </Table>
+        )}
 
         {meta && meta.totalPages > 1 && (
           <div className="flex items-center justify-between border-t p-3 text-sm text-gray-600">

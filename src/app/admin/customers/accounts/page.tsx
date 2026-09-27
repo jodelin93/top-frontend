@@ -9,6 +9,14 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import { CustomerDetailDialog } from '@/components/admin/customer-detail-dialog';
 import { useApproval } from '@/components/approval-dialog';
@@ -36,7 +44,7 @@ export default function CustomerAccountsPage() {
         title={t('Customer accounts')}
         description={t('Balances on account by age, and gift cards and store credit.')}
       />
-      <div className="flex gap-1 border-b" role="tablist">
+      <div className="flex gap-1 overflow-x-auto border-b" role="tablist">
         {(
           [
             ['aging', t('Aging')],
@@ -50,7 +58,7 @@ export default function CustomerAccountsPage() {
             aria-selected={tab === key}
             onClick={() => setTab(key)}
             className={cn(
-              '-mb-px border-b-2 px-3 py-2 text-sm',
+              '-mb-px shrink-0 whitespace-nowrap border-b-2 px-3 py-2 text-sm max-md:py-2.5',
               tab === key ? 'border-blue-600 font-medium text-blue-700' : 'border-transparent text-gray-600 hover:text-gray-900'
             )}
           >
@@ -70,6 +78,7 @@ function AgingTable() {
   const [debounced, setDebounced] = useState('');
   const [nonZero, setNonZero] = useState<'true' | 'false'>('true');
   const [viewing, setViewing] = useState<Customer | null>(null);
+  const smallScreen = useSmallScreen();
   useEffect(() => {
     const timeout = setTimeout(() => setDebounced(search.trim()), 300);
     return () => clearTimeout(timeout);
@@ -109,6 +118,58 @@ function AgingTable() {
           <ErrorMessage>{getErrorMessage(error, 'Could not load the accounts')}</ErrorMessage>
         </div>
       )}
+      {smallScreen ? (
+        <>
+          <DataCards
+            items={data?.rows ?? []}
+            getKey={(row) => row.customerId}
+            loading={isLoading}
+            loadingText={t('Loading...')}
+            emptyText={t('No customer owes anything.')}
+          >
+            {(row) => (
+              <>
+                <DataCardHeader
+                  title={row.name}
+                  subtitle={<span className="font-mono">{row.code}</span>}
+                  onTitleClick={() => open(row.customerId)}
+                  badge={row.creditHold && <Badge variant="danger">{t('On credit hold')}</Badge>}
+                />
+                <DataCardFields>
+                  <DataCardField label={t('Balance')}>
+                    <span className="font-semibold">{money(row.balance)}</span>
+                  </DataCardField>
+                  <DataCardField label={t('Credit limit')}>
+                    <span className="text-gray-500">{money(row.creditLimit)}</span>
+                  </DataCardField>
+                  {/* Only the age buckets that hold money, to keep the card short */}
+                  {AGING_COLUMNS.filter(([key]) => row.aging[key]).map(([key, label]) => (
+                    <DataCardField key={key} label={t(label)}>
+                      <span className={cn(key !== 'current' && row.aging[key] > 0 && 'text-red-600')}>
+                        {money(row.aging[key])}
+                      </span>
+                    </DataCardField>
+                  ))}
+                </DataCardFields>
+              </>
+            )}
+          </DataCards>
+          {!isLoading && !!data?.rows.length && (
+            <div className="space-y-1 border-t bg-gray-50 p-4 text-sm">
+              {AGING_COLUMNS.map(([key, label]) => (
+                <div key={key} className="flex justify-between gap-2">
+                  <span className="text-gray-600">{t(label)}</span>
+                  <span>{money(data.totals[key])}</span>
+                </div>
+              ))}
+              <div className="flex justify-between gap-2 font-semibold">
+                <span>{t('Total')}</span>
+                <span>{money(data.totals.total)}</span>
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -161,6 +222,7 @@ function AgingTable() {
           )}
         </TBody>
       </Table>
+      )}
       <CustomerDetailDialog customer={viewing} onClose={() => setViewing(null)} />
     </Card>
   );
@@ -179,6 +241,7 @@ function StoredValueTable() {
   const [key, setKey] = useState(newIdempotencyKey);
   // Large credits need a second person's approval, even with customers.credit.manage
   const { withApproval, approvalDialog } = useApproval();
+  const smallScreen = useSmallScreen();
 
   // Expiry is judged at the time the list was loaded
   const { data, isLoading, error, dataUpdatedAt } = useQuery({
@@ -255,7 +318,7 @@ function StoredValueTable() {
             onChange={(e) => setReason(e.target.value)}
             placeholder={t('Reason (required)')}
             aria-label={t('Reason')}
-            className="min-w-64 flex-1"
+            className="min-w-64 flex-1 max-md:min-w-0 max-md:basis-full"
           />
           <Button type="submit" disabled={adjust.isPending || !Number(amount) || !reason.trim()}>
             {t('Adjust')}
@@ -268,6 +331,65 @@ function StoredValueTable() {
           </div>
         </form>
       )}
+      {smallScreen ? (
+        <DataCards
+          items={data?.data ?? []}
+          getKey={(account) => account.id}
+          loading={isLoading}
+          loadingText={t('Loading...')}
+          emptyText={t('No gift cards or store credit yet.')}
+        >
+          {(account) => (
+            <>
+              <DataCardHeader
+                title={
+                  account.accountType === 'gift_card'
+                    ? `**** ${account.last4 ?? ''}`
+                    : account.customer
+                      ? customerName(account.customer)
+                      : '—'
+                }
+                subtitle={account.accountType === 'gift_card' ? t('Gift card') : t('Store credit')}
+                badge={
+                  <Badge variant={account.status === 'active' ? 'success' : account.status === 'pending' ? 'warning' : 'default'}>
+                    {statusLabel(account.status)}
+                  </Badge>
+                }
+              />
+              <DataCardFields>
+                <DataCardField label={t('Balance')}>
+                  <span className="font-semibold">{formatMoney(Number(account.balance), account.currencyCode || currency)}</span>
+                </DataCardField>
+                {account.accountType === 'gift_card' && (
+                  <DataCardField label={t('Initial value')}>
+                    {formatMoney(Number(account.initialAmount), account.currencyCode || currency)}
+                  </DataCardField>
+                )}
+                <DataCardField label={t('Issued')}>{formatDateTime(account.createdAt)}</DataCardField>
+                {account.accountType === 'gift_card' && (
+                  <DataCardField label={t('Expires')}>
+                    {account.expiresAt ? (
+                      <span className={cn(Date.parse(account.expiresAt) <= dataUpdatedAt && 'text-red-600')}>
+                        {formatDate(account.expiresAt)}
+                        {Date.parse(account.expiresAt) <= dataUpdatedAt && ` · ${t('Expired')}`}
+                      </span>
+                    ) : (
+                      <span className="text-gray-400">{t('Never')}</span>
+                    )}
+                  </DataCardField>
+                )}
+              </DataCardFields>
+              {canAdjust && account.status === 'active' && (
+                <DataCardActions>
+                  <Button variant="ghost" size="sm" onClick={() => setAdjusting(account)}>
+                    {t('Adjust')}
+                  </Button>
+                </DataCardActions>
+              )}
+            </>
+          )}
+        </DataCards>
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -331,6 +453,7 @@ function StoredValueTable() {
           )}
         </TBody>
       </Table>
+      )}
       {approvalDialog}
     </Card>
   );

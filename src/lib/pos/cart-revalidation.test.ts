@@ -179,3 +179,18 @@ describe('revalidateCart', () => {
     expect(result.changed).toBe(true);
   });
 });
+
+describe('revalidateCart: customer group discount', () => {
+  it('keeps a cart whose group discount did not change', () => {
+    const result = check({}, { groupDiscountPercent: 10, currentGroupDiscountPercent: 10 });
+    expect(result.changed).toBe(false);
+    // 20 − 10% = 18, + 10% tax
+    expect(result.totalBefore).toBe(19.8);
+  });
+
+  it('shows the new total when the group discount changed', () => {
+    const result = check({}, { groupDiscountPercent: 0, currentGroupDiscountPercent: 10 });
+    expect(result.changed).toBe(true);
+    expect(result).toMatchObject({ totalBefore: 22, totalAfter: 19.8, difference: -2.2 });
+  });
+});

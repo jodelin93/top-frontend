@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, dialogStickyFooter } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { getErrorMessage } from '@/lib/api/client';
 import { countTotal, shiftsApi } from '@/lib/api/shifts';
@@ -124,7 +125,7 @@ function OpenShiftForm({
       <Field label={t('Notes (optional)')} htmlFor="open-notes">
         <Input id="open-notes" maxLength={500} value={notes} onChange={(e) => setNotes(e.target.value)} />
       </Field>
-      <div className="flex items-center justify-between gap-2">
+      <div className={cn('flex items-center justify-between gap-2', dialogStickyFooter)}>
         <span className="text-sm text-gray-600">
           {t('Float:')} <strong>{formatMoney(float, currency)}</strong>
         </span>

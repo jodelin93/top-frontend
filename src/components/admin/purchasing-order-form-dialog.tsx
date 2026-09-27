@@ -7,27 +7,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useSmallScreen } from '@/components/ui/data-cards';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { useLocationOptions } from '@/components/admin/settings-shared';
 import { variantLabel, VariantPicker } from '@/components/admin/inventory-variant-picker';
 import { useSuppliers } from '@/components/admin/purchasing-suppliers';
 import { useCurrency } from '@/hooks/use-store-settings';
 import { getErrorMessage } from '@/lib/api/client';
-import {
-  PurchaseOrderDetail,
-  PurchaseOrderInput,
-  purchaseOrdersApi,
-  supplierProductsApi,
-} from '@/lib/api/purchasing';
-import { formatMoney } from '@/lib/format';
+import { PurchaseOrderDetail, PurchaseOrderInput, purchaseOrdersApi, supplierProductsApi } from '@/lib/api/purchasing';
+import { formatMoney, addDaysLocalIso } from '@/lib/format';
 import { t } from '@/i18n';
 import { QUANTITY_TEXT } from '@/lib/pos/quantity';
 
@@ -53,11 +42,7 @@ const lineNet = (line: OrderLine) => {
   return round2(gross - round2((gross * (Number(line.discountPercent) || 0)) / 100));
 };
 
-const addDaysIso = (days: number) => {
-  const date = new Date();
-  date.setDate(date.getDate() + days);
-  return date.toISOString().slice(0, 10);
-};
+const addDaysIso = (days: number) => addDaysLocalIso(days);
 
 /**
  * Create or edit a draft purchase order. An order past approval (approved,
@@ -86,6 +71,11 @@ export function PurchaseOrderFormDialog({
     order?.locationId ?? locations.find((l) => !l.isSellable)?.id ?? locations[0]?.id ?? ''
   );
   const [expected, setExpected] = useState(order?.expectedDeliveryDate?.slice(0, 10) ?? '');
+  // A new or changed expected delivery date can't already be over
+  const expectedError =
+    expected && expected !== (order?.expectedDeliveryDate?.slice(0, 10) ?? '') && expected < addDaysLocalIso(0)
+      ? t('The expected delivery date cannot be in the past')
+      : undefined;
   const [shipping, setShipping] = useState(order?.shippingCost ? String(order.shippingCost) : '');
   // Order-level tax: the order's tax minus what its lines carry
   const lineTaxTotal = round2((order?.items ?? []).reduce((sum, i) => sum + Number(i.taxAmount ?? 0), 0));
@@ -108,6 +98,7 @@ export function PurchaseOrderFormDialog({
     }))
   );
   const [error, setError] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   // The supplier's codes, last costs and minimums prefill new lines
   const { data: supplierProducts = [] } = useQuery({
@@ -141,6 +132,59 @@ export function PurchaseOrderFormDialog({
   const update = (variantId: string, patch: Partial<OrderLine>) =>
     setLines((prev) => prev.map((l) => (l.variantId === variantId ? { ...l, ...patch } : l)));
 
+  // Line controls, shared by the table (desktop) and the cards (phones)
+  type TextKey = 'supplierSku' | 'quantity' | 'unitOfMeasure' | 'unitCost' | 'discountPercent' | 'taxAmount';
+  const lineInput = (line: OrderLine, key: TextKey, label: string, props: React.ComponentProps<typeof Input> = {}) => (
+    <Input {...props} value={line[key]} onChange={(e) => update(line.variantId, { [key]: e.target.value })} aria-label={label} />
+  );
+  const supplierSkuInput = (line: OrderLine, className: string) =>
+    lineInput(line, 'supplierSku', t('Supplier code for {sku}', { sku: line.sku }), {
+      className,
+      placeholder: t('Supplier code'),
+    });
+  const quantityInput = (line: OrderLine, className?: string) =>
+    lineInput(line, 'quantity', t('Quantity for {sku}', { sku: line.sku }), {
+      inputMode: 'numeric',
+      className,
+    });
+  const unitInput = (line: OrderLine, className?: string) =>
+    lineInput(line, 'unitOfMeasure', t('Unit of measure for {sku}', { sku: line.sku }), {
+      placeholder: t('each'),
+      maxLength: 30,
+      className,
+    });
+  const unitCostInput = (line: OrderLine, className?: string) =>
+    lineInput(line, 'unitCost', t('Unit cost for {sku}', { sku: line.sku }), {
+      inputMode: 'decimal',
+      className,
+    });
+  const discountInput = (line: OrderLine, className?: string) =>
+    lineInput(line, 'discountPercent', t('Discount % for {sku}', { sku: line.sku }), {
+      inputMode: 'decimal',
+      placeholder: '0',
+      className,
+    });
+  const taxInput = (line: OrderLine, className?: string) =>
+    lineInput(line, 'taxAmount', t('Tax for {sku}', { sku: line.sku }), {
+      inputMode: 'decimal',
+      placeholder: '0.00',
+      className,
+    });
+  const lineTotal = (line: OrderLine) => formatMoney(round2(lineNet(line) + (Number(line.taxAmount) || 0)), currency);
+  const removeButton = (line: OrderLine) => (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      className="h-8 w-8 text-red-600"
+      disabled={line.received > 0}
+      aria-label={t('Remove {sku}', { sku: line.sku })}
+      onClick={() => setLines((prev) => prev.filter((l) => l.variantId !== line.variantId))}
+    >
+      <X className="h-4 w-4" />
+    </Button>
+  );
+
   const subtotal = round2(lines.reduce((sum, l) => sum + lineNet(l), 0));
   const allTax = round2(lines.reduce((sum, l) => sum + (Number(l.taxAmount) || 0), 0) + (Number(tax) || 0));
   const total = round2(subtotal + allTax + (Number(shipping) || 0));
@@ -152,6 +196,7 @@ export function PurchaseOrderFormDialog({
     if (!supplierId) return setError(t('Choose a supplier.'));
     if (!locationId) return setError(t('Choose where the goods will be received.'));
     if (lines.length === 0) return setError(t('Add at least one product.'));
+    if (expectedError) return setError(expectedError);
     if (isRevision && !reason.trim()) return setError(t('Say why the order is being revised.'));
     const items: PurchaseOrderInput['items'] = [];
     for (const line of lines) {
@@ -260,8 +305,14 @@ export function PurchaseOrderFormDialog({
                 ))}
               </Select>
             </Field>
-            <Field label={t('Expected delivery')} htmlFor="po-expected">
-              <Input id="po-expected" type="date" value={expected} onChange={(e) => setExpected(e.target.value)} />
+            <Field label={t('Expected delivery')} htmlFor="po-expected" error={expectedError}>
+              <Input
+                id="po-expected"
+                type="date"
+                min={addDaysLocalIso(0)}
+                value={expected}
+                onChange={(e) => setExpected(e.target.value)}
+              />
             </Field>
           </div>
 
@@ -302,6 +353,51 @@ export function PurchaseOrderFormDialog({
             <p className="rounded-md border border-dashed px-3 py-4 text-center text-sm text-gray-400">
               {t('No products added yet. Search above and click Add.')}
             </p>
+          ) : smallScreen ? (
+            // Phones: one card per line, every box in view (the table scrolls sideways)
+            <div className="space-y-2">
+              {lines.map((line) => (
+                <div key={line.variantId} className="space-y-2 rounded-md border p-3 text-sm">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="break-words font-medium">{line.label}</div>
+                      <div className="font-mono text-xs text-gray-500">{line.sku}</div>
+                      {line.received > 0 && (
+                        <div className="text-xs text-gray-500">{t('{count} received', { count: line.received })}</div>
+                      )}
+                    </div>
+                    {removeButton(line)}
+                  </div>
+                  {supplierSkuInput(line, 'h-10 w-full')}
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="block space-y-1">
+                      <span className="text-xs text-gray-500">{t('Quantity')}</span>
+                      {quantityInput(line, 'h-10 w-full')}
+                    </label>
+                    <label className="block space-y-1">
+                      <span className="text-xs text-gray-500">{t('Unit')}</span>
+                      {unitInput(line, 'h-10 w-full')}
+                    </label>
+                    <label className="block space-y-1">
+                      <span className="text-xs text-gray-500">{t('Unit cost')}</span>
+                      {unitCostInput(line, 'h-10 w-full')}
+                    </label>
+                    <label className="block space-y-1">
+                      <span className="text-xs text-gray-500">{t('Disc. %')}</span>
+                      {discountInput(line, 'h-10 w-full')}
+                    </label>
+                    <label className="block space-y-1">
+                      <span className="text-xs text-gray-500">{t('Tax')}</span>
+                      {taxInput(line, 'h-10 w-full')}
+                    </label>
+                    <div className="space-y-1 text-right">
+                      <div className="text-xs text-gray-500">{t('Line total')}</div>
+                      <div className="flex h-10 items-center justify-end font-medium">{lineTotal(line)}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
             <div className="overflow-x-auto rounded-md border">
               <table className="w-full text-sm">
@@ -323,76 +419,18 @@ export function PurchaseOrderFormDialog({
                       <td className="px-3 py-2">
                         <div className="font-medium">{line.label}</div>
                         <div className="font-mono text-xs text-gray-500">{line.sku}</div>
-                        <Input
-                          className="mt-1 h-7 text-xs"
-                          placeholder={t('Supplier code')}
-                          value={line.supplierSku}
-                          onChange={(e) => update(line.variantId, { supplierSku: e.target.value })}
-                          aria-label={t('Supplier code for {sku}', { sku: line.sku })}
-                        />
+                        {supplierSkuInput(line, 'mt-1 h-7 text-xs')}
                         {line.received > 0 && (
                           <div className="text-xs text-gray-500">{t('{count} received', { count: line.received })}</div>
                         )}
                       </td>
-                      <td className="px-2 py-2">
-                        <Input
-                          inputMode="numeric"
-                          value={line.quantity}
-                          onChange={(e) => update(line.variantId, { quantity: e.target.value })}
-                          aria-label={t('Quantity for {sku}', { sku: line.sku })}
-                        />
-                      </td>
-                      <td className="px-2 py-2">
-                        <Input
-                          placeholder={t('each')}
-                          maxLength={30}
-                          value={line.unitOfMeasure}
-                          onChange={(e) => update(line.variantId, { unitOfMeasure: e.target.value })}
-                          aria-label={t('Unit of measure for {sku}', { sku: line.sku })}
-                        />
-                      </td>
-                      <td className="px-2 py-2">
-                        <Input
-                          inputMode="decimal"
-                          value={line.unitCost}
-                          onChange={(e) => update(line.variantId, { unitCost: e.target.value })}
-                          aria-label={t('Unit cost for {sku}', { sku: line.sku })}
-                        />
-                      </td>
-                      <td className="px-2 py-2">
-                        <Input
-                          inputMode="decimal"
-                          placeholder="0"
-                          value={line.discountPercent}
-                          onChange={(e) => update(line.variantId, { discountPercent: e.target.value })}
-                          aria-label={t('Discount % for {sku}', { sku: line.sku })}
-                        />
-                      </td>
-                      <td className="px-2 py-2">
-                        <Input
-                          inputMode="decimal"
-                          placeholder="0.00"
-                          value={line.taxAmount}
-                          onChange={(e) => update(line.variantId, { taxAmount: e.target.value })}
-                          aria-label={t('Tax for {sku}', { sku: line.sku })}
-                        />
-                      </td>
-                      <td className="px-2 py-2 text-right">
-                        {formatMoney(round2(lineNet(line) + (Number(line.taxAmount) || 0)), currency)}
-                      </td>
-                      <td className="px-2 py-2">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-red-600"
-                          disabled={line.received > 0}
-                          aria-label={t('Remove {sku}', { sku: line.sku })}
-                          onClick={() => setLines((prev) => prev.filter((l) => l.variantId !== line.variantId))}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </td>
+                      <td className="px-2 py-2">{quantityInput(line)}</td>
+                      <td className="px-2 py-2">{unitInput(line)}</td>
+                      <td className="px-2 py-2">{unitCostInput(line)}</td>
+                      <td className="px-2 py-2">{discountInput(line)}</td>
+                      <td className="px-2 py-2">{taxInput(line)}</td>
+                      <td className="px-2 py-2 text-right">{lineTotal(line)}</td>
+                      <td className="px-2 py-2">{removeButton(line)}</td>
                     </tr>
                   ))}
                 </tbody>

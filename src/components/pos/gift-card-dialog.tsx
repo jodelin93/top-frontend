@@ -18,6 +18,12 @@ import { getErrorMessage } from '@/lib/api/client';
 import { formatDate, formatMoney } from '@/lib/format';
 import { t } from '@/i18n';
 
+/** Same rule as the server: 12 to 32 letters / digits, with both (spaces and dashes ignored) */
+export function isValidPreprintedCode(code: string): boolean {
+  const raw = code.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  return /^[A-Z0-9]{12,32}$/.test(raw) && /[A-Z]/.test(raw) && /[0-9]/.test(raw);
+}
+
 /**
  * Sell a gift card at the till (added to the sale as its own line: no tax, no
  * discount), or check a card's balance. Needs a connection: the card is created
@@ -56,6 +62,10 @@ export function GiftCardDialog({
     const value = Number(amount);
     if (!Number.isFinite(value) || value < 1) {
       setError(t('Enter an amount of at least 1.00'));
+      return;
+    }
+    if (code.trim() && !isValidPreprintedCode(code)) {
+      setError(t('A gift card code has 12 to 32 characters, with letters and digits'));
       return;
     }
     onAdd({ amount: Math.round(value * 100) / 100, code: code.trim() || undefined });

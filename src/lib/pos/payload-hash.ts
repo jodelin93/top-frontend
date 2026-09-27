@@ -31,8 +31,36 @@ const K = new Uint32Array([
   0xc67178f2,
 ]);
 
+const toHex = (bytes: Uint8Array) => [...bytes].map((b) => b.toString(16).padStart(2, '0')).join('');
+
 export function sha256Hex(text: string): string {
-  const bytes = new TextEncoder().encode(text);
+  return toHex(sha256Bytes(new TextEncoder().encode(text)));
+}
+
+/** HMAC-SHA256 (hex) without Web Crypto, for plain-http LAN addresses */
+export function hmacSha256Hex(secret: string, message: string): string {
+  const BLOCK = 64;
+  const raw = new TextEncoder().encode(secret);
+  const key: Uint8Array = raw.length > BLOCK ? sha256Bytes(raw) : raw;
+  const inner = new Uint8Array(BLOCK);
+  const outer = new Uint8Array(BLOCK);
+  for (let i = 0; i < BLOCK; i++) {
+    inner[i] = (key[i] ?? 0) ^ 0x36;
+    outer[i] = (key[i] ?? 0) ^ 0x5c;
+  }
+  const msg = new TextEncoder().encode(message);
+  const innerHash = sha256Bytes(concat(inner, msg));
+  return toHex(sha256Bytes(concat(outer, innerHash)));
+}
+
+function concat(a: Uint8Array, b: Uint8Array): Uint8Array {
+  const out = new Uint8Array(a.length + b.length);
+  out.set(a);
+  out.set(b, a.length);
+  return out;
+}
+
+export function sha256Bytes(bytes: Uint8Array): Uint8Array {
   const bitLength = bytes.length * 8;
   const padded = new Uint8Array((((bytes.length + 9 + 63) >> 6) << 6));
   padded.set(bytes);
@@ -79,7 +107,10 @@ export function sha256Hex(text: string): string {
     h[6] = (h[6] + g) >>> 0;
     h[7] = (h[7] + hh) >>> 0;
   }
-  return [...h].map((x) => x.toString(16).padStart(8, '0')).join('');
+  const out = new Uint8Array(32);
+  const outView = new DataView(out.buffer);
+  h.forEach((x, i) => outView.setUint32(i * 4, x));
+  return out;
 }
 
 export const payloadHash = (payload: unknown) => sha256Hex(canonicalJson(payload));

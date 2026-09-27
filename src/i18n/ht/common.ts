@@ -42,6 +42,9 @@ export const common: Record<string, string> = {
   // Admin layout and navigation
   'Admin': 'Administrasyon',
   'Account security': 'Sekirite kont',
+  'Open menu': 'Louvri meni an',
+  'Close menu': 'Fèmen meni an',
+  'Admin menu': 'Meni administrasyon',
   'Back to POS': 'Retounen nan kès la',
   'Sign out': 'Dekonekte',
   'Sales': 'Vant',

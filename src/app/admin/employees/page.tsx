@@ -10,6 +10,14 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage, Field, PageHeader } from '@/components/admin/page-header';
 import { EmployeeFormDialog } from '@/components/admin/employees-form-dialog';
 import { EmployeesAttendance } from '@/components/admin/employees-attendance';
@@ -18,6 +26,7 @@ import { Employee, EmployeeStatus, employeesApi } from '@/lib/api/employees';
 import { branchesApi } from '@/lib/api/settings';
 import { cn } from '@/lib/utils';
 import { plural, t } from '@/i18n';
+import { todayLocalIso } from '@/lib/format';
 
 type Tab = 'employees' | 'attendance';
 
@@ -31,6 +40,7 @@ export default function EmployeesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [deactivating, setDeactivating] = useState<Employee | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const { data: branches = [] } = useQuery({ queryKey: ['branches'], queryFn: () => branchesApi.list() });
   const { data, isLoading, error } = useQuery({
@@ -62,6 +72,42 @@ export default function EmployeesPage() {
       setActionError(getErrorMessage(err, 'Could not reactivate the employee'));
     }
   };
+
+  // Shared by the table and the phone cards
+  const branchList = (e: Employee) =>
+    e.branches.length === 0
+      ? '—'
+      : e.branches.map((b) => (
+          <span key={b.branchId} className={cn('mr-2', b.isPrimary && 'font-medium')}>
+            {branchName(b.branchId)}
+            {b.isPrimary && <span className="text-xs text-gray-500"> ({t('primary')})</span>}
+          </span>
+        ));
+  const rowActions = (e: Employee) => (
+    <>
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() => {
+          setEditing(e);
+          setFormOpen(true);
+        }}
+        aria-label={t('Edit')}
+        title={t('Edit')}
+      >
+        <Pencil className="h-4 w-4" />
+      </Button>
+      {e.status === 'active' ? (
+        <Button size="sm" variant="ghost" onClick={() => setDeactivating(e)} title={t('Deactivate')} aria-label={t('Deactivate')}>
+          <UserX className="h-4 w-4 text-red-600" />
+        </Button>
+      ) : (
+        <Button size="sm" variant="ghost" onClick={() => reactivate(e)} title={t('Reactivate')} aria-label={t('Reactivate')}>
+          <UserCheck className="h-4 w-4 text-green-700" />
+        </Button>
+      )}
+    </>
+  );
 
   return (
     <div className="mx-auto max-w-6xl space-y-4">
@@ -137,73 +183,74 @@ export default function EmployeesPage() {
             </div>
           )}
 
-          <Table>
-            <THead>
-              <tr>
-                <Th>{t('Name')}</Th>
-                <Th>{t('Job title')}</Th>
-                <Th>{t('Branches')}</Th>
-                <Th>{t('User account')}</Th>
-                <Th>{t('Status')}</Th>
-                <Th />
-              </tr>
-            </THead>
-            <TBody>
-              {isLoading ? (
-                <EmptyRow colSpan={6}>{t('Loading...')}</EmptyRow>
-              ) : rows.length === 0 ? (
-                <EmptyRow colSpan={6}>{t('No employees match.')}</EmptyRow>
-              ) : (
-                rows.map((e) => (
-                  <tr key={e.id}>
-                    <Td className="font-medium">
-                      {e.name}
-                      {e.employeeCode && <span className="block text-xs text-gray-500">{e.employeeCode}</span>}
-                    </Td>
-                    <Td>{e.jobTitle ?? '—'}</Td>
-                    <Td className="text-sm">
-                      {e.branches.length === 0
-                        ? '—'
-                        : e.branches.map((b) => (
-                            <span key={b.branchId} className={cn('mr-2', b.isPrimary && 'font-medium')}>
-                              {branchName(b.branchId)}
-                              {b.isPrimary && <span className="text-xs text-gray-500"> ({t('primary')})</span>}
-                            </span>
-                          ))}
-                    </Td>
-                    <Td className="text-sm">{e.user ? e.user.email : <span className="text-gray-400">{t('No account')}</span>}</Td>
-                    <Td>
-                      <Badge variant={e.status === 'active' ? 'success' : 'default'}>{t(e.status)}</Badge>
-                      {e.terminationDate && <span className="block text-xs text-gray-500">{e.terminationDate}</span>}
-                    </Td>
-                    <Td className="whitespace-nowrap text-right">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => {
-                          setEditing(e);
-                          setFormOpen(true);
-                        }}
-                        aria-label={t('Edit')}
-                        title={t('Edit')}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      {e.status === 'active' ? (
-                        <Button size="sm" variant="ghost" onClick={() => setDeactivating(e)} title={t('Deactivate')} aria-label={t('Deactivate')}>
-                          <UserX className="h-4 w-4 text-red-600" />
-                        </Button>
-                      ) : (
-                        <Button size="sm" variant="ghost" onClick={() => reactivate(e)} title={t('Reactivate')} aria-label={t('Reactivate')}>
-                          <UserCheck className="h-4 w-4 text-green-700" />
-                        </Button>
-                      )}
-                    </Td>
-                  </tr>
-                ))
+          {smallScreen ? (
+            <DataCards
+              items={rows}
+              getKey={(e) => e.id}
+              loading={isLoading}
+              loadingText={t('Loading...')}
+              emptyText={t('No employees match.')}
+            >
+              {(e) => (
+                <>
+                  <DataCardHeader
+                    title={e.name}
+                    subtitle={[e.employeeCode, e.jobTitle].filter(Boolean).join(' · ') || undefined}
+                    badge={<Badge variant={e.status === 'active' ? 'success' : 'default'}>{t(e.status)}</Badge>}
+                  />
+                  <DataCardFields>
+                    <DataCardField label={t('Branches')} full>
+                      {branchList(e)}
+                    </DataCardField>
+                    <DataCardField label={t('User account')} full>
+                      {e.user ? e.user.email : <span className="text-gray-400">{t('No account')}</span>}
+                    </DataCardField>
+                    {e.terminationDate && <DataCardField label={t('Last day')}>{e.terminationDate}</DataCardField>}
+                  </DataCardFields>
+                  <DataCardActions>{rowActions(e)}</DataCardActions>
+                </>
               )}
-            </TBody>
-          </Table>
+            </DataCards>
+          ) : (
+            <Table>
+              <THead>
+                <tr>
+                  <Th>{t('Name')}</Th>
+                  <Th>{t('Job title')}</Th>
+                  <Th>{t('Branches')}</Th>
+                  <Th>{t('User account')}</Th>
+                  <Th>{t('Status')}</Th>
+                  <Th />
+                </tr>
+              </THead>
+              <TBody>
+                {isLoading ? (
+                  <EmptyRow colSpan={6}>{t('Loading...')}</EmptyRow>
+                ) : rows.length === 0 ? (
+                  <EmptyRow colSpan={6}>{t('No employees match.')}</EmptyRow>
+                ) : (
+                  rows.map((e) => (
+                    <tr key={e.id}>
+                      <Td className="font-medium">
+                        {e.name}
+                        {e.employeeCode && <span className="block text-xs text-gray-500">{e.employeeCode}</span>}
+                      </Td>
+                      <Td>{e.jobTitle ?? '—'}</Td>
+                      <Td className="text-sm">{branchList(e)}</Td>
+                      <Td className="text-sm">
+                        {e.user ? e.user.email : <span className="text-gray-400">{t('No account')}</span>}
+                      </Td>
+                      <Td>
+                        <Badge variant={e.status === 'active' ? 'success' : 'default'}>{t(e.status)}</Badge>
+                        {e.terminationDate && <span className="block text-xs text-gray-500">{e.terminationDate}</span>}
+                      </Td>
+                      <Td className="whitespace-nowrap text-right">{rowActions(e)}</Td>
+                    </tr>
+                  ))
+                )}
+              </TBody>
+            </Table>
+          )}
           {data?.meta && (
             <div className="border-t p-3 text-sm text-gray-600">
               {plural(data.meta.total, '{count} employee', '{count} employees')}
@@ -221,6 +268,13 @@ export default function EmployeesPage() {
 function DeactivateDialog({ employee, onClose }: { employee: Employee | null; onClose: () => void }) {
   const queryClient = useQueryClient();
   const [terminationDate, setTerminationDate] = useState('');
+  // The last day is not in the future and not before the hire date
+  const terminationError =
+    terminationDate && terminationDate > todayLocalIso()
+      ? t('The date cannot be in the future')
+      : terminationDate && employee?.hireDate && terminationDate < employee.hireDate
+        ? t('The termination date is before the hire date')
+        : null;
   const [reason, setReason] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -234,6 +288,10 @@ function DeactivateDialog({ employee, onClose }: { employee: Employee | null; on
 
   const submit = async () => {
     if (!employee) return;
+    if (terminationError) {
+      setError(terminationError);
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
@@ -265,8 +323,15 @@ function DeactivateDialog({ employee, onClose }: { employee: Employee | null; on
           </DialogDescription>
         </DialogHeader>
         <ErrorMessage>{error}</ErrorMessage>
-        <Field label={t('Last day')} htmlFor="termination-date">
-          <Input id="termination-date" type="date" value={terminationDate} onChange={(e) => setTerminationDate(e.target.value)} />
+        <Field label={t('Last day')} htmlFor="termination-date" error={terminationError ?? undefined}>
+          <Input
+            id="termination-date"
+            type="date"
+            min={employee?.hireDate ?? undefined}
+            max={todayLocalIso()}
+            value={terminationDate}
+            onChange={(e) => setTerminationDate(e.target.value)}
+          />
         </Field>
         <Field label={t('Reason (optional)')} htmlFor="deactivate-reason">
           <Input id="deactivate-reason" value={reason} maxLength={500} onChange={(e) => setReason(e.target.value)} />

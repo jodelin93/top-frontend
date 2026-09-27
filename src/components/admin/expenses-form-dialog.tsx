@@ -19,8 +19,9 @@ import {
 } from '@/lib/api/expenses';
 import { registersApi } from '@/lib/api/settings';
 import { t } from '@/i18n';
+import { todayLocalIso } from '@/lib/format';
 
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => todayLocalIso();
 
 /**
  * Record a new expense or edit a draft / rejected one
@@ -64,7 +65,8 @@ function ExpenseForm({ expense, onClose }: { expense: Expense | null; onClose: (
   const [idempotencyKey] = useState(newIdempotencyKey);
 
   const value = Number(amount);
-  const valid = value > 0 && description.trim().length >= 2;
+  const dateError = expenseDate && expenseDate > todayLocalIso() ? t('The expense date cannot be in the future') : undefined;
+  const valid = value > 0 && description.trim().length >= 2 && !dateError;
 
   const save = useMutation({
     mutationFn: async (submit: boolean) => {
@@ -107,8 +109,14 @@ function ExpenseForm({ expense, onClose }: { expense: Expense | null; onClose: (
       >
         <ErrorMessage>{save.error ? getErrorMessage(save.error, 'Could not save the expense') : null}</ErrorMessage>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field label={t('Date')} htmlFor="expense-date">
-            <Input id="expense-date" type="date" value={expenseDate} onChange={(e) => setExpenseDate(e.target.value)} />
+          <Field label={t('Date')} htmlFor="expense-date" error={dateError}>
+            <Input
+              id="expense-date"
+              type="date"
+              max={todayLocalIso()}
+              value={expenseDate}
+              onChange={(e) => setExpenseDate(e.target.value)}
+            />
           </Field>
           <Field label={t('Amount')} htmlFor="expense-amount">
             <Input

@@ -8,6 +8,13 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import { EstimateFormDialog } from '@/components/admin/estimate-form-dialog';
 import { EstimateDetailDialog } from '@/components/admin/estimate-detail-dialog';
@@ -25,6 +32,7 @@ export default function EstimatesPage() {
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<{ estimate: Estimate | null } | null>(null);
   const [viewingId, setViewingId] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -92,6 +100,34 @@ export default function EstimatesPage() {
           </div>
         )}
 
+        {smallScreen ? (
+          <DataCards
+            items={rows}
+            getKey={(row) => row.id}
+            onItemClick={(row) => setViewingId(row.id)}
+            loading={isLoading}
+            loadingText={t('Loading...')}
+            emptyText={debounced || status ? t('No estimates match.') : t('No estimates yet.')}
+          >
+            {(row) => (
+              <>
+                <DataCardHeader
+                  title={<span className="font-mono text-xs">{row.estimateNumber}</span>}
+                  subtitle={estimateCustomerName(row)}
+                  onTitleClick={() => setViewingId(row.id)}
+                  badge={<EstimateStatusBadge estimate={row} />}
+                />
+                <DataCardFields>
+                  <DataCardField label={t('Total')}>
+                    <span className="font-medium">{formatMoney(Number(row.total), row.currencyCode)}</span>
+                  </DataCardField>
+                  <DataCardField label={t('Date')}>{formatDate(`${row.issueDate}T00:00:00`)}</DataCardField>
+                  <DataCardField label={t('Valid until')}>{formatDate(`${row.validUntil}T00:00:00`)}</DataCardField>
+                </DataCardFields>
+              </>
+            )}
+          </DataCards>
+        ) : (
         <Table>
           <THead>
             <tr>
@@ -128,6 +164,7 @@ export default function EstimatesPage() {
             )}
           </TBody>
         </Table>
+        )}
 
         {meta && meta.totalPages > 1 && (
           <div className="flex items-center justify-between border-t p-3 text-sm text-gray-600">

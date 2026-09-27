@@ -12,7 +12,7 @@ import { CheckboxField, SettingsSection } from '@/components/admin/settings-shar
 import { useStoreSettings } from '@/hooks/use-store-settings';
 import { getErrorMessage } from '@/lib/api/client';
 import { settingsApi, StoreSettings } from '@/lib/api/settings';
-import { formatDateTime } from '@/lib/format';
+import { formatDateTime, nowLocalInput } from '@/lib/format';
 import { t } from '@/i18n';
 
 const securitySchema = z.object({
@@ -150,7 +150,7 @@ export function SettingsSecurity() {
             error={errorText(errors.effectiveFrom?.message)}
             hint={t('Leave empty to apply now, or pick a future date and time to schedule the change.')}
           >
-            <Input id="effectiveFrom" type="datetime-local" {...register('effectiveFrom')} />
+            <Input id="effectiveFrom" type="datetime-local" min={nowLocalInput()} {...register('effectiveFrom')} />
           </Field>
           <Field label={t('Note (optional)')} htmlFor="note" error={errorText(errors.note?.message)} hint={t('Shown in the settings history.')}>
             <Input id="note" maxLength={255} {...register('note')} />

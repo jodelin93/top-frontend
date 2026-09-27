@@ -239,6 +239,7 @@ function ThermalReceipt({
   printClass?: string;
 }) {
   const money = (value: number) => formatMoney(value, sale.currencyCode);
+  const groupDiscount = groupDiscountOf(sale);
   const business = businessLines(settings, sale);
   const rates = taxByRate(sale);
   const cashier = cashierName(sale);
@@ -335,6 +336,11 @@ function ThermalReceipt({
       <Separator template={options.template} />
       {!compact && <Row label={t('Subtotal')} value={money(sale.subtotal)} />}
       {sale.discountAmount > 0 && <Row label={t('Discounts')} value={`-${money(sale.discountAmount)}`} />}
+      {groupDiscount && (
+        <div className="pl-2">
+          <Row label={groupDiscountLabel(groupDiscount)} value={`-${money(groupDiscount.amount)}`} />
+        </div>
+      )}
       {sale.metadata?.cartDiscountReason && (
         <div className="pl-2">{t('Discount reason: {reason}', { reason: sale.metadata.cartDiscountReason })}</div>
       )}
@@ -397,6 +403,7 @@ function InvoiceReceipt({
   printClass?: string;
 }) {
   const money = (value: number) => formatMoney(value, sale.currencyCode);
+  const groupDiscount = groupDiscountOf(sale);
   const business = businessLines(settings, sale);
   const rates = taxByRate(sale);
   const cashier = cashierName(sale);
@@ -513,6 +520,9 @@ function InvoiceReceipt({
         <div className="w-72 space-y-0.5">
           <Row label={t('Subtotal')} value={money(sale.subtotal)} />
           {sale.discountAmount > 0 && <Row label={t('Discounts')} value={`-${money(sale.discountAmount)}`} />}
+          {groupDiscount && (
+            <Row label={groupDiscountLabel(groupDiscount)} value={`-${money(groupDiscount.amount)}`} />
+          )}
           {sale.metadata?.cartDiscountReason && (
             <div className="text-xs text-gray-500">
               {t('Discount reason: {reason}', { reason: sale.metadata.cartDiscountReason })}
@@ -551,6 +561,18 @@ function InvoiceReceipt({
       {settings?.receiptFooter && <div className="mt-6 whitespace-pre-line text-center">{settings.receiptFooter}</div>}
     </div>
   );
+}
+
+/** Customer group discount given on the sale (part of its discounts), if any */
+export function groupDiscountOf(sale: Sale) {
+  const group = sale.metadata?.groupDiscount;
+  return group && Number(group.amount) > 0 ? { ...group, amount: Number(group.amount) } : null;
+}
+
+export function groupDiscountLabel(group: { name: string | null; percent: number }): string {
+  return group.name
+    ? t('Group discount ({name}, {percent}%)', { name: group.name, percent: group.percent })
+    : t('Group discount ({percent}%)', { percent: group.percent });
 }
 
 function Row({ label, value, bold }: { label: string; value: string; bold?: boolean }) {

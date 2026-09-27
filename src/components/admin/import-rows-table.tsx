@@ -6,6 +6,7 @@ import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
 import { Select } from '@/components/ui/select';
 import type { ImportAction, ImportPriceChange, ImportRow } from '@/lib/api/imports';
 import { currentLocale, t } from '@/i18n';
+import { translateServerError } from '@/lib/server-texts';
 
 const actionBadge: Record<ImportAction, { label: string; variant: 'success' | 'info' | 'default' | 'danger' }> = {
   create: { label: 'create', variant: 'success' },
@@ -97,7 +98,7 @@ export function ImportRowsTable({ rows }: { rows: ImportRow[] }) {
                     {row.errors.length > 0 ? (
                       <ul className="list-disc space-y-0.5 pl-4 text-red-700">
                         {row.errors.map((message) => (
-                          <li key={message}>{message}</li>
+                          <li key={message}>{translateServerError(message)}</li>
                         ))}
                       </ul>
                     ) : (

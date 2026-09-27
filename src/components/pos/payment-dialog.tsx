@@ -10,6 +10,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  dialogStickyFooter,
 } from '@/components/ui/dialog';
 import { ErrorMessage } from '@/components/admin/page-header';
 import type { PaymentMethod } from '@/lib/api/settings';
@@ -430,7 +431,7 @@ export function PaymentDialog({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-7 w-7"
+                    className="h-7 w-7 max-sm:h-10 max-sm:w-10"
                     onClick={() => setPayments(payments.filter((_, i) => i !== index))}
                     disabled={submitting}
                     aria-label={t('Remove payment')}
@@ -554,7 +555,14 @@ export function PaymentDialog({
                 {selected.methodType === 'cash' && (
                   <div className="flex flex-wrap gap-2">
                     {cashSuggestions(dueInActive, activeRate).map((value) => (
-                      <Button key={value} type="button" variant="outline" size="sm" onClick={() => addPayment(value)}>
+                      <Button
+                        key={value}
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="max-sm:h-11 max-sm:flex-auto max-sm:text-sm"
+                        onClick={() => addPayment(value)}
+                      >
                         {money(value, activeCurrency)}
                       </Button>
                     ))}
@@ -568,7 +576,8 @@ export function PaymentDialog({
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                       aria-label={t('Amount in {currency}', { currency: activeCurrency })}
-                      className="pr-14 text-right text-lg"
+                      enterKeyHint="done"
+                      className="pr-14 text-right text-lg max-sm:h-11"
                     />
                     <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
                       {activeCurrency}
@@ -583,7 +592,9 @@ export function PaymentDialog({
                       className="flex-1"
                     />
                   )}
-                  <Button type="submit" variant="outline">{t('Add')}</Button>
+                  <Button type="submit" variant="outline" className="max-sm:h-11 max-sm:px-5">
+                    {t('Add')}
+                  </Button>
                 </div>
                 {foreign && Number(amount) > 0 && (
                   <p className="text-xs text-gray-500">
@@ -628,7 +639,9 @@ export function PaymentDialog({
                     )}
                   >
                     <span className="block text-xs font-medium">{c}</span>
-                    <span className={cn('block font-bold tabular-nums', chosen ? 'text-2xl' : 'text-lg')}>{value}</span>
+                    <span className={cn('block font-bold tabular-nums break-words', chosen ? 'text-2xl max-sm:text-xl' : 'text-lg')}>
+                      {value}
+                    </span>
                   </button>
                 );
               })}
@@ -636,18 +649,20 @@ export function PaymentDialog({
           </div>
         )}
 
-        <Button
-          size="lg"
-          className="w-full"
-          disabled={!canComplete}
-          onClick={() => onComplete(payments, change > 0 && changeCurrency !== currency ? changeCurrency : undefined)}
-        >
-          {submitting
-            ? t('Completing sale...')
-            : change > 0
-              ? t('Complete sale · give {amount} change', { amount: changeShown })
-              : t('Complete sale')}
-        </Button>
+        <div className={dialogStickyFooter}>
+          <Button
+            size="lg"
+            className="w-full max-sm:h-auto max-sm:min-h-12 max-sm:whitespace-normal max-sm:py-2 max-sm:text-base"
+            disabled={!canComplete}
+            onClick={() => onComplete(payments, change > 0 && changeCurrency !== currency ? changeCurrency : undefined)}
+          >
+            {submitting
+              ? t('Completing sale...')
+              : change > 0
+                ? t('Complete sale · give {amount} change', { amount: changeShown })
+                : t('Complete sale')}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -678,7 +693,7 @@ function CurrencyToggle({
             aria-checked={value === code}
             onClick={() => onChange(code)}
             className={cn(
-              'flex-1 rounded-md px-3 py-1.5 text-sm font-medium',
+              'flex-1 rounded-md px-3 py-1.5 text-sm font-medium max-sm:py-2.5',
               value === code ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-600 hover:text-gray-900'
             )}
           >
@@ -695,7 +710,7 @@ function Stat({ label, value, highlight, others = [] }: { label: string; value: 
   return (
     <div>
       <div className="text-xs uppercase text-gray-500">{label}</div>
-      <div className={cn('text-lg font-semibold', highlight && 'text-blue-700')}>{value}</div>
+      <div className={cn('text-lg font-semibold break-words max-sm:text-base', highlight && 'text-blue-700')}>{value}</div>
       {others.map((o) => (
         <div key={o} className="text-xs text-gray-500">{`≈ ${o}`}</div>
       ))}

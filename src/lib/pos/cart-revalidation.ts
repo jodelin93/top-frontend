@@ -75,6 +75,9 @@ export interface RevalidationInput<D extends CalcDiscount = CalcDiscount> {
   heldTotal?: number | null;
   // Server quote of the new cart (online); offline the new totals are computed locally
   quote?: QuotedTotals | null;
+  // Customer group discount (%) the cart was rung up with, and now (undefined = unchanged)
+  groupDiscountPercent?: number;
+  currentGroupDiscountPercent?: number;
 }
 
 export interface LineFigures {
@@ -135,7 +138,8 @@ export function revalidateCart<D extends CalcDiscount>(input: RevalidationInput<
 
   const calc = (
     rows: { line: RevalidationLine; unitPrice: number; taxRate: number | null }[],
-    discount: D | null
+    discount: D | null,
+    groupDiscountPercent = input.groupDiscountPercent ?? 0
   ) =>
     calculateSale(
       rows.map(({ line, unitPrice, taxRate }) => ({
@@ -147,8 +151,9 @@ export function revalidateCart<D extends CalcDiscount>(input: RevalidationInput<
         discountPercent: line.discountPercent,
         taxRate,
       })),
-      { taxRate: tax.taxRate, pricesIncludeTax: tax.pricesIncludeTax, discount, cartDiscount }
+      { taxRate: tax.taxRate, pricesIncludeTax: tax.pricesIncludeTax, discount, cartDiscount, groupDiscountPercent }
     );
+  const groupAfter = input.currentGroupDiscountPercent ?? input.groupDiscountPercent ?? 0;
 
   // ---- The cart as held ----
   const beforeRows = lines.map((line) => ({ line, unitPrice: line.unitPrice, taxRate: line.taxRate ?? null }));
@@ -171,8 +176,8 @@ export function revalidateCart<D extends CalcDiscount>(input: RevalidationInput<
     };
   });
   const sellableRows = next.filter((row) => row.sellable);
-  const after = calc(sellableRows, newDiscount);
-  const promoAfter = promotionByLine(after, calc(sellableRows, null));
+  const after = calc(sellableRows, newDiscount, groupAfter);
+  const promoAfter = promotionByLine(after, calc(sellableRows, null, groupAfter));
   const afterByKey = new Map(after.lines.map((l) => [l.key, l]));
 
   // Units of each variant the cart holds (a variant can be on several lines)

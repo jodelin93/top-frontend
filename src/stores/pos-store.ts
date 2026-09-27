@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { CatalogItem, CartDiscountInput, ResumedCart } from '@/lib/api/sales';
+import type { CatalogItem, CartDiscountInput, CustomerGroupPricing, ResumedCart } from '@/lib/api/sales';
 import type { Discount } from '@/lib/api/discounts';
 import { calculateSale, CalcResult } from '@/lib/pos/sale-calculator';
 import { isMeasured, roundToUnit, type CatalogUnit } from '@/lib/pos/quantity';
+import { randomId } from '@/lib/uuid';
 
 export interface CartItem {
   // Unique per cart line (the same product can be added twice with different discounts)
@@ -50,7 +51,14 @@ export interface CartCustomer {
   id: string;
   name: string;
   loyaltyPoints: number;
+  // The customer's group pricing (price list used for the cart, group discount %),
+  // as the server gave it when the customer was chosen; kept for offline totals
+  group?: CustomerGroupPricing | null;
 }
+
+/** Group discount (%) the cart gets: the customer's group's, never on an estimate (quoted prices) */
+export const groupDiscountPercentOf = (state: Pick<POSState, 'customer' | 'estimate'>): number =>
+  state.estimate ? 0 : Math.min(Math.max(Number(state.customer?.group?.discountPercent ?? 0), 0), 100);
 
 interface POSState {
   registerId: string | null;
@@ -150,7 +158,7 @@ export const usePOSStore = create<POSState>()(
           cart: [
             ...cart,
             {
-              key: crypto.randomUUID(),
+              key: randomId(),
               variantId: item.variantId,
               productId: item.productId,
               categoryId: item.categoryId,
@@ -261,7 +269,7 @@ export const usePOSStore = create<POSState>()(
           cartDiscount: resumed.cartDiscount,
           notes: resumed.notes ?? '',
           cart: resumed.items.map((item) => ({
-            key: crypto.randomUUID(),
+            key: randomId(),
             variantId: item.variantId,
             productId: item.productId,
             categoryId: item.categoryId,
@@ -293,7 +301,7 @@ export const usePOSStore = create<POSState>()(
           discount: null,
           cartDiscount: estimate.cartDiscount,
           notes: estimate.notes ?? '',
-          cart: lines.map((line) => ({ ...line, key: crypto.randomUUID() })),
+          cart: lines.map((line) => ({ ...line, key: randomId() })),
         }),
 
       clearCart: () =>
@@ -319,7 +327,7 @@ export const usePOSStore = create<POSState>()(
  * Cart totals using the same calculation as the server
  */
 export function computeTotals(
-  state: Pick<POSState, 'cart' | 'discount' | 'cartDiscount'>,
+  state: Pick<POSState, 'cart' | 'discount' | 'cartDiscount'> & Partial<Pick<POSState, 'customer' | 'estimate'>>,
   tax: { taxRate: number; pricesIncludeTax: boolean }
 ): CalcResult {
   return calculateSale(
@@ -337,6 +345,7 @@ export function computeTotals(
       pricesIncludeTax: tax.pricesIncludeTax,
       discount: state.discount,
       cartDiscount: state.cartDiscount,
+      groupDiscountPercent: groupDiscountPercentOf({ customer: state.customer ?? null, estimate: state.estimate ?? null }),
     }
   );
 }

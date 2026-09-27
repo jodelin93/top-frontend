@@ -8,6 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge, statusVariant } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import { memberName, UserFormDialog } from '@/components/admin/user-form-dialog';
 import { UserPasswordDialog } from '@/components/admin/user-password-dialog';
@@ -24,6 +32,7 @@ export default function UsersPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Member | null>(null);
   const [resetting, setResetting] = useState<Member | null>(null);
+  const smallScreen = useSmallScreen();
 
   const { data: members = [], isLoading, error } = useQuery({
     queryKey: ['users'],
@@ -70,6 +79,96 @@ export default function UsersPage() {
           </div>
         )}
 
+        {smallScreen ? (
+          // Phones: one card per user instead of a table that scrolls sideways
+          <DataCards
+            items={members}
+            getKey={(member) => member.id}
+            loading={isLoading}
+            loadingText={t('Loading users...')}
+            emptyText={t('No users yet.')}
+          >
+            {(member) => {
+              const isSelf = member.id === currentUser?.id;
+              return (
+                <>
+                  <DataCardHeader
+                    title={
+                      <>
+                        {memberName(member)}
+                        {isSelf && <span className="ml-2 text-xs text-gray-400">{t('(you)')}</span>}
+                      </>
+                    }
+                    subtitle={member.email}
+                    badge={
+                      <>
+                        <Badge variant={member.role === 'owner' ? 'info' : 'default'}>
+                          {roleLabel(member.roleName)}
+                        </Badge>
+                        {member.status === 'invited' ? (
+                          <Badge variant="warning">{t('Invited — waiting for acceptance')}</Badge>
+                        ) : (
+                          <Badge variant={statusVariant(member.status)}>{t(member.status)}</Badge>
+                        )}
+                      </>
+                    }
+                  />
+                  <DataCardFields>
+                    <DataCardField label={t('Branches')}>{branchAccess(member)}</DataCardField>
+                    <DataCardField label={t('MFA')}>
+                      {member.mfaEnabled ? (
+                        <span className="inline-flex items-center gap-1 text-green-700">
+                          <ShieldCheck className="h-4 w-4" />
+                          {t('On')}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400">{t('Off')}</span>
+                      )}
+                    </DataCardField>
+                    <DataCardField label={t('Last login')} full>
+                      {member.lastLoginAt ? formatDateTime(member.lastLoginAt) : t('Never')}
+                    </DataCardField>
+                  </DataCardFields>
+                  {canManage(member) && (
+                    <DataCardActions>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => openEdit(member)}
+                        aria-label={t('Edit {name}', { name: member.email })}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      {isSelf ? (
+                        // One's own password is changed with the current one, from the account page
+                        <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                          <Link
+                            href="/account/security"
+                            title={t('Change your own password from your account settings')}
+                            aria-label={t('Change your own password from your account settings')}
+                          >
+                            <KeyRound className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => setResetting(member)}
+                          aria-label={t('Reset password for {name}', { name: member.email })}
+                        >
+                          <KeyRound className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </DataCardActions>
+                  )}
+                </>
+              );
+            }}
+          </DataCards>
+        ) : (
         <Table>
           <THead>
             <tr>
@@ -165,6 +264,7 @@ export default function UsersPage() {
             )}
           </TBody>
         </Table>
+        )}
       </Card>
 
       <UserFormDialog open={dialogOpen} onOpenChange={setDialogOpen} member={editing} />

@@ -39,14 +39,14 @@ describe('authApi.changePassword', () => {
   });
 
   it('rejects a wrong current password without ending the session', async () => {
-    localStorage.setItem('access_token', 'token');
+    localStorage.setItem('auth-storage', '{"state":{"isAuthenticated":true}}');
     apiClient.defaults.adapter = answerWith(401, { message: 'Your current password is incorrect' });
     const error = await authApi.changePassword({ currentPassword: 'wrong-one', newPassword: 'new-password' }).catch((e) => e);
     expect(error).toBeInstanceOf(AxiosError);
     expect(error.response.status).toBe(401);
     expect(signInErrorMessage(error, 'x')).toBe('Your current password is incorrect');
     // The session is kept (the API client clears it on an expired-session 401)
-    expect(localStorage.getItem('access_token')).toBe('token');
+    expect(localStorage.getItem('auth-storage')).not.toBeNull();
   });
 
   it('resolves on 204', async () => {

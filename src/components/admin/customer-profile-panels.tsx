@@ -239,7 +239,7 @@ export function CustomerAddressesPanel({ customerId }: { customerId: string }) {
             <Input placeholder={t('Name')} aria-label={t('Name')} value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} />
             <Input placeholder={t('Role')} aria-label={t('Role')} value={contact.role} onChange={(e) => setContact({ ...contact, role: e.target.value })} />
             <Input placeholder={t('Email')} aria-label={t('Email')} type="email" value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} />
-            <Input placeholder={t('Phone')} aria-label={t('Phone')} value={contact.phone} onChange={(e) => setContact({ ...contact, phone: e.target.value })} />
+            <Input type="tel" placeholder={t('Phone')} aria-label={t('Phone')} value={contact.phone} onChange={(e) => setContact({ ...contact, phone: e.target.value })} />
             <Button type="submit" variant="outline" disabled={!contact.name.trim() || addContact.isPending}>
               {t('Add contact')}
             </Button>

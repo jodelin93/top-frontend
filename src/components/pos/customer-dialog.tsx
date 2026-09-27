@@ -5,13 +5,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { BookOpen, Search, UserPlus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, dialogStickyFooter } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import { ErrorMessage } from '@/components/admin/page-header';
 import { useApproval } from '@/components/approval-dialog';
 import { Select } from '@/components/ui/select';
@@ -171,13 +166,13 @@ export function CustomerDialog({
         {online && creating && (
           <div className="space-y-3">
             <ErrorMessage>{error}</ErrorMessage>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 max-sm:grid-cols-1">
               <Input placeholder={t('First name')} value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} autoFocus />
               <Input placeholder={t('Last name')} value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} />
-              <Input placeholder={t('Phone')} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+              <Input placeholder={t('Phone')} type="tel" inputMode="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
               <Input placeholder={t('Email')} type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             </div>
-            <div className="flex justify-end gap-2">
+            <div className={cn('flex justify-end gap-2', dialogStickyFooter)}>
               <Button variant="outline" onClick={() => setCreating(false)}>{t('Back')}</Button>
               <Button onClick={create} disabled={!form.firstName.trim() && !form.lastName.trim()}>
                 {t('Add customer')}

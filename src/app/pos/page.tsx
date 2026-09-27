@@ -12,6 +12,7 @@ import {
   ListRestart,
   LogOut,
   Minus,
+  MoreHorizontal,
   PauseCircle,
   Pencil,
   Percent,
@@ -34,6 +35,7 @@ import { canSell } from '@/lib/landing';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { CustomerDialog } from '@/components/pos/customer-dialog';
 import { DiscountDialog } from '@/components/pos/discount-dialog';
 import { LanguageSwitcher } from '@/components/language-switcher';
@@ -56,6 +58,7 @@ import { ShortcutsDialog } from '@/components/pos/shortcuts-dialog';
 import { SalespersonSelect, useStaff } from '@/components/pos/salesperson-select';
 import { useApprovals } from '@/components/pos/use-approvals';
 import { usePosShortcuts } from '@/components/pos/use-pos-shortcuts';
+import { useSmallScreen } from '@/components/pos/use-small-screen';
 import { ShiftPanel } from '@/components/shifts/shift-panel';
 import { DrawerOpenButton } from '@/components/shifts/drawer-open-button';
 import { ClockButton } from '@/components/shifts/clock-button';
@@ -64,11 +67,13 @@ import { LOCAL_QUERY, useCatalog, useOnlineStatus, usePendingSales, usePosContex
 import {
   CatalogItem,
   CreateSaleInput,
+  CustomerGroupPricing,
   GiftCardLineInput,
   IssuedGiftCard,
   Quote,
   QuoteInput,
   Sale,
+  posApi,
   salesApi,
 } from '@/lib/api/sales';
 import { customerName } from '@/lib/api/customers';
@@ -85,9 +90,17 @@ import { round2 } from '@/lib/pos/sale-calculator';
 import { parseWeightedBarcode, scannedQuantity } from '@/lib/pos/weighted-barcode';
 import { formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import { catalogPriceOf, computeTotals, isPriceOverridden, usePOSStore } from '@/stores/pos-store';
+import {
+  CartCustomer,
+  catalogPriceOf,
+  computeTotals,
+  groupDiscountPercentOf,
+  isPriceOverridden,
+  usePOSStore,
+} from '@/stores/pos-store';
 import { canUseAdmin, hasPermission, useAuthStore } from '@/stores/auth-store';
 import { plural, t } from '@/i18n';
+import { randomId } from '@/lib/uuid';
 
 export default function POSPage() {
   return (
@@ -104,7 +117,17 @@ function POSGate() {
   return canSell(user) ? <POSScreen /> : <NoPosAccess />;
 }
 
-type DialogName = 'customer' | 'discount' | 'payment' | 'pending' | 'held' | 'shortcuts' | 'giftcard' | 'returns' | null;
+type DialogName =
+  | 'customer'
+  | 'discount'
+  | 'payment'
+  | 'pending'
+  | 'held'
+  | 'shortcuts'
+  | 'giftcard'
+  | 'returns'
+  | 'menu'
+  | null;
 
 // A cart priced longer ago than this is repriced before tendering (spec §5)
 const REPRICE_AFTER_MS = 10 * 60_000;
@@ -134,6 +157,22 @@ function POSScreen() {
   const pos = usePOSStore();
   const { registerId, setRegister, cart } = pos;
   const approvals = useApprovals();
+  // Phones: products and cart are two views (tablets and desktops show both side by side)
+  const smallScreen = useSmallScreen();
+  const [mobileView, setMobileView] = useState<'products' | 'cart'>('products');
+  // Brief "added" feedback on phones, where the cart is not in sight
+  const [added, setAdded] = useState<{ product: string; at: number } | null>(null);
+  const addedCount = useRef(0);
+  const badgeRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!added) return;
+    badgeRef.current?.animate?.(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.5)' }, { transform: 'scale(1)' }],
+      { duration: 350, easing: 'ease-out' }
+    );
+    const timeout = setTimeout(() => setAdded(null), 1600);
+    return () => clearTimeout(timeout);
+  }, [added]);
 
   // Default to the first register; forget a register that no longer exists
   const registers = context?.registers ?? [];
@@ -159,7 +198,10 @@ function POSScreen() {
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
-  const focusSearch = () => setTimeout(() => searchRef.current?.focus(), 30);
+  // Not on phones: focusing the search box would pop the on-screen keyboard after every action
+  const focusSearch = () => {
+    if (!smallScreen) setTimeout(() => searchRef.current?.focus(), 30);
+  };
 
   useEffect(() => {
     const timeout = setTimeout(() => setDebouncedSearch(search.trim()), 250);
@@ -174,6 +216,67 @@ function POSScreen() {
     // Offline the search runs on the cached catalog: it must not pause with the network
     ...LOCAL_QUERY,
   });
+
+  // ---- Customer group pricing ----
+  // A customer's group may have its own price list (used automatically) and a discount
+  // (taken off as the group discount). Choosing / removing the customer reprices the cart
+  // with the server; offline, removing them goes back to the cached catalog prices.
+  const priceForCustomer = async (customer: CartCustomer | null, variantIds?: string[]) => {
+    if (!register) return null;
+    const state = usePOSStore.getState();
+    const ids = [...new Set(variantIds ?? state.cart.map((l) => l.variantId))];
+    try {
+      const result = await posApi.prices({ registerId: register.id, customerId: customer?.id, variantIds: ids });
+      // The customer changed meanwhile: that choice reprices the cart itself
+      if ((usePOSStore.getState().customer?.id ?? null) !== (customer?.id ?? null)) return null;
+      // Group lists apply to what is sold now, not to an estimate's quoted prices
+      if (!usePOSStore.getState().estimate) pos.updatePrices(new Map(Object.entries(result.prices)));
+      return result.customerGroup;
+    } catch {
+      // The checkout quote prices the cart anyway
+      return undefined;
+    }
+  };
+
+  const chooseCustomer = async (customer: CartCustomer | null) => {
+    const previous = usePOSStore.getState().customer;
+    pos.setCustomer(customer ? { ...customer, group: null } : null);
+    const hadGroupPrices = !!previous?.group?.priceListId;
+    // Walk-in again after a customer without group prices: nothing to reprice
+    if (!customer && !hadGroupPrices) return;
+    if (!online) {
+      if (!customer && hadGroupPrices && !usePOSStore.getState().estimate) {
+        const cached = new Map((catalog.items ?? []).map((item) => [item.variantId, item.price]));
+        pos.updatePrices(cached);
+      }
+      return;
+    }
+    const group = await priceForCustomer(customer);
+    if (!customer || group === null || group === undefined) {
+      if (group === undefined && customer) setNotice(t('Could not load the customer group prices. They are applied at checkout.'));
+      return;
+    }
+    if (usePOSStore.getState().customer?.id !== customer.id) return;
+    pos.setCustomer({ ...customer, group });
+    setNotice(
+      group.discountPercent > 0
+        ? t('Group {name}: group prices and a {percent}% group discount apply.', {
+            name: group.name,
+            percent: group.discountPercent,
+          })
+        : t('Group {name}: group prices apply.', { name: group.name })
+    );
+  };
+
+  // The customer's group as the last quote gave it: applied with the prices the cashier confirms
+  const quotedGroup = useRef<CustomerGroupPricing | null | undefined>(undefined);
+  const applyQuotedGroup = () => {
+    const group = quotedGroup.current;
+    quotedGroup.current = undefined;
+    const customer = usePOSStore.getState().customer;
+    if (group === undefined || !customer) return;
+    if (JSON.stringify(customer.group ?? null) !== JSON.stringify(group)) pos.setCustomer({ ...customer, group });
+  };
 
   // No negative stock (D018): never more in the cart than the catalog says is on the
   // shelf. Services are not limited. Online the server checks again at checkout.
@@ -198,6 +301,10 @@ function POSScreen() {
     }
     setNotice(null);
     pos.addItem(item, quantity ?? 1);
+    // The customer's group has its own prices: the catalog item carries the price for everyone
+    if (pos.customer?.group?.priceListId && !pos.estimate) void priceForCustomer(pos.customer, [item.variantId]);
+    addedCount.current += 1;
+    setAdded({ product: item.productName, at: addedCount.current });
   };
 
   // Quantity pad: a measured item being added, or a cart line whose quantity is edited
@@ -283,10 +390,17 @@ function POSScreen() {
   // ---- Totals ----
   const tax = { taxRate: context?.taxRate ?? 0, pricesIncludeTax: context?.settings.pricesIncludeTax ?? false };
   const totals = useMemo(
-    () => computeTotals({ cart, discount: pos.discount, cartDiscount: pos.cartDiscount }, tax),
+    () =>
+      computeTotals(
+        { cart, discount: pos.discount, cartDiscount: pos.cartDiscount, customer: pos.customer, estimate: pos.estimate },
+        tax
+      ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [cart, pos.discount, pos.cartDiscount, tax.taxRate, tax.pricesIncludeTax]
+    [cart, pos.discount, pos.cartDiscount, pos.customer, pos.estimate, tax.taxRate, tax.pricesIncludeTax]
   );
+  // Customer group discount on this cart (shown as its own total row)
+  const groupPercent = groupDiscountPercentOf(pos);
+  const groupName = pos.customer?.group?.name ?? '';
   // Pieces count by quantity; each weighed (measured) line counts once
   const itemCount = countItems(cart);
   // Products can have their own tax rate (tax categories): show the rate only when there is one
@@ -389,6 +503,8 @@ function POSScreen() {
       note: line.note?.trim() || undefined,
     })),
     giftCards: forOffline || giftCards.length === 0 ? undefined : giftCards,
+    // Offline the server keeps the group discount the till gave (online the group decides)
+    groupDiscountPercent: forOffline && groupPercent > 0 ? groupPercent : undefined,
   });
 
   // Informed confirmation of new prices (AC05), recorded on the sale
@@ -435,7 +551,7 @@ function POSScreen() {
       }
     }
 
-    idempotencyKey.current = crypto.randomUUID();
+    idempotencyKey.current = randomId();
     if (!options.continuing) approvalTokens.current = [];
     let due = grandTotal;
     // Resumed held cart, loaded estimate or cart priced a while ago: stock and items
@@ -464,6 +580,7 @@ function POSScreen() {
           setRepricing({ result, context: check });
           return;
         }
+        applyQuotedGroup();
         pos.markPriced();
         if (quote) due = quote.total;
       } catch (error) {
@@ -500,6 +617,7 @@ function POSScreen() {
     setIssuedCards(sale.issuedGiftCards ?? []);
     setSelectedKey(null);
     setNotice(null);
+    setMobileView('products');
     // Stock levels changed
     queryClient.invalidateQueries({ queryKey: ['pos', 'search'] });
     if (!offline) queryClient.invalidateQueries({ queryKey: ['pos', 'catalog-cache'] });
@@ -627,6 +745,14 @@ function POSScreen() {
       salesperson: salesperson ? { id: salesperson.id, firstName: salesperson.name, lastName: null, email: '' } : null,
       metadata: {
         cartDiscountReason: pos.cartDiscount?.reason?.trim() || null,
+        groupDiscount: totals.groupDiscountAmount
+          ? {
+              groupId: pos.customer?.group?.id ?? null,
+              name: pos.customer?.group?.name ?? null,
+              percent: groupPercent,
+              amount: totals.groupDiscountAmount,
+            }
+          : null,
         changeTender:
           change > 0 && input.changeCurrency && changeRate
             ? {
@@ -757,7 +883,10 @@ function POSScreen() {
     try {
       const { result } = await checkCart((input) => salesApi.quote(input), check);
       if (result.changed) setRepricing({ result, context: check });
-      else pos.markPriced();
+      else {
+        applyQuotedGroup();
+        pos.markPriced();
+      }
     } catch {
       // Needs a manager's approval, or the server could not price it: checked again at checkout
     }
@@ -805,6 +934,8 @@ function POSScreen() {
       if (!item || item.stockTracked === false || item.stock === null) return null;
       return addQty(item.stock, reservedOf(line.variantId));
     };
+    // The group discount the server priced with (undefined: unknown, kept as it is)
+    let currentGroupDiscountPercent: number | undefined;
     const compare = (
       current: Map<string, CurrentLine>,
       currentDiscount: Discount | null | undefined,
@@ -820,6 +951,8 @@ function POSScreen() {
         discountCodeLost: context.discountCodeLost,
         heldTotal: context.heldTotal,
         quote,
+        groupDiscountPercent: groupDiscountPercentOf(state),
+        currentGroupDiscountPercent,
       });
 
     // ---- Offline: the cached catalog ----
@@ -891,6 +1024,10 @@ function POSScreen() {
         quote = await quoteCart();
       }
 
+      if (quote && quote.customerGroup !== undefined) {
+        quotedGroup.current = quote.customerGroup;
+        currentGroupDiscountPercent = state.estimate ? 0 : (quote.customerGroup?.discountPercent ?? 0);
+      }
       const current = new Map<string, CurrentLine>();
       const quoted: QuotedTotals | null = quote ? { total: round2(quote.total - giftTotal), lines: new Map() } : null;
       kept().forEach((line, index) => {
@@ -931,6 +1068,7 @@ function POSScreen() {
       );
       if (usePOSStore.getState().cart.length === 0 || !result.changed) {
         setRepricing(null);
+        applyQuotedGroup();
         pos.markPriced();
         if (repricing.context.trigger === 'checkout' && usePOSStore.getState().cart.length > 0) {
           setCheckoutRequest((n) => n + 1);
@@ -951,6 +1089,7 @@ function POSScreen() {
   const confirmRepricing = () => {
     if (!repricing || repricing.result.blocking) return;
     const { result, context } = repricing;
+    applyQuotedGroup();
     pos.applyRepricing(result.apply, { confirmedAt: new Date().toISOString(), previousTotal: result.totalBefore });
     setRepricing(null);
     setNotice(
@@ -1057,35 +1196,42 @@ function POSScreen() {
   }
 
   return (
-    <div className="flex h-screen flex-col bg-gray-100">
+    <div className="flex h-screen flex-col bg-gray-100 max-md:h-dvh">
       {/* Offline lease: notice while offline, lock once it has expired */}
       <OfflineLeaseGuard online={online} registerId={register?.id ?? null} />
-      {/* Top bar */}
-      <header className="flex items-center gap-3 border-b bg-white px-4 py-2">
-        <ShoppingCart className="h-5 w-5 text-blue-600" aria-hidden />
-        <span className="font-semibold">{context.settings.storeName}</span>
-        <Select
-          value={register?.id ?? ''}
-          onChange={(e) => setRegister(e.target.value)}
-          className="h-9 w-48"
-          aria-label={t('Register')}
-        >
-          {registers.map((r) => (
-            <option key={r.id} value={r.id}>
-              {r.name} · {r.branch?.name}
-            </option>
-          ))}
-        </Select>
-        <ShiftPanel
-          registerId={register?.id}
-          registerName={register?.name}
-          currency={context.settings.currencyCode}
-          storeName={context.settings.storeName}
-        />
-        <DrawerOpenButton registerId={register?.id} />
-        <ClockButton branchId={register?.branchId} />
+      {/* Top bar. Phones: two rows (store + status, then register + shift); the
+          secondary actions move to the "more" menu */}
+      <header className="flex flex-wrap items-center gap-x-2 gap-y-1.5 border-b bg-white px-3 py-2 md:flex-nowrap md:gap-3 md:px-4">
+        <ShoppingCart className="h-5 w-5 shrink-0 text-blue-600" aria-hidden />
+        <span className="min-w-0 flex-1 truncate font-semibold md:min-w-auto md:flex-none md:overflow-visible md:whitespace-normal">
+          {context.settings.storeName}
+        </span>
+        <div className="order-last flex w-full min-w-0 items-center gap-2 md:order-none md:contents">
+          <Select
+            value={register?.id ?? ''}
+            onChange={(e) => setRegister(e.target.value)}
+            className="h-9 min-w-0 flex-1 md:w-48 md:min-w-auto md:flex-none"
+            aria-label={t('Register')}
+          >
+            {registers.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name} · {r.branch?.name}
+              </option>
+            ))}
+          </Select>
+          <ShiftPanel
+            registerId={register?.id}
+            registerName={register?.name}
+            currency={context.settings.currencyCode}
+            storeName={context.settings.storeName}
+          />
+        </div>
+        <div className="hidden md:contents">
+          <DrawerOpenButton registerId={register?.id} />
+          <ClockButton branchId={register?.branchId} />
+        </div>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-1 md:gap-2">
           <button
             onClick={() => setDialog('pending')}
             className={cn(
@@ -1101,17 +1247,24 @@ function POSScreen() {
             }`}
           >
             {online ? <Wifi className="h-3.5 w-3.5" /> : <WifiOff className="h-3.5 w-3.5" />}
-            {online ? t('Online') : t('Offline')}
+            <span className="max-md:sr-only">{online ? t('Online') : t('Offline')}</span>
             {pending.sales.length > 0 && (
               <span className="ml-1 flex items-center gap-1">
                 <CloudUpload className="h-3.5 w-3.5" />
-                {t('{count} pending', { count: pending.sales.length })}
+                <span className="max-md:hidden">{t('{count} pending', { count: pending.sales.length })}</span>
+                <span className="md:hidden">{pending.sales.length}</span>
               </span>
             )}
           </button>
-          {context.fromCache && <span className="text-xs text-amber-700">{t('Using saved data')}</span>}
+          {context.fromCache && <span className="text-xs text-amber-700 max-md:hidden">{t('Using saved data')}</span>}
           {canHold && (
-            <Button variant="outline" size="sm" className="h-9" onClick={() => setDialog('held')} title={t('Held carts (F9)')}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-9 max-md:hidden"
+              onClick={() => setDialog('held')}
+              title={t('Held carts (F9)')}
+            >
               <ListRestart className="h-4 w-4" />
               {t('Held carts')}
             </Button>
@@ -1119,6 +1272,7 @@ function POSScreen() {
           <Button
             variant="ghost"
             size="icon"
+            className="max-md:hidden"
             onClick={() => setDialog('shortcuts')}
             title={t('Keyboard shortcuts (?)')}
             aria-label={t('Keyboard shortcuts')}
@@ -1129,7 +1283,7 @@ function POSScreen() {
             <Button
               variant="outline"
               size="sm"
-              className="h-9"
+              className="h-9 max-md:hidden"
               onClick={() => setDialog('returns')}
               disabled={!online}
               title={online ? t('Returns and exchanges') : t('Returns need a connection')}
@@ -1139,29 +1293,63 @@ function POSScreen() {
             </Button>
           )}
           {canManage && (
-            <Button variant="outline" size="sm" className="h-9" asChild>
+            <Button variant="outline" size="sm" className="h-9 max-md:hidden" asChild>
               <Link href="/admin">
                 <Settings className="h-4 w-4" />
                 {t('Admin')}
               </Link>
             </Button>
           )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 w-10 md:hidden"
+            onClick={() => setDialog('menu')}
+            aria-label={t('More actions')}
+            aria-haspopup="dialog"
+          >
+            <MoreHorizontal className="h-5 w-5" />
+          </Button>
           <NotificationBell />
-          <LanguageSwitcher compact />
-          <Button variant="ghost" size="icon" asChild title={t('Account security')}>
+          <LanguageSwitcher compact className="max-md:hidden" />
+          <Button variant="ghost" size="icon" className="max-md:hidden" asChild title={t('Account security')}>
             <Link href="/account/security" aria-label={t('Account security')}>
               <ShieldCheck className="h-4 w-4" />
             </Link>
           </Button>
-          <Button variant="ghost" size="icon" onClick={handleLogout} title={t('Sign out')} aria-label={t('Sign out')}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="max-md:hidden"
+            onClick={handleLogout}
+            title={t('Sign out')}
+            aria-label={t('Sign out')}
+          >
             <LogOut className="h-4 w-4" />
           </Button>
         </div>
       </header>
 
+      {/* Phones: products and cart as two views */}
+      <div className="grid grid-cols-2 gap-1 border-b bg-white p-1.5 md:hidden" role="tablist" aria-label={t('Till views')}>
+        <MobileTab active={mobileView === 'products'} onClick={() => setMobileView('products')}>
+          {t('Products')}
+        </MobileTab>
+        <MobileTab active={mobileView === 'cart'} onClick={() => setMobileView('cart')}>
+          {t('Cart ({count})', { count: itemCount })}
+          {giftCards.length > 0 ? ` + ${giftCards.length}` : ''}
+        </MobileTab>
+      </div>
+
       <div className="flex min-h-0 flex-1">
         {/* Products */}
-        <section className="flex min-w-0 flex-1 flex-col gap-3 p-4" aria-label={t('Products')}>
+        <section
+          className={cn(
+            'flex min-w-0 flex-1 flex-col gap-3 p-4 max-md:gap-2 max-md:p-3',
+            mobileView === 'cart' && 'max-md:hidden'
+          )}
+          aria-label={t('Products')}
+        >
           <form
             className="relative"
             role="search"
@@ -1173,18 +1361,25 @@ function POSScreen() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" aria-hidden />
             <Input
               ref={searchRef}
-              autoFocus
+              autoFocus={!smallScreen}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={scanner.onKeyDown}
-              placeholder={t('Search products or scan a barcode... (F2)')}
+              enterKeyHint="search"
+              placeholder={
+                smallScreen ? t('Search or scan a barcode...') : t('Search products or scan a barcode... (F2)')
+              }
               aria-label={t('Search products or scan a barcode')}
               className="h-12 bg-white pl-10 text-base"
             />
           </form>
 
           {context.categories.length > 0 && (
-            <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label={t('Categories')}>
+            <div
+              className="flex gap-2 overflow-x-auto pb-1 max-md:-mx-3 max-md:shrink-0 max-md:snap-x max-md:px-3 max-md:[scrollbar-width:none]"
+              role="group"
+              aria-label={t('Categories')}
+            >
               <CategoryChip active={!categoryId} onClick={() => setCategoryId(null)}>
                 {t('All')}
               </CategoryChip>
@@ -1222,7 +1417,7 @@ function POSScreen() {
                     : t('No products yet')}
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 max-md:gap-2 md:grid-cols-3 xl:grid-cols-4">
                 {results.map((item) => {
                   // Stock never goes negative (D018); services are never sold out
                   const soldOut = item.stockTracked !== false && item.stock !== null && item.stock <= 0;
@@ -1235,12 +1430,12 @@ function POSScreen() {
                         product: `${item.productName}${item.variantName ? ` ${item.variantName}` : ''}`,
                         price: money(item.price),
                       })}
-                      className="flex min-h-28 flex-col rounded-lg border bg-white p-3 text-left shadow-sm transition hover:border-blue-400 hover:shadow focus-visible:outline-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex min-h-28 flex-col rounded-lg border bg-white p-3 text-left shadow-sm transition hover:border-blue-400 hover:shadow focus-visible:outline-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50 max-md:min-h-32 max-md:min-w-0 max-md:active:scale-[0.98]"
                     >
-                      <span className="line-clamp-2 font-medium">{item.productName}</span>
+                      <span className="line-clamp-2 font-medium max-md:break-words">{item.productName}</span>
                       {item.variantName && <span className="text-sm text-gray-500">{item.variantName}</span>}
-                      <span className="mt-1 font-mono text-xs text-gray-400">{item.sku}</span>
-                      <span className="mt-auto flex items-end justify-between pt-2">
+                      <span className="mt-1 font-mono text-xs text-gray-400 max-md:truncate">{item.sku}</span>
+                      <span className="mt-auto flex items-end justify-between pt-2 max-md:flex-wrap max-md:gap-x-2">
                         <span className="text-lg font-semibold">{money(item.price)}</span>
                         {item.stock !== null && (
                           <span className={cn('text-xs', item.stock <= 0 ? 'text-red-600' : 'text-gray-500')}>
@@ -1257,7 +1452,14 @@ function POSScreen() {
         </section>
 
         {/* Cart */}
-        <aside className="flex w-[26rem] shrink-0 flex-col border-l bg-white" aria-label={t('Cart')}>
+        {/* Phones: the whole cart scrolls, the totals and Charge stay at the bottom */}
+        <aside
+          className={cn(
+            'flex w-[26rem] shrink-0 flex-col border-l bg-white max-md:w-full max-md:overflow-y-auto max-md:border-l-0',
+            mobileView === 'products' && 'max-md:hidden'
+          )}
+          aria-label={t('Cart')}
+        >
           <div className="border-b p-3">
             <Button
               variant="outline"
@@ -1269,6 +1471,7 @@ function POSScreen() {
               {pos.customer ? (
                 <span>
                   {pos.customer.name} <span className="text-gray-500">· {t('{points} pts', { points: pos.customer.loyaltyPoints })}</span>
+                  {pos.customer.group && <span className="text-gray-500"> · {pos.customer.group.name}</span>}
                 </span>
               ) : (
                 t('Walk-in customer')
@@ -1287,7 +1490,7 @@ function POSScreen() {
             )}
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto p-3">
+          <div className="min-h-0 flex-1 overflow-y-auto p-3 max-md:flex-none max-md:overflow-visible">
             {issuedCards.length > 0 && (
               <div className="mb-3 rounded-lg border-2 border-green-600 bg-green-50 p-3 text-sm" role="status">
                 <p className="font-semibold text-green-900">{t('Gift cards issued — give the codes to the customer')}</p>
@@ -1306,9 +1509,12 @@ function POSScreen() {
               </div>
             )}
             {cart.length === 0 && giftCards.length === 0 ? (
-              <div className="flex h-full flex-col items-center justify-center text-gray-400">
+              <div className="flex h-full flex-col items-center justify-center text-gray-400 max-md:py-10">
                 <ShoppingCart className="mb-2 h-12 w-12" aria-hidden />
                 <p>{t('Cart is empty')}</p>
+                <Button variant="outline" className="mt-4 h-11 md:hidden" onClick={() => setMobileView('products')}>
+                  {t('Add products')}
+                </Button>
               </div>
             ) : (
               <ul className="space-y-2">
@@ -1337,7 +1543,7 @@ function POSScreen() {
                           <button
                             type="button"
                             onClick={() => setPriceKey(line.key)}
-                            className="flex min-h-8 items-center gap-1 text-xs text-gray-500 hover:text-blue-700"
+                            className="flex min-h-8 items-center gap-1 text-xs text-gray-500 hover:text-blue-700 max-md:flex-wrap max-md:text-left"
                             aria-label={t('Change price of {product}, now {price}', { product: line.productName, price: money(line.unitPrice) })}
                           >
                             {measured
@@ -1352,18 +1558,18 @@ function POSScreen() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-10 w-10 shrink-0"
+                          className="h-10 w-10 shrink-0 max-md:h-11 max-md:w-11"
                           onClick={() => pos.removeItem(line.key)}
                           aria-label={t('Remove {product}', { product: line.productName })}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                      <div className="mt-2 flex items-center justify-between gap-2">
+                      <div className="mt-2 flex items-center justify-between gap-2 max-md:flex-wrap">
                         {measured ? (
                           <Button
                             variant="outline"
-                            className="h-10 min-w-24 tabular-nums"
+                            className="h-10 min-w-24 tabular-nums max-md:h-11"
                             onClick={() => {
                               setSelectedKey(line.key);
                               setQuantityTarget({ key: line.key });
@@ -1380,7 +1586,7 @@ function POSScreen() {
                             <Button
                               variant="outline"
                               size="icon"
-                              className="h-10 w-10"
+                              className="h-10 w-10 max-md:h-11 max-md:w-11"
                               onClick={() => pos.setQuantity(line.key, line.quantity - 1)}
                               aria-label={t('Decrease quantity of {product}', { product: line.productName })}
                             >
@@ -1394,13 +1600,14 @@ function POSScreen() {
                               }}
                               onFocus={() => setSelectedKey(line.key)}
                               inputMode="numeric"
-                              className="h-10 w-14 text-center"
+                              enterKeyHint="done"
+                              className="h-10 w-14 text-center max-md:h-11 max-md:w-12 max-md:px-1 max-md:text-base"
                               aria-label={t('Quantity of {product}', { product: line.productName })}
                             />
                             <Button
                               variant="outline"
                               size="icon"
-                              className="h-10 w-10"
+                              className="h-10 w-10 max-md:h-11 max-md:w-11"
                               onClick={() => changeQuantity(line.key, line.quantity + 1)}
                               aria-label={t('Increase quantity of {product}', { product: line.productName })}
                             >
@@ -1415,8 +1622,9 @@ function POSScreen() {
                             onChange={(e) => pos.setLineDiscount(line.key, Number(e.target.value) || 0)}
                             onFocus={() => setSelectedKey(line.key)}
                             inputMode="decimal"
+                            enterKeyHint="done"
                             placeholder="0"
-                            className="h-10 w-16 text-right"
+                            className="h-10 w-16 text-right max-md:h-11 max-md:w-14 max-md:text-base"
                             aria-label={t('Discount percent on {product}', { product: line.productName })}
                           />
                         </label>
@@ -1443,7 +1651,7 @@ function POSScreen() {
                           maxLength={255}
                           placeholder={t('Reason for the discount (required)')}
                           aria-label={t('Reason for the discount on {product}', { product: line.productName })}
-                          className="mt-2 h-9 text-sm"
+                          className="mt-2 h-9 text-sm max-md:h-11 max-md:text-base"
                         />
                       )}
                       {noteKey === line.key ? (
@@ -1458,14 +1666,15 @@ function POSScreen() {
                           maxLength={255}
                           placeholder={t('Note printed on the receipt')}
                           aria-label={t('Note on {product}', { product: line.productName })}
-                          className="mt-2 h-9 text-sm"
+                          enterKeyHint="done"
+                          className="mt-2 h-9 text-sm max-md:h-11 max-md:text-base"
                         />
                       ) : (
                         <button
                           type="button"
                           onClick={() => setNoteKey(line.key)}
                           className={cn(
-                            'mt-1 flex min-h-8 items-center gap-1 text-left text-xs hover:text-blue-700',
+                            'mt-1 flex min-h-8 items-center gap-1 text-left text-xs hover:text-blue-700 max-md:min-h-10 max-md:break-all',
                             line.note ? 'text-gray-600' : 'text-gray-400'
                           )}
                           aria-label={
@@ -1510,93 +1719,169 @@ function POSScreen() {
             )}
           </div>
 
-          <div className="space-y-3 border-t p-3">
-            <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-3 border-t p-3 max-md:contents">
+            <div className="space-y-3 max-md:border-t max-md:p-3">
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  className="h-11"
+                  onClick={() => setDialog('discount')}
+                  disabled={cart.length === 0}
+                  title={t('Discounts (F8)')}
+                >
+                  <Percent className="h-4 w-4" />
+                  <span className="truncate">
+                    {pos.discount || pos.cartDiscount
+                      ? [
+                          pos.discount?.code,
+                          pos.cartDiscount &&
+                            (pos.cartDiscount.type === 'percentage'
+                              ? t('{value}% off', { value: pos.cartDiscount.value })
+                              : t('{value} off', { value: money(pos.cartDiscount.value) })),
+                        ]
+                          .filter(Boolean)
+                          .join(' + ')
+                      : t('Discount')}
+                  </span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-11"
+                  onClick={holdCart}
+                  disabled={cart.length === 0 || holding || !canHold}
+                  title={online ? t('Hold the cart (F6)') : t('Holding a cart needs a connection')}
+                >
+                  <PauseCircle className="h-4 w-4" />
+                  {holding ? t('Holding...') : t('Hold')}
+                </Button>
+              </div>
               <Button
                 variant="outline"
-                className="h-11"
-                onClick={() => setDialog('discount')}
-                disabled={cart.length === 0}
-                title={t('Discounts (F8)')}
+                className="h-11 w-full"
+                onClick={() => setDialog('giftcard')}
+                title={online ? t('Sell or check a gift card') : t('Gift cards need a connection.')}
               >
-                <Percent className="h-4 w-4" />
-                <span className="truncate">
-                  {pos.discount || pos.cartDiscount
-                    ? [
-                        pos.discount?.code,
-                        pos.cartDiscount &&
-                          (pos.cartDiscount.type === 'percentage'
-                            ? t('{value}% off', { value: pos.cartDiscount.value })
-                            : t('{value} off', { value: money(pos.cartDiscount.value) })),
-                      ]
-                        .filter(Boolean)
-                        .join(' + ')
-                    : t('Discount')}
-                </span>
+                <Ticket className="h-4 w-4" />
+                {t('Gift card')}
               </Button>
-              <Button
-                variant="outline"
-                className="h-11"
-                onClick={holdCart}
-                disabled={cart.length === 0 || holding || !canHold}
-                title={online ? t('Hold the cart (F6)') : t('Holding a cart needs a connection')}
-              >
-                <PauseCircle className="h-4 w-4" />
-                {holding ? t('Holding...') : t('Hold')}
-              </Button>
-            </div>
-            <Button
-              variant="outline"
-              className="h-11 w-full"
-              onClick={() => setDialog('giftcard')}
-              title={online ? t('Sell or check a gift card') : t('Gift cards need a connection.')}
-            >
-              <Ticket className="h-4 w-4" />
-              {t('Gift card')}
-            </Button>
-            {!online && cart.length > 0 && canHold && (
-              <p className="text-xs text-gray-500">{t('Offline: holding a cart needs a connection.')}</p>
-            )}
-            {totals.discountMessage && <p className="text-xs text-amber-700">{totals.discountMessage}</p>}
-
-            <div className="space-y-1 text-sm">
-              <TotalRow label={plural(itemCount, 'Subtotal ({count} item)', 'Subtotal ({count} items)')} value={money(totals.subtotal)} />
-              {totals.discountAmount > 0 && (
-                <TotalRow label={t('Discounts')} value={`-${money(totals.discountAmount)}`} className="text-green-700" />
+              {!online && cart.length > 0 && canHold && (
+                <p className="text-xs text-gray-500">{t('Offline: holding a cart needs a connection.')}</p>
               )}
-              <TotalRow label={taxLabel} value={money(totals.taxAmount)} />
-              {giftTotal > 0 && <TotalRow label={t('Gift cards')} value={money(giftTotal)} />}
-              <TotalRow label={t('Total')} value={money(grandTotal)} className="border-t pt-2 text-xl font-bold" />
-              {Object.keys(context.settings.exchangeRates ?? {}).map((code) => {
-                const rate = exchangeRate(context.settings.exchangeRates, context.settings.currencyCode, currency, code);
-                return rate && code !== currency ? (
-                  <TotalRow key={code} label={t('≈ in {currency}', { currency: code })} value={formatMoney(amountDueIn(grandTotal, rate), code)} className="text-sm text-gray-500" />
-                ) : null;
-              })}
+              {totals.discountMessage && <p className="text-xs text-amber-700">{totals.discountMessage}</p>}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-11 w-full md:hidden"
+                disabled={cart.length === 0}
+                onClick={clearCart}
+              >
+                {t('Clear cart')}
+              </Button>
             </div>
 
-            <Button
-              size="lg"
-              className="h-14 w-full text-lg"
-              disabled={!hasLines}
-              onClick={() => startCheckout()}
-              title={t('Charge (F12)')}
-            >
-              <CreditCard className="h-5 w-5" />
-              {t('Charge {amount}', { amount: money(grandTotal) })}
-            </Button>
-            <Button variant="ghost" size="sm" className="h-10 w-full" disabled={cart.length === 0} onClick={clearCart}>
-              {t('Clear cart')}
-            </Button>
+            <div className="space-y-3 max-md:sticky max-md:bottom-0 max-md:mt-auto max-md:border-t max-md:bg-white max-md:p-3 max-md:shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+              <div className="space-y-1 text-sm">
+                <TotalRow label={plural(itemCount, 'Subtotal ({count} item)', 'Subtotal ({count} items)')} value={money(totals.subtotal)} />
+                {totals.discountAmount > 0 && (
+                  <TotalRow label={t('Discounts')} value={`-${money(totals.discountAmount)}`} className="text-green-700" />
+                )}
+                {!!totals.groupDiscountAmount && (
+                  <TotalRow
+                    label={t('Group discount ({name}, {percent}%)', { name: groupName, percent: groupPercent })}
+                    value={`-${money(totals.groupDiscountAmount)}`}
+                    className="pl-3 text-xs text-green-700"
+                  />
+                )}
+                <TotalRow label={taxLabel} value={money(totals.taxAmount)} />
+                {giftTotal > 0 && <TotalRow label={t('Gift cards')} value={money(giftTotal)} />}
+                <TotalRow label={t('Total')} value={money(grandTotal)} className="border-t pt-2 text-xl font-bold" />
+                {Object.keys(context.settings.exchangeRates ?? {}).map((code) => {
+                  const rate = exchangeRate(context.settings.exchangeRates, context.settings.currencyCode, currency, code);
+                  return rate && code !== currency ? (
+                    <TotalRow key={code} label={t('≈ in {currency}', { currency: code })} value={formatMoney(amountDueIn(grandTotal, rate), code)} className="text-sm text-gray-500" />
+                  ) : null;
+                })}
+              </div>
+
+              <Button
+                size="lg"
+                className="h-14 w-full text-lg"
+                disabled={!hasLines}
+                onClick={() => startCheckout()}
+                title={t('Charge (F12)')}
+              >
+                <CreditCard className="h-5 w-5" />
+                {t('Charge {amount}', { amount: money(grandTotal) })}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-10 w-full max-md:hidden"
+                disabled={cart.length === 0}
+                onClick={clearCart}
+              >
+                {t('Clear cart')}
+              </Button>
+            </div>
           </div>
         </aside>
       </div>
+
+      {/* Phones, products view: what is in the cart, always in reach */}
+      {mobileView === 'products' && (
+        <div className="relative border-t bg-white p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-4px_12px_rgba(0,0,0,0.06)] md:hidden">
+          {added && (
+            <p
+              key={added.at}
+              className="pointer-events-none absolute inset-x-3 -top-12 truncate rounded-lg bg-gray-900/90 px-3 py-2 text-center text-sm text-white shadow-lg"
+            >
+              {t('Added: {product}', { product: added.product })}
+            </p>
+          )}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setMobileView('cart')}
+              className="flex min-h-12 min-w-0 flex-1 items-center gap-2 rounded-lg px-2 text-left hover:bg-gray-50"
+              aria-label={t('View cart: {items}, {total}', {
+                items: plural(itemCount, '{count} item', '{count} items'),
+                total: money(grandTotal),
+              })}
+            >
+              <span className="relative shrink-0">
+                <ShoppingCart className="h-6 w-6 text-gray-700" aria-hidden />
+                <span
+                  ref={badgeRef}
+                  className={cn(
+                    'absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-semibold text-white',
+                    itemCount > 0 ? 'bg-blue-600' : 'bg-gray-400'
+                  )}
+                  aria-hidden
+                >
+                  {itemCount}
+                </span>
+              </span>
+              <span className="min-w-0">
+                <span className="block text-xs text-gray-500">{plural(itemCount, '{count} item', '{count} items')}</span>
+                <span className="block truncate font-semibold tabular-nums">{money(grandTotal)}</span>
+              </span>
+            </button>
+            <Button className="h-12 shrink-0 px-5 text-base" disabled={!hasLines} onClick={() => startCheckout()}>
+              <CreditCard className="h-5 w-5" />
+              {t('Charge')}
+            </Button>
+          </div>
+        </div>
+      )}
+      <p className="sr-only md:hidden" role="status" aria-live="polite">
+        {added ? t('Added: {product}', { product: added.product }) : ''}
+      </p>
 
       <CustomerDialog
         open={dialog === 'customer'}
         onOpenChange={(open) => setDialog(open ? 'customer' : null)}
         current={pos.customer}
-        onSelect={pos.setCustomer}
+        onSelect={(customer) => void chooseCustomer(customer)}
         online={online}
         registerId={register?.id ?? null}
         paymentMethods={context.paymentMethods}
@@ -1686,6 +1971,60 @@ function POSScreen() {
         onResume={resumeCart}
       />
       <ShortcutsDialog open={dialog === 'shortcuts'} onOpenChange={(open) => setDialog(open ? 'shortcuts' : null)} />
+      {/* Phones: the header's secondary actions */}
+      <Dialog open={dialog === 'menu'} onOpenChange={(open) => setDialog(open ? 'menu' : null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{t('More actions')}</DialogTitle>
+            <DialogDescription className="truncate">
+              {user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email : ''}
+              {register ? ` · ${register.name}` : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-2">
+            <DrawerOpenButton registerId={register?.id} className={MENU_ITEM} />
+            <ClockButton branchId={register?.branchId} className={MENU_ITEM} />
+            {canHold && (
+              <Button variant="outline" className={MENU_ITEM} onClick={() => setDialog('held')}>
+                <ListRestart className="h-4 w-4" />
+                {t('Held carts')}
+              </Button>
+            )}
+            {hasPermission(user, 'sales.refund') && (
+              <Button variant="outline" className={MENU_ITEM} onClick={() => setDialog('returns')} disabled={!online}>
+                <RotateCcw className="h-4 w-4" />
+                {online ? t('Returns') : t('Returns need a connection')}
+              </Button>
+            )}
+            {canManage && (
+              <Button variant="outline" className={MENU_ITEM} asChild>
+                <Link href="/admin">
+                  <Settings className="h-4 w-4" />
+                  {t('Admin')}
+                </Link>
+              </Button>
+            )}
+            {!smallScreen && (
+              <Button variant="outline" className={MENU_ITEM} onClick={() => setDialog('shortcuts')}>
+                <Keyboard className="h-4 w-4" />
+                {t('Keyboard shortcuts')}
+              </Button>
+            )}
+            <Button variant="outline" className={MENU_ITEM} asChild>
+              <Link href="/account/security">
+                <ShieldCheck className="h-4 w-4" />
+                {t('Account security')}
+              </Link>
+            </Button>
+            {context.fromCache && <p className="text-sm text-amber-700">{t('Using saved data')}</p>}
+            <LanguageSwitcher className="h-12 rounded-md border px-3" />
+            <Button variant="outline" className={cn(MENU_ITEM, 'text-red-700')} onClick={handleLogout}>
+              <LogOut className="h-4 w-4" />
+              {t('Sign out')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       <QuantityDialog
         target={
           quantityTarget?.item
@@ -1754,6 +2093,26 @@ function POSScreen() {
 }
 
 class OfflineError extends Error {}
+
+// A full-width row of the phone "more actions" menu
+const MENU_ITEM = 'h-12 w-full justify-start px-4 text-base';
+
+function MobileTab({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      onClick={onClick}
+      className={cn(
+        'min-h-11 truncate rounded-md px-3 text-sm font-medium',
+        active ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-700 hover:bg-gray-100'
+      )}
+    >
+      {children}
+    </button>
+  );
+}
 
 function CategoryChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (

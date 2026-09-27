@@ -8,6 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import { getErrorMessage } from '@/lib/api/client';
 import { Device, devicesApi, DeviceStatus } from '@/lib/api/devices';
@@ -32,6 +40,7 @@ export default function DevicesPage() {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [expanded, setExpanded] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
   const canManage = hasPermission(user, 'devices.manage');
 
   const { data: devices = [], isLoading, error, refetch, isFetching } = useQuery({
@@ -96,6 +105,100 @@ export default function DevicesPage() {
             ((revoke.error || restore.error || markLost.error) &&
               getErrorMessage(revoke.error ?? restore.error ?? markLost.error, 'Could not update the device'))}
         </ErrorMessage>
+        {smallScreen ? (
+          // Phones: one card per device (tap to show its details) instead of a table that scrolls sideways
+          <DataCards
+            items={devices}
+            getKey={(device) => device.id}
+            onItemClick={(device) => setExpanded(expanded === device.id ? null : device.id)}
+            loading={isLoading}
+            loadingText={t('Loading...')}
+            emptyText={t('No devices yet. A till registers itself the first time it opens the POS.')}
+          >
+            {(device) => (
+              <>
+                <DataCardHeader
+                  className={device.revokedAt ? 'opacity-60' : undefined}
+                  title={
+                    <span className="inline-flex items-center gap-1">
+                      {expanded === device.id ? (
+                        <ChevronDown className="h-4 w-4 shrink-0" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4 shrink-0" />
+                      )}
+                      {device.name}
+                    </span>
+                  }
+                  subtitle={`${registerName(device.registerId)} · ${describeUserAgent(device.userAgent)}`}
+                  onTitleClick={() => setExpanded(expanded === device.id ? null : device.id)}
+                  badge={<Badge variant={STATUS[device.health.status].variant}>{t(STATUS[device.health.status].label)}</Badge>}
+                />
+                <DataCardFields className={device.revokedAt ? 'opacity-60' : undefined}>
+                  <DataCardField label={t('Last seen')}>{formatDateTime(device.lastSeenAt)}</DataCardField>
+                  <DataCardField label={t('Last sync')}>{formatDateTime(device.lastSyncAt)}</DataCardField>
+                  <DataCardField label={t('Waiting')}>
+                    {device.pendingSales}
+                    {device.failedSales > 0 && <span className="block text-xs text-red-600">{t('{count} rejected', { count: device.failedSales })}</span>}
+                  </DataCardField>
+                  <DataCardField label={t('Offline until')}>
+                    {device.revokedAt ? '—' : device.health.leaseActive ? formatDateTime(device.leaseExpiresAt) : t('Expired')}
+                  </DataCardField>
+                </DataCardFields>
+                {expanded === device.id && (
+                  <div className="rounded-md bg-gray-50 p-3">
+                    <DeviceDetails device={device} />
+                  </div>
+                )}
+                <DataCardActions>
+                  {device.lostAt ? (
+                    <span className="text-xs font-medium text-red-700">{t('Lost')}</span>
+                  ) : device.revokedAt ? (
+                    <Button size="sm" variant="outline" disabled={restore.isPending} onClick={() => restore.mutate(device.id)}>
+                      {t('Restore')}
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-red-600"
+                      disabled={revoke.isPending}
+                      onClick={() => {
+                        const reason = window.prompt(
+                          t('Revoke "{name}"? It will stop selling offline at once. Reason (optional):', {
+                            name: device.name,
+                          })
+                        );
+                        if (reason !== null) revoke.mutate({ id: device.id, reason: reason || undefined });
+                      }}
+                    >
+                      {t('Revoke')}
+                    </Button>
+                  )}
+                  {!device.lostAt && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-red-700"
+                      disabled={markLost.isPending}
+                      title={t('Lost or abandoned: revoke for good, refuse its sync and open a review case')}
+                      onClick={() => {
+                        const reason = window.prompt(
+                          t(
+                            'Mark "{name}" as lost? It is revoked for good, its {count} unsynced sales are recorded and a review case is opened. Reason (optional):',
+                            { name: device.name, count: device.pendingSales + device.health.unaccountedCount }
+                          )
+                        );
+                        if (reason !== null) markLost.mutate({ id: device.id, reason: reason || undefined });
+                      }}
+                    >
+                      {t('Mark lost')}
+                    </Button>
+                  )}
+                </DataCardActions>
+              </>
+            )}
+          </DataCards>
+        ) : (
         <Table>
           <THead>
             <tr>
@@ -199,6 +302,7 @@ export default function DevicesPage() {
             )}
           </TBody>
         </Table>
+        )}
       </Card>
     </div>
   );

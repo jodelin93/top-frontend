@@ -74,7 +74,7 @@ export function ExchangeRateCard() {
 
   return (
     <Card className="bg-white p-4">
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-center gap-2">
           <ArrowLeftRight className="h-5 w-5 text-blue-600" />
           <div>
@@ -96,7 +96,7 @@ export function ExchangeRateCard() {
           </div>
         </div>
         {canEdit && !editing && (
-          <div className="flex gap-1">
+          <div className="flex flex-wrap gap-1">
             {history.length > 0 && (
               <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)} aria-expanded={showHistory}>
                 <History className="h-4 w-4" />

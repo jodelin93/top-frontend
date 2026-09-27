@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { CatalogItem } from '@/lib/api/sales';
 import type { Discount } from '@/lib/api/discounts';
-import { computeTotals, usePOSStore } from './pos-store';
+import { computeTotals, groupDiscountPercentOf, usePOSStore } from './pos-store';
 
 const item = (overrides: Partial<CatalogItem> = {}): CatalogItem => ({
   variantId: 'v1',
@@ -309,5 +309,26 @@ describe('usePOSStore: measured items (sold by weight)', () => {
       { customer: null, discount: null }
     );
     expect(store().cart[0]).toMatchObject({ quantity: 1.25, unit: kg });
+  });
+});
+
+describe('computeTotals: customer group discount', () => {
+  const trade = { id: 'g1', name: 'Trade', priceListId: null, discountPercent: 10 };
+
+  it("takes the customer's group discount off and reports it apart", () => {
+    store().addItem(item({ price: 20 }));
+    store().setCustomer({ id: 'c1', name: 'Ann', loyaltyPoints: 0, group: trade });
+    const totals = computeTotals(store(), { taxRate: 0, pricesIncludeTax: false });
+    expect(totals).toMatchObject({ subtotal: 20, discountAmount: 2, groupDiscountAmount: 2, total: 18 });
+  });
+
+  it('reverts when the customer is removed, and never applies to an estimate', () => {
+    store().addItem(item({ price: 20 }));
+    store().setCustomer({ id: 'c1', name: 'Ann', loyaltyPoints: 0, group: trade });
+    expect(groupDiscountPercentOf({ customer: store().customer, estimate: { id: 'e1', number: 'EST-1' } })).toBe(0);
+    store().setCustomer(null);
+    const totals = computeTotals(store(), { taxRate: 0, pricesIncludeTax: false });
+    expect(totals.total).toBe(20);
+    expect(totals.groupDiscountAmount).toBeUndefined();
   });
 });

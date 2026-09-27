@@ -9,6 +9,7 @@
  */
 import type { PaperWidth } from './escpos';
 import { toBase64 } from './escpos';
+import { hmacSha256Hex, sha256Hex as syncSha256Hex } from '@/lib/pos/payload-hash';
 
 export const DEFAULT_BRIDGE_URL = 'http://127.0.0.1:17777';
 const STORAGE_KEY = 'pos_print_bridge';
@@ -92,16 +93,25 @@ export function updatePairing(changes: Partial<Pick<BridgePairing, 'printerId' |
 const hex = (buffer: ArrayBuffer) =>
   [...new Uint8Array(buffer)].map((b) => b.toString(16).padStart(2, '0')).join('');
 
+// crypto.subtle only exists in secure contexts (https, localhost): a till that
+// opens the app on a plain-http LAN address signs with the built-in SHA-256.
+const subtle = (): SubtleCrypto | undefined =>
+  typeof crypto !== 'undefined' ? crypto.subtle : undefined;
+
 export async function sha256Hex(text: string): Promise<string> {
-  return hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)));
+  const webCrypto = subtle();
+  if (!webCrypto) return syncSha256Hex(text);
+  return hex(await webCrypto.digest('SHA-256', new TextEncoder().encode(text)));
 }
 
 export async function bridgeSignature(secret: string, timestamp: string, method: string, path: string, body: string) {
-  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, [
+  const canonical = `${timestamp}\n${method.toUpperCase()}\n${path}\n${await sha256Hex(body)}`;
+  const webCrypto = subtle();
+  if (!webCrypto) return hmacSha256Hex(secret, canonical);
+  const key = await webCrypto.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, [
     'sign',
   ]);
-  const canonical = `${timestamp}\n${method.toUpperCase()}\n${path}\n${await sha256Hex(body)}`;
-  return hex(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(canonical)));
+  return hex(await webCrypto.sign('HMAC', key, new TextEncoder().encode(canonical)));
 }
 
 async function call<T>(url: string, method: string, path: string, body?: unknown, secret?: string, timeoutMs = 8000): Promise<T> {

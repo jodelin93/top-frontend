@@ -9,6 +9,13 @@ import { Select } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { Badge, statusVariant } from '@/components/ui/badge';
 import { Table, THead, TBody, Th, Td, EmptyRow } from '@/components/ui/table';
+import {
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import {
   DateRange,
@@ -36,6 +43,7 @@ export default function SalesPage() {
   const [range, setRange] = useState<DateRange>(() => presetRange('all'));
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   // Debounce search typing
   useEffect(() => {
@@ -118,6 +126,39 @@ export default function SalesPage() {
           </div>
         )}
 
+        {smallScreen ? (
+          // Phones: one card per sale instead of a table that scrolls sideways
+          <DataCards
+            items={sales}
+            getKey={(sale) => sale.id}
+            onItemClick={(sale) => setSelectedId(sale.id)}
+            loading={isLoading}
+            loadingText={t('Loading sales...')}
+            emptyText={hasFilters ? t('No sales match your filters.') : t('No sales yet.')}
+            className={isFetching && !isLoading ? 'opacity-60' : undefined}
+          >
+            {(sale) => (
+              <>
+                <DataCardHeader
+                  title={<span className="font-mono text-xs">{sale.saleNumber}</span>}
+                  subtitle={sale.offlineNumber || undefined}
+                  onTitleClick={() => setSelectedId(sale.id)}
+                  badge={<Badge variant={statusVariant(sale.status)}>{t(sale.status.replace('_', ' '))}</Badge>}
+                />
+                <DataCardFields>
+                  <DataCardField label={t('Date')}>{formatDateTime(sale.saleDate)}</DataCardField>
+                  <DataCardField label={t('Total')}>
+                    <span className="font-medium">{formatMoney(sale.total, sale.currencyCode)}</span>
+                  </DataCardField>
+                  <DataCardField label={t('Customer')}>
+                    {sale.customer ? customerName(sale.customer) : <span className="text-gray-400">{t('Walk-in')}</span>}
+                  </DataCardField>
+                  <DataCardField label={t('Cashier')}>{cashierName(sale.user)}</DataCardField>
+                </DataCardFields>
+              </>
+            )}
+          </DataCards>
+        ) : (
         <Table className={isFetching && !isLoading ? 'opacity-60' : undefined}>
           <THead>
             <tr>
@@ -173,9 +214,10 @@ export default function SalesPage() {
             )}
           </TBody>
         </Table>
+        )}
 
         {meta && meta.total > 0 && (
-          <div className="flex items-center justify-between border-t px-4 py-3 text-sm text-gray-500">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t px-4 py-3 text-sm text-gray-500">
             <span>
               {t('{start}–{end} of {total}', {
                 start: (meta.page - 1) * PAGE_SIZE + 1,

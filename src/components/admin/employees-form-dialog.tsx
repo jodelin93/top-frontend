@@ -22,6 +22,7 @@ import { branchesApi } from '@/lib/api/settings';
 import { usersApi } from '@/lib/api/users';
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
 import { t } from '@/i18n';
+import { addDaysLocalIso } from '@/lib/format';
 
 interface FormState {
   firstName: string;
@@ -99,7 +100,14 @@ function EmployeeForm({ employee, onDone }: { employee: Employee | null; onDone:
       return { ...f, branchIds, primaryBranchId };
     });
 
-  const valid = form.firstName.trim() && form.lastName.trim();
+  // Hire dates: from 1900, up to a year ahead (a planned start date)
+  const hireError =
+    form.hireDate && form.hireDate < '1900-01-01'
+      ? t('The date cannot be before 1900')
+      : form.hireDate && form.hireDate > addDaysLocalIso(366)
+        ? t('The hire date cannot be more than a year ahead')
+        : undefined;
+  const valid = form.firstName.trim() && form.lastName.trim() && !hireError;
 
   const save = async () => {
     setBusy(true);
@@ -166,13 +174,20 @@ function EmployeeForm({ employee, onDone }: { employee: Employee | null; onDone:
           <Input id="emp-code" value={form.employeeCode} maxLength={50} onChange={(e) => set('employeeCode', e.target.value)} />
         </Field>
         <Field label={t('Phone')} htmlFor="emp-phone">
-          <Input id="emp-phone" value={form.phone} maxLength={50} onChange={(e) => set('phone', e.target.value)} />
+          <Input id="emp-phone" type="tel" value={form.phone} maxLength={50} onChange={(e) => set('phone', e.target.value)} />
         </Field>
         <Field label={t('Email')} htmlFor="emp-email">
           <Input id="emp-email" type="email" value={form.email} maxLength={255} onChange={(e) => set('email', e.target.value)} />
         </Field>
-        <Field label={t('Hire date')} htmlFor="emp-hire">
-          <Input id="emp-hire" type="date" value={form.hireDate} onChange={(e) => set('hireDate', e.target.value)} />
+        <Field label={t('Hire date')} htmlFor="emp-hire" error={hireError}>
+          <Input
+            id="emp-hire"
+            type="date"
+            min="1900-01-01"
+            max={addDaysLocalIso(366)}
+            value={form.hireDate}
+            onChange={(e) => set('hireDate', e.target.value)}
+          />
         </Field>
         <Field
           label={t('User account')}

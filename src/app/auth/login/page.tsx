@@ -27,7 +27,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setUser, setTokens, setRequiresMfa } = useAuthStore();
+  const { setUser, setRequiresMfa } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Self-service store sign-up is offered only when the server allows it
@@ -54,13 +54,11 @@ export default function LoginPage() {
       const response = await authApi.login(data);
 
       if (response.requiresMfa) {
-        // Store temporary token and redirect to MFA verification
-        setTokens('', response.accessToken); // temp token
+        // The API keeps the temporary token in a short-lived HttpOnly cookie
         setRequiresMfa(true);
         router.push('/auth/mfa-verify');
       } else {
-        // Full access - store token and user
-        setTokens(response.accessToken);
+        // Signed in: the session is an HttpOnly cookie; keep the profile
         if (response.user) {
           setUser(response.user);
         }

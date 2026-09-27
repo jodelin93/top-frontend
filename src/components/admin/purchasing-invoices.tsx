@@ -9,14 +9,8 @@ import { Select } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { DataCardField, DataCardFields, DataCardHeader, DataCards, useSmallScreen } from '@/components/ui/data-cards';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { useApproval } from '@/components/approval-dialog';
 import { useSuppliers } from '@/components/admin/purchasing-suppliers';
@@ -31,7 +25,8 @@ import {
   SupplierInvoiceStatus,
   supplierInvoicesApi,
 } from '@/lib/api/purchasing';
-import { formatDate, formatDateTime, formatMoney } from '@/lib/format';
+import { formatDate, formatDateTime, formatMoney, todayLocalIso } from '@/lib/format';
+import { cn } from '@/lib/utils';
 import { t } from '@/i18n';
 import { QUANTITY_TEXT } from '@/lib/pos/quantity';
 
@@ -47,7 +42,7 @@ const invoiceStatusVariant: Record<SupplierInvoiceStatus, 'warning' | 'info' | '
   void: 'default',
 };
 
-export const today = () => new Date().toISOString().slice(0, 10);
+export const today = () => todayLocalIso();
 const round2 = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
 
 /**
@@ -61,6 +56,7 @@ export function SupplierInvoicesTab() {
   const [status, setStatus] = useState<SupplierInvoiceStatus | ''>('');
   const [creating, setCreating] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const { data: invoices = [], isLoading, error } = useQuery({
     queryKey: ['supplier-invoices', supplierId, status],
@@ -114,55 +110,104 @@ export function SupplierInvoicesTab() {
           <ErrorMessage>{getErrorMessage(error, 'Could not load supplier invoices')}</ErrorMessage>
         </div>
       )}
-      <Table>
-        <THead>
-          <tr>
-            <Th>{t('Invoice')}</Th>
-            <Th>{t('Supplier')}</Th>
-            <Th>{t('PO')}</Th>
-            <Th>{t('Date')}</Th>
-            <Th>{t('Due')}</Th>
-            <Th>{t('Status')}</Th>
-            <Th className="text-right">{t('Total')}</Th>
-            <Th className="text-right">{t('Owed')}</Th>
-          </tr>
-        </THead>
-        <TBody>
-          {isLoading ? (
-            <EmptyRow colSpan={8}>{t('Loading...')}</EmptyRow>
-          ) : invoices.length === 0 ? (
-            <EmptyRow colSpan={8}>{t('No supplier invoices yet.')}</EmptyRow>
-          ) : (
-            invoices.map((invoice) => (
-              <tr key={invoice.id} className="cursor-pointer hover:bg-gray-50" onClick={() => setOpenId(invoice.id)}>
-                <Td className="font-mono text-xs font-medium">
-                  {invoice.invoiceNumber}
-                  {invoice.invoiceType === 'opening_balance' && (
-                    <div className="font-sans text-xs text-gray-500">{t('Opening balance')}</div>
-                  )}
-                </Td>
-                <Td>{invoice.supplier?.name ?? '—'}</Td>
-                <Td className="font-mono text-xs">{invoice.purchaseOrder?.poNumber ?? '—'}</Td>
-                <Td className="whitespace-nowrap">{formatDate(invoice.invoiceDate)}</Td>
-                <Td className={`whitespace-nowrap ${invoice.overdue ? 'font-medium text-red-600' : ''}`}>
-                  {formatDate(invoice.dueDate)}
-                </Td>
-                <Td>
-                  <Badge variant={invoiceStatusVariant[invoice.status]}>{t(invoiceStatusLabels[invoice.status])}</Badge>
-                  {invoice.hasVariance && invoice.status !== 'void' && (
-                    <AlertTriangle
-                      className="ml-1 inline h-4 w-4 text-orange-500"
-                      aria-label={t('Variance against the order')}
-                    />
-                  )}
-                </Td>
-                <Td className="text-right">{formatMoney(invoice.total, invoice.currencyCode)}</Td>
-                <Td className="text-right">{formatMoney(invoice.amountOpen, invoice.currencyCode)}</Td>
-              </tr>
-            ))
+      {smallScreen ? (
+        // Phones: one card per invoice instead of a table that scrolls sideways
+        <DataCards
+          items={invoices}
+          getKey={(invoice) => invoice.id}
+          onItemClick={(invoice) => setOpenId(invoice.id)}
+          loading={isLoading}
+          loadingText={t('Loading...')}
+          emptyText={t('No supplier invoices yet.')}
+        >
+          {(invoice) => (
+            <>
+              <DataCardHeader
+                title={<span className="font-mono text-xs">{invoice.invoiceNumber}</span>}
+                subtitle={
+                  invoice.invoiceType === 'opening_balance'
+                    ? `${invoice.supplier?.name ?? '—'} · ${t('Opening balance')}`
+                    : (invoice.supplier?.name ?? '—')
+                }
+                onTitleClick={() => setOpenId(invoice.id)}
+                badge={
+                  <>
+                    <Badge variant={invoiceStatusVariant[invoice.status]}>{t(invoiceStatusLabels[invoice.status])}</Badge>
+                    {invoice.hasVariance && invoice.status !== 'void' && (
+                      <AlertTriangle className="h-4 w-4 text-orange-500" aria-label={t('Variance against the order')} />
+                    )}
+                  </>
+                }
+              />
+              <DataCardFields>
+                <DataCardField label={t('Date')}>{formatDate(invoice.invoiceDate)}</DataCardField>
+                <DataCardField label={t('Due')}>
+                  <span className={invoice.overdue ? 'font-medium text-red-600' : undefined}>{formatDate(invoice.dueDate)}</span>
+                </DataCardField>
+                <DataCardField label={t('Total')}>{formatMoney(invoice.total, invoice.currencyCode)}</DataCardField>
+                <DataCardField label={t('Owed')}>
+                  <span className="font-medium">{formatMoney(invoice.amountOpen, invoice.currencyCode)}</span>
+                </DataCardField>
+                {invoice.purchaseOrder && (
+                  <DataCardField label={t('PO')}>
+                    <span className="font-mono text-xs">{invoice.purchaseOrder.poNumber}</span>
+                  </DataCardField>
+                )}
+              </DataCardFields>
+            </>
           )}
-        </TBody>
-      </Table>
+        </DataCards>
+      ) : (
+        <Table>
+          <THead>
+            <tr>
+              <Th>{t('Invoice')}</Th>
+              <Th>{t('Supplier')}</Th>
+              <Th>{t('PO')}</Th>
+              <Th>{t('Date')}</Th>
+              <Th>{t('Due')}</Th>
+              <Th>{t('Status')}</Th>
+              <Th className="text-right">{t('Total')}</Th>
+              <Th className="text-right">{t('Owed')}</Th>
+            </tr>
+          </THead>
+          <TBody>
+            {isLoading ? (
+              <EmptyRow colSpan={8}>{t('Loading...')}</EmptyRow>
+            ) : invoices.length === 0 ? (
+              <EmptyRow colSpan={8}>{t('No supplier invoices yet.')}</EmptyRow>
+            ) : (
+              invoices.map((invoice) => (
+                <tr key={invoice.id} className="cursor-pointer hover:bg-gray-50" onClick={() => setOpenId(invoice.id)}>
+                  <Td className="font-mono text-xs font-medium">
+                    {invoice.invoiceNumber}
+                    {invoice.invoiceType === 'opening_balance' && (
+                      <div className="font-sans text-xs text-gray-500">{t('Opening balance')}</div>
+                    )}
+                  </Td>
+                  <Td>{invoice.supplier?.name ?? '—'}</Td>
+                  <Td className="font-mono text-xs">{invoice.purchaseOrder?.poNumber ?? '—'}</Td>
+                  <Td className="whitespace-nowrap">{formatDate(invoice.invoiceDate)}</Td>
+                  <Td className={`whitespace-nowrap ${invoice.overdue ? 'font-medium text-red-600' : ''}`}>
+                    {formatDate(invoice.dueDate)}
+                  </Td>
+                  <Td>
+                    <Badge variant={invoiceStatusVariant[invoice.status]}>{t(invoiceStatusLabels[invoice.status])}</Badge>
+                    {invoice.hasVariance && invoice.status !== 'void' && (
+                      <AlertTriangle
+                        className="ml-1 inline h-4 w-4 text-orange-500"
+                        aria-label={t('Variance against the order')}
+                      />
+                    )}
+                  </Td>
+                  <Td className="text-right">{formatMoney(invoice.total, invoice.currencyCode)}</Td>
+                  <Td className="text-right">{formatMoney(invoice.amountOpen, invoice.currencyCode)}</Td>
+                </tr>
+              ))
+            )}
+          </TBody>
+        </Table>
+      )}
       {creating && (
         <SupplierInvoiceFormDialog
           onClose={() => setCreating(false)}
@@ -210,6 +255,7 @@ function SupplierInvoiceFormDialog({
   const [notes, setNotes] = useState('');
   const [lines, setLines] = useState<InvoiceLine[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
   const supplier = suppliers.find((s) => s.id === supplierId);
   const currency = supplier?.currencyCode ?? storeCurrency;
 
@@ -249,6 +295,89 @@ function SupplierInvoiceFormDialog({
   const update = (key: string, patch: Partial<InvoiceLine>) =>
     setLines((prev) => prev.map((l) => (l.key === key ? { ...l, ...patch } : l)));
 
+  // Line controls, shared by the table (desktop) and the cards (phones)
+  const includeBox = (line: InvoiceLine) => (
+    <input
+      type="checkbox"
+      className="h-4 w-4"
+      checked={line.include}
+      onChange={(e) => update(line.key, { include: e.target.checked })}
+      aria-label={t('Include {name}', { name: line.description || '—' })}
+    />
+  );
+  const lineDescription = (line: InvoiceLine, className?: string) =>
+    line.purchaseOrderItemId ? (
+      <>
+        <div className="font-medium">{line.description}</div>
+        <div className="text-xs text-gray-500">
+          {t('Ordered at {price} · received {count}', {
+            price: formatMoney(line.expectedUnitPrice ?? 0, currency),
+            count: line.receivedQuantity ?? 0,
+          })}
+        </div>
+      </>
+    ) : (
+      <Input
+        placeholder={t('e.g. Freight')}
+        value={line.description}
+        onChange={(e) => update(line.key, { description: e.target.value })}
+        className={className}
+        aria-label={t('Description')}
+      />
+    );
+  const quantityInput = (line: InvoiceLine, className = '') => (
+    <Input
+      inputMode="numeric"
+      className={cn(
+        line.receivedQuantity != null && Number(line.quantity) > line.receivedQuantity ? 'border-orange-400' : '',
+        className
+      )}
+      value={line.quantity}
+      onChange={(e) => update(line.key, { quantity: e.target.value })}
+      aria-label={t('Quantity for {name}', { name: line.description || '—' })}
+    />
+  );
+  const unitPriceInput = (line: InvoiceLine, className = '') => {
+    const price = Number(line.unitPrice);
+    const priceHigher = line.expectedUnitPrice != null && !isNaN(price) && price > line.expectedUnitPrice;
+    return (
+      <Input
+        inputMode="decimal"
+        className={cn(priceHigher ? 'border-orange-400' : '', className)}
+        value={line.unitPrice}
+        onChange={(e) => update(line.key, { unitPrice: e.target.value })}
+        aria-label={t('Unit price for {name}', {
+          name: line.description || '—',
+        })}
+      />
+    );
+  };
+  const taxInput = (line: InvoiceLine, className?: string) => (
+    <Input
+      inputMode="decimal"
+      placeholder="0.00"
+      value={line.taxAmount}
+      onChange={(e) => update(line.key, { taxAmount: e.target.value })}
+      className={className}
+      aria-label={t('Tax for {name}', { name: line.description || '—' })}
+    />
+  );
+  const lineTotal = (line: InvoiceLine) =>
+    formatMoney(round2((Number(line.quantity) || 0) * (Number(line.unitPrice) || 0)) + (Number(line.taxAmount) || 0), currency);
+  const removeLineButton = (line: InvoiceLine) =>
+    !line.purchaseOrderItemId && (
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 text-red-600"
+        aria-label={t('Remove line')}
+        onClick={() => setLines((prev) => prev.filter((l) => l.key !== line.key))}
+      >
+        <X className="h-4 w-4" />
+      </Button>
+    );
+
   const save = useMutation({
     mutationFn: (input: SupplierInvoiceInput) => supplierInvoicesApi.create(input),
     onSuccess: async (invoice) => {
@@ -273,6 +402,7 @@ function SupplierInvoiceFormDialog({
     setError(null);
     if (!supplierId) return setError(t('Choose a supplier.'));
     if (!invoiceNumber.trim()) return setError(t('Enter the supplier’s invoice number.'));
+    if (invoiceDate > today()) return setError(t('The invoice date cannot be in the future'));
     if (dueDate && dueDate < invoiceDate) return setError(t('The due date cannot be before the invoice date.'));
     const base = {
       supplierId,
@@ -365,8 +495,18 @@ function SupplierInvoiceFormDialog({
                 onChange={(e) => setInvoiceNumber(e.target.value)}
               />
             </Field>
-            <Field label={t('Invoice date')} htmlFor="inv-date">
-              <Input id="inv-date" type="date" value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} />
+            <Field
+              label={t('Invoice date')}
+              htmlFor="inv-date"
+              error={invoiceDate > today() ? t('The invoice date cannot be in the future') : undefined}
+            >
+              <Input
+                id="inv-date"
+                type="date"
+                max={today()}
+                value={invoiceDate}
+                onChange={(e) => setInvoiceDate(e.target.value)}
+              />
             </Field>
             <Field
               label={t('Due date')}
@@ -377,7 +517,13 @@ function SupplierInvoiceFormDialog({
                   : t('Empty = the invoice date')
               }
             >
-              <Input id="inv-due" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+              <Input
+                id="inv-due"
+                type="date"
+                min={invoiceDate || undefined}
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+              />
             </Field>
             {type === 'standard' ? (
               <Field label={t('Purchase order')} htmlFor="inv-po">
@@ -404,119 +550,80 @@ function SupplierInvoiceFormDialog({
 
           {type === 'standard' && (
             <>
-              <div className="overflow-x-auto rounded-md border">
-                <table className="w-full text-sm">
-                  <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
-                    <tr>
-                      <th className="w-8 px-2 py-2" />
-                      <th className="px-3 py-2 font-medium">{t('Description')}</th>
-                      <th className="w-20 px-2 py-2 font-medium">{t('Qty')}</th>
-                      <th className="w-28 px-2 py-2 font-medium">{t('Unit price')}</th>
-                      <th className="w-24 px-2 py-2 font-medium">{t('Tax')}</th>
-                      <th className="w-24 px-2 py-2 text-right font-medium">{t('Total')}</th>
-                      <th className="w-8 px-2 py-2" />
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y">
-                    {lines.length === 0 ? (
+              {smallScreen ? (
+                // Phones: one card per line, every box in view (the table scrolls sideways)
+                <div className="space-y-2">
+                  {lines.length === 0 && (
+                    <p className="rounded-md border p-3 text-center text-sm text-gray-400">
+                      {t('Choose a purchase order to take its lines, or add lines by hand.')}
+                    </p>
+                  )}
+                  {lines.map((line) => (
+                    <div key={line.key} className={cn('space-y-2 rounded-md border p-3 text-sm', !line.include && 'opacity-50')}>
+                      <div className="flex items-start gap-2">
+                        <div className="pt-1">{includeBox(line)}</div>
+                        <div className="min-w-0 flex-1">{lineDescription(line, 'h-10 w-full')}</div>
+                        {removeLineButton(line)}
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <label className="block space-y-1">
+                          <span className="text-xs text-gray-500">{t('Qty')}</span>
+                          {quantityInput(line, 'h-10 w-full')}
+                        </label>
+                        <label className="block space-y-1">
+                          <span className="text-xs text-gray-500">{t('Unit price')}</span>
+                          {unitPriceInput(line, 'h-10 w-full')}
+                        </label>
+                        <label className="block space-y-1">
+                          <span className="text-xs text-gray-500">{t('Tax')}</span>
+                          {taxInput(line, 'h-10 w-full')}
+                        </label>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">{t('Total')}</span>
+                        <span className="font-medium">{lineTotal(line)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="overflow-x-auto rounded-md border">
+                  <table className="w-full text-sm">
+                    <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
                       <tr>
-                        <td colSpan={7} className="px-3 py-4 text-center text-gray-400">
-                          {t('Choose a purchase order to take its lines, or add lines by hand.')}
-                        </td>
+                        <th className="w-8 px-2 py-2" />
+                        <th className="px-3 py-2 font-medium">{t('Description')}</th>
+                        <th className="w-20 px-2 py-2 font-medium">{t('Qty')}</th>
+                        <th className="w-28 px-2 py-2 font-medium">{t('Unit price')}</th>
+                        <th className="w-24 px-2 py-2 font-medium">{t('Tax')}</th>
+                        <th className="w-24 px-2 py-2 text-right font-medium">{t('Total')}</th>
+                        <th className="w-8 px-2 py-2" />
                       </tr>
-                    ) : (
-                      lines.map((line) => {
-                        const price = Number(line.unitPrice);
-                        const priceHigher =
-                          line.expectedUnitPrice != null && !isNaN(price) && price > line.expectedUnitPrice;
-                        const qtyHigher =
-                          line.receivedQuantity != null && Number(line.quantity) > line.receivedQuantity;
-                        return (
+                    </thead>
+                    <tbody className="divide-y">
+                      {lines.length === 0 ? (
+                        <tr>
+                          <td colSpan={7} className="px-3 py-4 text-center text-gray-400">
+                            {t('Choose a purchase order to take its lines, or add lines by hand.')}
+                          </td>
+                        </tr>
+                      ) : (
+                        lines.map((line) => (
                           <tr key={line.key} className={line.include ? '' : 'opacity-50'}>
-                            <td className="px-2 py-2">
-                              <input
-                                type="checkbox"
-                                className="h-4 w-4"
-                                checked={line.include}
-                                onChange={(e) => update(line.key, { include: e.target.checked })}
-                                aria-label={t('Include {name}', { name: line.description || '—' })}
-                              />
-                            </td>
-                            <td className="px-3 py-2">
-                              {line.purchaseOrderItemId ? (
-                                <>
-                                  <div className="font-medium">{line.description}</div>
-                                  <div className="text-xs text-gray-500">
-                                    {t('Ordered at {price} · received {count}', {
-                                      price: formatMoney(line.expectedUnitPrice ?? 0, currency),
-                                      count: line.receivedQuantity ?? 0,
-                                    })}
-                                  </div>
-                                </>
-                              ) : (
-                                <Input
-                                  placeholder={t('e.g. Freight')}
-                                  value={line.description}
-                                  onChange={(e) => update(line.key, { description: e.target.value })}
-                                  aria-label={t('Description')}
-                                />
-                              )}
-                            </td>
-                            <td className="px-2 py-2">
-                              <Input
-                                inputMode="numeric"
-                                className={qtyHigher ? 'border-orange-400' : ''}
-                                value={line.quantity}
-                                onChange={(e) => update(line.key, { quantity: e.target.value })}
-                                aria-label={t('Quantity for {name}', { name: line.description || '—' })}
-                              />
-                            </td>
-                            <td className="px-2 py-2">
-                              <Input
-                                inputMode="decimal"
-                                className={priceHigher ? 'border-orange-400' : ''}
-                                value={line.unitPrice}
-                                onChange={(e) => update(line.key, { unitPrice: e.target.value })}
-                                aria-label={t('Unit price for {name}', { name: line.description || '—' })}
-                              />
-                            </td>
-                            <td className="px-2 py-2">
-                              <Input
-                                inputMode="decimal"
-                                placeholder="0.00"
-                                value={line.taxAmount}
-                                onChange={(e) => update(line.key, { taxAmount: e.target.value })}
-                                aria-label={t('Tax for {name}', { name: line.description || '—' })}
-                              />
-                            </td>
-                            <td className="px-2 py-2 text-right">
-                              {formatMoney(
-                                round2((Number(line.quantity) || 0) * (Number(line.unitPrice) || 0)) +
-                                  (Number(line.taxAmount) || 0),
-                                currency
-                              )}
-                            </td>
-                            <td className="px-2 py-2">
-                              {!line.purchaseOrderItemId && (
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 text-red-600"
-                                  aria-label={t('Remove line')}
-                                  onClick={() => setLines((prev) => prev.filter((l) => l.key !== line.key))}
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              )}
-                            </td>
+                            <td className="px-2 py-2">{includeBox(line)}</td>
+                            <td className="px-3 py-2">{lineDescription(line)}</td>
+                            <td className="px-2 py-2">{quantityInput(line)}</td>
+                            <td className="px-2 py-2">{unitPriceInput(line)}</td>
+                            <td className="px-2 py-2">{taxInput(line)}</td>
+                            <td className="px-2 py-2 text-right">{lineTotal(line)}</td>
+                            <td className="px-2 py-2">{removeLineButton(line)}</td>
                           </tr>
-                        );
-                      })
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
               <div className="flex items-center justify-between">
                 <Button
                   type="button"
@@ -569,6 +676,7 @@ function SupplierInvoiceDetailDialog({ id, onClose }: { id: string; onClose: () 
   const { withApproval, approvalDialog } = useApproval();
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const { data: invoice, error: loadError } = useQuery({
     queryKey: ['supplier-invoices', 'detail', id],
@@ -634,7 +742,56 @@ function SupplierInvoiceDetailDialog({ id, onClose }: { id: string; onClose: () 
               )}
             </p>
           )}
-          {invoice && invoice.items.length > 0 && (
+          {invoice && invoice.items.length > 0 && smallScreen && (
+            // Phones: one card per invoice line (the table scrolls sideways)
+            <div className="space-y-2">
+              {invoice.items.map((item) => (
+                <div key={item.id} className={cn('space-y-2 rounded-md border p-3 text-sm', item.varianceFlag && 'bg-orange-50')}>
+                  <div>
+                    <div className="break-words font-medium">{item.description}</div>
+                    {item.purchaseOrderItemId == null && <div className="text-xs text-gray-500">{t('Not on the order')}</div>}
+                  </div>
+                  <DataCardFields>
+                    <DataCardField label={t('Qty')}>{item.quantity}</DataCardField>
+                    <DataCardField label={t('Unit price')}>{formatMoney(item.unitPrice, currency)}</DataCardField>
+                    <DataCardField label={t('Order price')}>
+                      {item.expectedUnitPrice != null ? formatMoney(item.expectedUnitPrice, currency) : '—'}
+                    </DataCardField>
+                    <DataCardField label={t('Price variance')}>
+                      {item.expectedUnitPrice != null ? (
+                        <>
+                          {formatMoney(item.priceVariance, currency)}
+                          {item.priceVariancePercent != null && (
+                            <span className="text-xs text-gray-500"> ({Number(item.priceVariancePercent)}%)</span>
+                          )}
+                        </>
+                      ) : (
+                        '—'
+                      )}
+                    </DataCardField>
+                    <DataCardField label={t('Qty variance')}>
+                      {item.matchableQuantity != null ? (
+                        <>
+                          {item.quantityVariance > 0 ? `+${item.quantityVariance}` : item.quantityVariance}
+                          <div className="text-xs text-gray-500">
+                            {t('{count} to bill', {
+                              count: item.matchableQuantity,
+                            })}
+                          </div>
+                        </>
+                      ) : (
+                        '—'
+                      )}
+                    </DataCardField>
+                    <DataCardField label={t('Total')}>
+                      <span className="font-medium">{formatMoney(item.total, currency)}</span>
+                    </DataCardField>
+                  </DataCardFields>
+                </div>
+              ))}
+            </div>
+          )}
+          {invoice && invoice.items.length > 0 && !smallScreen && (
             <div className="overflow-x-auto rounded-md border">
               <table className="w-full text-sm">
                 <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">

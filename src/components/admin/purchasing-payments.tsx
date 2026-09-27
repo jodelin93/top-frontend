@@ -10,13 +10,14 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { useSuppliers } from '@/components/admin/purchasing-suppliers';
 import { today } from '@/components/admin/purchasing-invoices';
@@ -63,6 +64,7 @@ export function SupplierPaymentsTab() {
     | null
   >(null);
   const [error, setError] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const payments = useQuery({
     queryKey: ['supplier-payments', supplierId],
@@ -141,132 +143,257 @@ export function SupplierPaymentsTab() {
           </div>
         )}
         <div className="px-4 pt-3 text-sm font-medium">{t('Payments')}</div>
-        <Table>
-          <THead>
-            <tr>
-              <Th>{t('Payment')}</Th>
-              <Th>{t('Supplier')}</Th>
-              <Th>{t('Date')}</Th>
-              <Th>{t('Method')}</Th>
-              <Th className="text-right">{t('Amount')}</Th>
-              <Th className="text-right">{t('Unallocated')}</Th>
-              <Th />
-            </tr>
-          </THead>
-          <TBody>
-            {payments.isLoading ? (
-              <EmptyRow colSpan={7}>{t('Loading...')}</EmptyRow>
-            ) : (payments.data ?? []).length === 0 ? (
-              <EmptyRow colSpan={7}>{t('No supplier payments yet.')}</EmptyRow>
-            ) : (
-              payments.data!.map((p) => (
-                <tr key={p.id}>
-                  <Td className="font-mono text-xs font-medium">
-                    {p.paymentNumber}
-                    {p.status === 'void' && (
-                      <Badge variant="danger" className="ml-1">
-                        {t('Void')}
-                      </Badge>
-                    )}
-                  </Td>
-                  <Td>{p.supplier?.name ?? '—'}</Td>
-                  <Td className="whitespace-nowrap">{formatDate(p.paymentDate)}</Td>
-                  <Td>
+        {smallScreen ? (
+          // Phones: one card per payment instead of a table that scrolls sideways
+          <DataCards
+            items={payments.data ?? []}
+            getKey={(p) => p.id}
+            loading={payments.isLoading}
+            loadingText={t('Loading...')}
+            emptyText={t('No supplier payments yet.')}
+          >
+            {(p) => (
+              <>
+                <DataCardHeader
+                  title={<span className="font-mono text-xs">{p.paymentNumber}</span>}
+                  subtitle={p.supplier?.name ?? '—'}
+                  badge={p.status === 'void' && <Badge variant="danger">{t('Void')}</Badge>}
+                />
+                <DataCardFields>
+                  <DataCardField label={t('Date')}>{formatDate(p.paymentDate)}</DataCardField>
+                  <DataCardField label={t('Method')}>
                     {t(paymentMethodLabels[p.method])}
                     {p.reference && <div className="text-xs text-gray-500">{p.reference}</div>}
-                  </Td>
-                  <Td className="text-right">{formatMoney(p.amount, p.currencyCode)}</Td>
-                  <Td className="text-right">{formatMoney(p.amountUnallocated, p.currencyCode)}</Td>
-                  <Td>
-                    {canRecord && p.status === 'posted' && (
-                      <div className="flex justify-end gap-1">
-                        {p.amountUnallocated > 0 && (
-                          <Button variant="ghost" size="sm" onClick={() => setDialog({ kind: 'allocate-payment', payment: p })}>
-                            {t('Allocate')}
-                          </Button>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-red-600"
-                          onClick={() => voidDocument.mutate({ kind: 'payment', id: p.id })}
-                        >
-                          {t('Void')}
-                        </Button>
-                      </div>
+                  </DataCardField>
+                  <DataCardField label={t('Amount')}>
+                    <span className="font-medium">{formatMoney(p.amount, p.currencyCode)}</span>
+                  </DataCardField>
+                  <DataCardField label={t('Unallocated')}>{formatMoney(p.amountUnallocated, p.currencyCode)}</DataCardField>
+                </DataCardFields>
+                {canRecord && p.status === 'posted' && (
+                  <DataCardActions>
+                    {p.amountUnallocated > 0 && (
+                      <Button variant="ghost" size="sm" onClick={() => setDialog({ kind: 'allocate-payment', payment: p })}>
+                        {t('Allocate')}
+                      </Button>
                     )}
-                  </Td>
-                </tr>
-              ))
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-600"
+                      onClick={() => voidDocument.mutate({ kind: 'payment', id: p.id })}
+                    >
+                      {t('Void')}
+                    </Button>
+                  </DataCardActions>
+                )}
+              </>
             )}
-          </TBody>
-        </Table>
-      </Card>
-
-      <Card className="bg-white">
-        <div className="px-4 pt-3 text-sm font-medium">{t('Supplier credits')}</div>
-        <Table>
-          <THead>
-            <tr>
-              <Th>{t('Credit')}</Th>
-              <Th>{t('Supplier')}</Th>
-              <Th>{t('Date')}</Th>
-              <Th>{t('Reason')}</Th>
-              <Th className="text-right">{t('Amount')}</Th>
-              <Th className="text-right">{t('Unallocated')}</Th>
-              <Th />
-            </tr>
-          </THead>
-          <TBody>
-            {credits.isLoading ? (
-              <EmptyRow colSpan={7}>{t('Loading...')}</EmptyRow>
-            ) : (credits.data ?? []).length === 0 ? (
-              <EmptyRow colSpan={7}>{t('No supplier credits yet.')}</EmptyRow>
-            ) : (
-              credits.data!.map((c) => (
-                <tr key={c.id}>
-                  <Td className="font-mono text-xs font-medium">
-                    {c.creditNumber}
-                    {c.status === 'void' && (
-                      <Badge variant="danger" className="ml-1">
-                        {t('Void')}
-                      </Badge>
-                    )}
-                    <div className="font-sans text-xs text-gray-500">
-                      {c.creditType === 'return' ? t('From a return') : t('Manual')}
-                    </div>
-                  </Td>
-                  <Td>{c.supplier?.name ?? '—'}</Td>
-                  <Td className="whitespace-nowrap">{formatDate(c.creditDate)}</Td>
-                  <Td className="text-gray-600">{c.reason}</Td>
-                  <Td className="text-right">{formatMoney(c.amount, c.currencyCode)}</Td>
-                  <Td className="text-right">{formatMoney(c.amountUnallocated, c.currencyCode)}</Td>
-                  <Td>
-                    {canRecord && c.status === 'open' && (
-                      <div className="flex justify-end gap-1">
-                        {c.amountUnallocated > 0 && (
-                          <Button variant="ghost" size="sm" onClick={() => setDialog({ kind: 'allocate-credit', credit: c })}>
-                            {t('Allocate')}
-                          </Button>
-                        )}
-                        {c.creditType === 'manual' && c.amountAllocated === 0 && (
+          </DataCards>
+        ) : (
+          <Table>
+            <THead>
+              <tr>
+                <Th>{t('Payment')}</Th>
+                <Th>{t('Supplier')}</Th>
+                <Th>{t('Date')}</Th>
+                <Th>{t('Method')}</Th>
+                <Th className="text-right">{t('Amount')}</Th>
+                <Th className="text-right">{t('Unallocated')}</Th>
+                <Th />
+              </tr>
+            </THead>
+            <TBody>
+              {payments.isLoading ? (
+                <EmptyRow colSpan={7}>{t('Loading...')}</EmptyRow>
+              ) : (payments.data ?? []).length === 0 ? (
+                <EmptyRow colSpan={7}>{t('No supplier payments yet.')}</EmptyRow>
+              ) : (
+                payments.data!.map((p) => (
+                  <tr key={p.id}>
+                    <Td className="font-mono text-xs font-medium">
+                      {p.paymentNumber}
+                      {p.status === 'void' && (
+                        <Badge variant="danger" className="ml-1">
+                          {t('Void')}
+                        </Badge>
+                      )}
+                    </Td>
+                    <Td>{p.supplier?.name ?? '—'}</Td>
+                    <Td className="whitespace-nowrap">{formatDate(p.paymentDate)}</Td>
+                    <Td>
+                      {t(paymentMethodLabels[p.method])}
+                      {p.reference && <div className="text-xs text-gray-500">{p.reference}</div>}
+                    </Td>
+                    <Td className="text-right">{formatMoney(p.amount, p.currencyCode)}</Td>
+                    <Td className="text-right">{formatMoney(p.amountUnallocated, p.currencyCode)}</Td>
+                    <Td>
+                      {canRecord && p.status === 'posted' && (
+                        <div className="flex justify-end gap-1">
+                          {p.amountUnallocated > 0 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                setDialog({
+                                  kind: 'allocate-payment',
+                                  payment: p,
+                                })
+                              }
+                            >
+                              {t('Allocate')}
+                            </Button>
+                          )}
                           <Button
                             variant="ghost"
                             size="sm"
                             className="text-red-600"
-                            onClick={() => voidDocument.mutate({ kind: 'credit', id: c.id })}
+                            onClick={() => voidDocument.mutate({ kind: 'payment', id: p.id })}
                           >
                             {t('Void')}
                           </Button>
-                        )}
-                      </div>
-                    )}
-                  </Td>
-                </tr>
-              ))
+                        </div>
+                      )}
+                    </Td>
+                  </tr>
+                ))
+              )}
+            </TBody>
+          </Table>
+        )}
+      </Card>
+
+      <Card className="bg-white">
+        <div className="px-4 pt-3 text-sm font-medium">{t('Supplier credits')}</div>
+        {smallScreen ? (
+          <DataCards
+            items={credits.data ?? []}
+            getKey={(c) => c.id}
+            loading={credits.isLoading}
+            loadingText={t('Loading...')}
+            emptyText={t('No supplier credits yet.')}
+          >
+            {(c) => (
+              <>
+                <DataCardHeader
+                  title={<span className="font-mono text-xs">{c.creditNumber}</span>}
+                  subtitle={`${c.supplier?.name ?? '—'} · ${c.creditType === 'return' ? t('From a return') : t('Manual')}`}
+                  badge={c.status === 'void' && <Badge variant="danger">{t('Void')}</Badge>}
+                />
+                <DataCardFields>
+                  <DataCardField label={t('Date')}>{formatDate(c.creditDate)}</DataCardField>
+                  <DataCardField label={t('Amount')}>
+                    <span className="font-medium">{formatMoney(c.amount, c.currencyCode)}</span>
+                  </DataCardField>
+                  <DataCardField label={t('Unallocated')}>{formatMoney(c.amountUnallocated, c.currencyCode)}</DataCardField>
+                  {c.reason && (
+                    <DataCardField label={t('Reason')} full>
+                      {c.reason}
+                    </DataCardField>
+                  )}
+                </DataCardFields>
+                {canRecord &&
+                  c.status === 'open' &&
+                  (c.amountUnallocated > 0 || (c.creditType === 'manual' && c.amountAllocated === 0)) && (
+                    <DataCardActions>
+                      {c.amountUnallocated > 0 && (
+                        <Button variant="ghost" size="sm" onClick={() => setDialog({ kind: 'allocate-credit', credit: c })}>
+                          {t('Allocate')}
+                        </Button>
+                      )}
+                      {c.creditType === 'manual' && c.amountAllocated === 0 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600"
+                          onClick={() => voidDocument.mutate({ kind: 'credit', id: c.id })}
+                        >
+                          {t('Void')}
+                        </Button>
+                      )}
+                    </DataCardActions>
+                  )}
+              </>
             )}
-          </TBody>
-        </Table>
+          </DataCards>
+        ) : (
+          <Table>
+            <THead>
+              <tr>
+                <Th>{t('Credit')}</Th>
+                <Th>{t('Supplier')}</Th>
+                <Th>{t('Date')}</Th>
+                <Th>{t('Reason')}</Th>
+                <Th className="text-right">{t('Amount')}</Th>
+                <Th className="text-right">{t('Unallocated')}</Th>
+                <Th />
+              </tr>
+            </THead>
+            <TBody>
+              {credits.isLoading ? (
+                <EmptyRow colSpan={7}>{t('Loading...')}</EmptyRow>
+              ) : (credits.data ?? []).length === 0 ? (
+                <EmptyRow colSpan={7}>{t('No supplier credits yet.')}</EmptyRow>
+              ) : (
+                credits.data!.map((c) => (
+                  <tr key={c.id}>
+                    <Td className="font-mono text-xs font-medium">
+                      {c.creditNumber}
+                      {c.status === 'void' && (
+                        <Badge variant="danger" className="ml-1">
+                          {t('Void')}
+                        </Badge>
+                      )}
+                      <div className="font-sans text-xs text-gray-500">
+                        {c.creditType === 'return' ? t('From a return') : t('Manual')}
+                      </div>
+                    </Td>
+                    <Td>{c.supplier?.name ?? '—'}</Td>
+                    <Td className="whitespace-nowrap">{formatDate(c.creditDate)}</Td>
+                    <Td className="text-gray-600">{c.reason}</Td>
+                    <Td className="text-right">{formatMoney(c.amount, c.currencyCode)}</Td>
+                    <Td className="text-right">{formatMoney(c.amountUnallocated, c.currencyCode)}</Td>
+                    <Td>
+                      {canRecord && c.status === 'open' && (
+                        <div className="flex justify-end gap-1">
+                          {c.amountUnallocated > 0 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                setDialog({
+                                  kind: 'allocate-credit',
+                                  credit: c,
+                                })
+                              }
+                            >
+                              {t('Allocate')}
+                            </Button>
+                          )}
+                          {c.creditType === 'manual' && c.amountAllocated === 0 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600"
+                              onClick={() =>
+                                voidDocument.mutate({
+                                  kind: 'credit',
+                                  id: c.id,
+                                })
+                              }
+                            >
+                              {t('Void')}
+                            </Button>
+                          )}
+                        </div>
+                      )}
+                    </Td>
+                  </tr>
+                ))
+              )}
+            </TBody>
+          </Table>
+        )}
       </Card>
 
       {dialog?.kind === 'payment' && (
@@ -344,6 +471,20 @@ function AllocationEditor({
     enabled: !!supplierId,
   });
   const allocated = Object.values(value).reduce((sum, v) => sum + toCents(Number(v) || 0), 0);
+  const smallScreen = useSmallScreen();
+
+  const amountInput = (invoice: (typeof invoices)[number], className?: string) => (
+    <Input
+      inputMode="decimal"
+      placeholder="0.00"
+      value={value[invoice.id] ?? ''}
+      onChange={(e) => onChange({ ...value, [invoice.id]: e.target.value })}
+      className={className}
+      aria-label={t('Amount for invoice {number}', {
+        number: invoice.invoiceNumber,
+      })}
+    />
+  );
 
   // Oldest due first, up to what is available
   const autofill = () => {
@@ -367,50 +508,67 @@ function AllocationEditor({
           {t('Oldest first')}
         </Button>
       </div>
-      <div className="max-h-64 overflow-auto rounded-md border">
-        <table className="w-full text-sm">
-          <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
-            <tr>
-              <th className="px-3 py-2 font-medium">{t('Invoice')}</th>
-              <th className="px-3 py-2 font-medium">{t('Due')}</th>
-              <th className="px-3 py-2 text-right font-medium">{t('Owed')}</th>
-              <th className="w-32 px-3 py-2 font-medium">{t('Allocate')}</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {isLoading ? (
+      {smallScreen ? (
+        // Phones: one line per invoice with the amount box in view
+        <div className="max-h-64 divide-y overflow-y-auto rounded-md border">
+          {isLoading ? (
+            <p className="px-3 py-4 text-center text-sm text-gray-400">{t('Loading...')}</p>
+          ) : invoices.length === 0 ? (
+            <p className="px-3 py-4 text-center text-sm text-gray-400">
+              {t('No approved invoice is waiting for payment. The amount stays on account.')}
+            </p>
+          ) : (
+            invoices.map((invoice) => (
+              <div key={invoice.id} className="flex items-center gap-2 p-3 text-sm">
+                <div className="min-w-0 flex-1">
+                  <div className="break-words font-mono text-xs font-medium">{invoice.invoiceNumber}</div>
+                  <div className="text-xs text-gray-500">
+                    {t('Due')} {formatDate(invoice.dueDate)} · {t('Owed')} {formatMoney(invoice.amountOpen, currency)}
+                  </div>
+                </div>
+                {amountInput(invoice, 'h-10 w-28 shrink-0')}
+              </div>
+            ))
+          )}
+        </div>
+      ) : (
+        <div className="max-h-64 overflow-auto rounded-md border">
+          <table className="w-full text-sm">
+            <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
               <tr>
-                <td colSpan={4} className="px-3 py-4 text-center text-gray-400">
-                  {t('Loading...')}
-                </td>
+                <th className="px-3 py-2 font-medium">{t('Invoice')}</th>
+                <th className="px-3 py-2 font-medium">{t('Due')}</th>
+                <th className="px-3 py-2 text-right font-medium">{t('Owed')}</th>
+                <th className="w-32 px-3 py-2 font-medium">{t('Allocate')}</th>
               </tr>
-            ) : invoices.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="px-3 py-4 text-center text-gray-400">
-                  {t('No approved invoice is waiting for payment. The amount stays on account.')}
-                </td>
-              </tr>
-            ) : (
-              invoices.map((invoice) => (
-                <tr key={invoice.id}>
-                  <td className="px-3 py-2 font-mono text-xs">{invoice.invoiceNumber}</td>
-                  <td className="px-3 py-2">{formatDate(invoice.dueDate)}</td>
-                  <td className="px-3 py-2 text-right">{formatMoney(invoice.amountOpen, currency)}</td>
-                  <td className="px-3 py-2">
-                    <Input
-                      inputMode="decimal"
-                      placeholder="0.00"
-                      value={value[invoice.id] ?? ''}
-                      onChange={(e) => onChange({ ...value, [invoice.id]: e.target.value })}
-                      aria-label={t('Amount for invoice {number}', { number: invoice.invoiceNumber })}
-                    />
+            </thead>
+            <tbody className="divide-y">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={4} className="px-3 py-4 text-center text-gray-400">
+                    {t('Loading...')}
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ) : invoices.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-3 py-4 text-center text-gray-400">
+                    {t('No approved invoice is waiting for payment. The amount stays on account.')}
+                  </td>
+                </tr>
+              ) : (
+                invoices.map((invoice) => (
+                  <tr key={invoice.id}>
+                    <td className="px-3 py-2 font-mono text-xs">{invoice.invoiceNumber}</td>
+                    <td className="px-3 py-2">{formatDate(invoice.dueDate)}</td>
+                    <td className="px-3 py-2 text-right">{formatMoney(invoice.amountOpen, currency)}</td>
+                    <td className="px-3 py-2">{amountInput(invoice)}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
       <p className={`text-xs ${allocated > toCents(available) ? 'text-red-600' : 'text-gray-500'}`}>
         {t('Allocated {allocated} of {available}; {left} stays on account.', {
           allocated: formatMoney(allocated / 100, currency),
@@ -471,6 +629,7 @@ function PaymentFormDialog({
     setError(null);
     if (!supplierId) return setError(t('Choose a supplier.'));
     if (!amount.trim() || isNaN(Number(amount)) || Number(amount) <= 0) return setError(t('Enter the amount paid.'));
+    if (paymentDate > today()) return setError(t('The date cannot be in the future'));
     const lines = allocationsFrom(allocations, value);
     if (typeof lines === 'string') return setError(lines);
     save.mutate({
@@ -516,8 +675,18 @@ function PaymentFormDialog({
             <Field label={t('Amount ({currency})', { currency })} htmlFor="pay-amount">
               <Input id="pay-amount" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
             </Field>
-            <Field label={t('Date')} htmlFor="pay-date">
-              <Input id="pay-date" type="date" value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} />
+            <Field
+              label={t('Date')}
+              htmlFor="pay-date"
+              error={paymentDate > today() ? t('The date cannot be in the future') : undefined}
+            >
+              <Input
+                id="pay-date"
+                type="date"
+                max={today()}
+                value={paymentDate}
+                onChange={(e) => setPaymentDate(e.target.value)}
+              />
             </Field>
             <Field label={t('Method')} htmlFor="pay-method">
               <Select id="pay-method" value={method} onChange={(e) => setMethod(e.target.value as SupplierPaymentMethod)}>
@@ -588,6 +757,7 @@ function CreditFormDialog({
     const value = Number(amount);
     if (!amount.trim() || isNaN(value) || value <= 0) return setError(t('Enter the credit amount.'));
     if (!reason.trim()) return setError(t('A reason is required.'));
+    if (creditDate > today()) return setError(t('The date cannot be in the future'));
     save.mutate({
       supplierId,
       amount: Math.round(value * 100) / 100,
@@ -622,8 +792,18 @@ function CreditFormDialog({
             <Field label={t('Amount ({currency})', { currency })} htmlFor="credit-amount">
               <Input id="credit-amount" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
             </Field>
-            <Field label={t('Date')} htmlFor="credit-date">
-              <Input id="credit-date" type="date" value={creditDate} onChange={(e) => setCreditDate(e.target.value)} />
+            <Field
+              label={t('Date')}
+              htmlFor="credit-date"
+              error={creditDate > today() ? t('The date cannot be in the future') : undefined}
+            >
+              <Input
+                id="credit-date"
+                type="date"
+                max={today()}
+                value={creditDate}
+                onChange={(e) => setCreditDate(e.target.value)}
+              />
             </Field>
             <Field label={t('Credit note number')} htmlFor="credit-reference">
               <Input id="credit-reference" maxLength={100} value={reference} onChange={(e) => setReference(e.target.value)} />

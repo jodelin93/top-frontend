@@ -2,10 +2,11 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-// Plain table primitives with the admin list styling
+// Plain table primitives with the admin list styling. On phones the table keeps a
+// readable minimum width and scrolls sideways inside its own container.
 const Table = ({ className, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
   <div className="overflow-x-auto">
-    <table className={cn("w-full text-sm", className)} {...props} />
+    <table className={cn("w-full text-sm max-md:min-w-[36rem]", className)} {...props} />
   </div>
 )
 

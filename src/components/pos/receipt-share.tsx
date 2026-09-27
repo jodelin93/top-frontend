@@ -35,7 +35,7 @@ export function ReceiptShare({ sale }: { sale: Sale }) {
   const [mode, setMode] = useState<'email' | 'link' | null>(null);
   return (
     <div className="space-y-2">
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2 max-sm:grid-cols-1">
         <Button type="button" variant={mode === 'email' ? 'default' : 'outline'} onClick={() => setMode(mode === 'email' ? null : 'email')}>
           <Mail className="h-4 w-4" />
           {t('Email receipt')}

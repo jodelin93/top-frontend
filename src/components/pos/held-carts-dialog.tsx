@@ -98,10 +98,10 @@ export function HeldCartsDialog({
             ) : held.length === 0 ? (
               <p className="py-6 text-center text-sm text-gray-500">{t('No held carts.')}</p>
             ) : (
-              <ul className="max-h-[50vh] divide-y overflow-y-auto rounded-md border">
+              <ul className="max-h-[50vh] divide-y overflow-y-auto rounded-md border max-sm:max-h-none">
                 {held.map((sale) => (
-                  <li key={sale.id} className="flex items-center gap-3 p-3">
-                    <div className="min-w-0 flex-1">
+                  <li key={sale.id} className="flex items-center gap-3 p-3 max-sm:flex-wrap">
+                    <div className="min-w-0 flex-1 max-sm:basis-full">
                       <p className="font-medium">
                         {sale.heldLabel || (sale.customer ? customerName(sale.customer) : t('Walk-in customer'))}
                         <span className="ml-2 font-mono text-xs text-gray-500">{sale.saleNumber}</span>
@@ -116,7 +116,7 @@ export function HeldCartsDialog({
                         {sale.heldUntil && ` · ${t('expires {date}', { date: formatDateTime(sale.heldUntil) })}`}
                       </p>
                     </div>
-                    <span className="font-semibold">{formatMoney(sale.total, currency)}</span>
+                    <span className="font-semibold max-sm:mr-auto">{formatMoney(sale.total, currency)}</span>
                     <Button
                       className="h-11"
                       onClick={() => act(sale, 'resume')}

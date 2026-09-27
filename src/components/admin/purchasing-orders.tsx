@@ -9,6 +9,13 @@ import { Select } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage } from '@/components/admin/page-header';
 import { useLocationOptions } from '@/components/admin/settings-shared';
 import { useDebouncedValue } from '@/components/admin/inventory-variant-picker';
@@ -44,6 +51,7 @@ export function PurchaseOrdersTab() {
   const debouncedSearch = useDebouncedValue(search.trim());
   const [editing, setEditing] = useState<PurchaseOrderDetail | 'new' | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const {
     data: orders = [],
@@ -130,6 +138,37 @@ export function PurchaseOrdersTab() {
         </div>
       )}
 
+      {smallScreen ? (
+        // Phones: one card per order instead of a table that scrolls sideways
+        <DataCards
+          items={orders}
+          getKey={(order) => order.id}
+          onItemClick={(order) => setOpenId(order.id)}
+          loading={isLoading}
+          loadingText={t('Loading purchase orders...')}
+          emptyText={
+            status || supplierId || search ? t('No purchase order matches your filters.') : t('No purchase orders yet.')
+          }
+        >
+          {(order) => (
+            <>
+              <DataCardHeader
+                title={<span className="font-mono text-xs">{order.poNumber}</span>}
+                subtitle={order.supplier?.name ?? '—'}
+                onTitleClick={() => setOpenId(order.id)}
+                badge={<Badge variant={poStatusVariant[order.status]}>{t(poStatusLabels[order.status])}</Badge>}
+              />
+              <DataCardFields>
+                <DataCardField label={t('Deliver to')}>{labelFor(order.locationId, order.location?.code)}</DataCardField>
+                <DataCardField label={t('Expected')}>{formatDate(order.expectedDeliveryDate)}</DataCardField>
+                <DataCardField label={t('Total')}>
+                  <span className="font-medium">{formatMoney(order.total, order.currencyCode)}</span>
+                </DataCardField>
+              </DataCardFields>
+            </>
+          )}
+        </DataCards>
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -164,6 +203,7 @@ export function PurchaseOrdersTab() {
           )}
         </TBody>
       </Table>
+      )}
 
       {editing && (
         <PurchaseOrderFormDialog

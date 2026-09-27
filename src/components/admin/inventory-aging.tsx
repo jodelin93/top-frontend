@@ -8,6 +8,13 @@ import { Select } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage } from '@/components/admin/page-header';
 import { useDebouncedValue, useStockLocationOptions } from '@/components/admin/inventory-variant-picker';
 import { useCurrency } from '@/hooks/use-store-settings';
@@ -53,6 +60,7 @@ export function AgingTab() {
   const [locationId, setLocationId] = useState('');
   const [search, setSearch] = useState('');
   const [minDays, setMinDays] = useState('');
+  const smallScreen = useSmallScreen();
   const debouncedSearch = useDebouncedValue(search.trim());
   const debouncedMinDays = useDebouncedValue(minDays.trim());
   const minDaysValue = /^\d+$/.test(debouncedMinDays) ? Number(debouncedMinDays) : undefined;
@@ -130,6 +138,60 @@ export function AgingTab() {
           </div>
         )}
 
+        {smallScreen ? (
+          // Phones: one card per product and location, the age up front
+          <DataCards
+            items={items}
+            getKey={(item) => `${item.variantId}-${item.locationId}`}
+            loading={isLoading}
+            loadingText={t('Loading stock aging...')}
+            emptyText={t('No stock matches your filters.')}
+          >
+            {(item) => {
+              const variantName = text(item.variantName);
+              return (
+                <>
+                  <DataCardHeader
+                    title={text(item.productName, '—')}
+                    subtitle={
+                      <>
+                        {variantName && `${variantName} · `}
+                        <span className="font-mono">{item.sku}</span>
+                      </>
+                    }
+                    badge={
+                      item.stockStatus &&
+                      item.stockStatus !== 'sellable' && <Badge variant="warning">{t(statusLabels[item.stockStatus])}</Badge>
+                    }
+                  />
+                  <DataCardFields>
+                    <DataCardField label={t('Location')} full>
+                      {labelFor(item.locationId, item.locationName || item.locationCode)}
+                    </DataCardField>
+                    <DataCardField label={t('Days')}>
+                      <span
+                        className={cn(
+                          'font-medium',
+                          item.days !== null && item.days > 180 && 'text-red-700',
+                          item.days !== null && item.days > 90 && item.days <= 180 && 'text-amber-700'
+                        )}
+                      >
+                        {item.days ?? '—'}
+                      </span>
+                    </DataCardField>
+                    <DataCardField label={t('On hand')}>{item.quantityOnHand}</DataCardField>
+                    <DataCardField label={t('Aged from')}>{formatDate(item.agedFrom)}</DataCardField>
+                    {showValue && (
+                      <DataCardField label={t('Stock value')}>
+                        {item.stockValue == null ? '—' : formatMoney(item.stockValue, currency)}
+                      </DataCardField>
+                    )}
+                  </DataCardFields>
+                </>
+              );
+            }}
+          </DataCards>
+        ) : (
         <Table>
           <THead>
             <tr>
@@ -187,6 +249,7 @@ export function AgingTab() {
             )}
           </TBody>
         </Table>
+        )}
         <p className="border-t px-4 py-2 text-xs text-gray-500">
           {t(
             'Age is counted from the last supplier receipt at the location (else the first time the stock arrived there).'

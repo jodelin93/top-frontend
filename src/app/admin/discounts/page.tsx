@@ -7,6 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge, statusVariant } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import { DiscountFormDialog } from '@/components/admin/discount-form-dialog';
 import { getErrorMessage } from '@/lib/api/client';
@@ -69,6 +77,7 @@ export default function DiscountsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Discount | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const { data: discounts = [], isLoading, error } = useQuery({
     queryKey: ['discounts'],
@@ -122,6 +131,60 @@ export default function DiscountsPage() {
           </div>
         )}
 
+        {smallScreen ? (
+          // Phones: one card per discount instead of a table that scrolls sideways
+          <DataCards
+            items={discounts}
+            getKey={(discount) => discount.id}
+            loading={isLoading}
+            loadingText={t('Loading discounts...')}
+            emptyText={t('No discounts yet. Create your first one.')}
+          >
+            {(discount) => (
+              <>
+                <DataCardHeader
+                  title={text(discount.name, '—')}
+                  subtitle={<span className="font-mono">{discount.code}</span>}
+                  badge={
+                    <Badge variant={statusVariant(discount.status)}>{t(statusLabels[discount.status] ?? discount.status)}</Badge>
+                  }
+                />
+                <DataCardFields>
+                  <DataCardField label={t('Value')}>{discountValue(discount, currency)}</DataCardField>
+                  <DataCardField label={t('Type')}>{t(typeLabels[discount.discountType])}</DataCardField>
+                  <DataCardField label={t('Applies to')}>{discountScope(discount)}</DataCardField>
+                  <DataCardField label={t('Usage')}>
+                    {discount.usageCount} / {discount.usageLimit ?? '∞'}
+                  </DataCardField>
+                  <DataCardField label={t('Valid')} full>
+                    {validity(discount)}
+                  </DataCardField>
+                </DataCardFields>
+                <DataCardActions>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => openEdit(discount)}
+                    aria-label={t('Edit {code}', { code: discount.code })}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-red-600 hover:text-red-700"
+                    onClick={() => handleDelete(discount)}
+                    disabled={remove.isPending}
+                    aria-label={t('Delete {code}', { code: discount.code })}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </DataCardActions>
+              </>
+            )}
+          </DataCards>
+        ) : (
         <Table>
           <THead>
             <tr>
@@ -184,6 +247,7 @@ export default function DiscountsPage() {
             )}
           </TBody>
         </Table>
+        )}
       </Card>
 
       <DiscountFormDialog open={dialogOpen} onOpenChange={setDialogOpen} discount={editing} />

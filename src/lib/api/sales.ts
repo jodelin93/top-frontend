@@ -168,6 +168,8 @@ export interface Sale {
     cartDiscountReason?: string | null;
     // New prices shown and confirmed at the till before tendering (AC05)
     repricing?: { confirmedAt: string; confirmedBy: string; previousTotal: number | null; total: number } | null;
+    // Customer group discount given on the sale (part of discountAmount)
+    groupDiscount?: GroupDiscountApplied | null;
   } | null;
   // Staff member credited with the sale (the cashier is `user`)
   salespersonId?: string | null;
@@ -181,6 +183,22 @@ export interface Sale {
   user?: { id: string; firstName: string | null; lastName: string | null; email: string };
   // Only in the response of the sale that sold them (the full codes are never stored)
   issuedGiftCards?: IssuedGiftCard[];
+}
+
+/** A customer's group as it prices a sale: its price list and discount (%) */
+export interface CustomerGroupPricing {
+  id: string;
+  name: string;
+  priceListId: string | null;
+  discountPercent: number;
+}
+
+/** Customer group discount given on a sale */
+export interface GroupDiscountApplied {
+  groupId: string | null;
+  name: string | null;
+  percent: number;
+  amount: number;
 }
 
 export interface Paginated<T> {
@@ -263,6 +281,8 @@ export interface CreateSaleInput extends QuoteInput {
   deviceSequence?: number;
   // Held/resumed cart this sale completes
   heldSaleId?: string;
+  // Offline sales only: the customer group discount (%) the till gave
+  groupDiscountPercent?: number;
   // AC05: the cart was repriced and the cashier confirmed the new prices (stored on the sale)
   repricedConfirmedAt?: string;
   repricedPreviousTotal?: number;
@@ -316,6 +336,9 @@ export interface Quote {
   total: number;
   // Permissions the cart uses (discounts / price overrides)
   overrides?: string[];
+  // The customer's group (absent from older servers) and its discount on this cart
+  customerGroup?: CustomerGroupPricing | null;
+  groupDiscount?: GroupDiscountApplied | null;
   lines: {
     variantId: string;
     sku: string;
@@ -436,6 +459,15 @@ export const posApi = {
     limit?: number;
   }): Promise<CatalogItem[]> => {
     const { data } = await apiClient.get('/pos/catalog', { params });
+    return data;
+  },
+  // Prices of cart items for a customer (their group's price list) and the group's discount
+  prices: async (input: {
+    registerId: string;
+    customerId?: string;
+    variantIds: string[];
+  }): Promise<{ customerGroup: CustomerGroupPricing | null; prices: Record<string, number> }> => {
+    const { data } = await apiClient.post('/pos/prices', input);
     return data;
   },
   // Staff a sale can be credited to (salesperson)

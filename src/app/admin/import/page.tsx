@@ -21,6 +21,7 @@ import {
 import { downloadBlob } from '@/lib/api/storage';
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
 import { plural, t } from '@/i18n';
+import { translateServerError } from '@/lib/server-texts';
 
 const COLUMNS: [string, string][] = [
   ['sku', 'Required. Existing products are matched on SKU.'],
@@ -265,7 +266,7 @@ export default function ImportPage() {
       {result && (
         <Card className="space-y-4 bg-white p-4">
           <h2 className="font-semibold">{t('Import finished')}</h2>
-          {result.error && <ErrorMessage>{result.error}</ErrorMessage>}
+          {result.error && <ErrorMessage>{translateServerError(result.error)}</ErrorMessage>}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Stat label="Created" value={result.created} tone="text-green-700" />
             <Stat label="Updated" value={result.updated} tone="text-blue-700" />

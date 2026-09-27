@@ -23,6 +23,7 @@ import { text } from '@/lib/api/crud';
 import { branchesApi } from '@/lib/api/settings';
 import { PriceList, priceListsApi, PriceListType } from '@/lib/api/price-lists';
 import { t } from '@/i18n';
+import { nowLocalInput } from '@/lib/format';
 
 export const priceListTypes: { value: PriceListType; label: string; hint: string }[] = [
   { value: 'standard', label: 'Standard', hint: 'Applied automatically at the POS.' },
@@ -129,6 +130,11 @@ export function PriceListFormDialog({
 
   const onSubmit = async (data: PriceListFormData) => {
     setError(null);
+    // A new or changed end date can't already be over (an unchanged one is kept)
+    if (data.validTo && data.validTo !== toLocalInput(priceList?.validTo) && data.validTo < nowLocalInput()) {
+      setError(t('The end date cannot be in the past'));
+      return;
+    }
     try {
       const input = toInput(data, priceList);
       const saved = priceList
@@ -197,8 +203,13 @@ export function PriceListFormDialog({
             <Field label={t('Valid from')} htmlFor="pl-from" hint={t('Leave empty to start immediately.')}>
               <Input id="pl-from" type="datetime-local" {...register('validFrom')} />
             </Field>
-            <Field label={t('Valid to')} htmlFor="pl-to" error={errors.validTo?.message && t(errors.validTo.message)} hint={t('Leave empty for no end date.')}>
-              <Input id="pl-to" type="datetime-local" {...register('validTo')} />
+            <Field
+              label={t('Valid to')}
+              htmlFor="pl-to"
+              error={errors.validTo?.message && t(errors.validTo.message)}
+              hint={t('Leave empty for no end date.')}
+            >
+              <Input id="pl-to" type="datetime-local" min={priceList ? undefined : nowLocalInput()} {...register('validTo')} />
             </Field>
             {isEdit && (
               <Field label={t('Status')} htmlFor="pl-status">

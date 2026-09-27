@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useSmallScreen } from '@/components/ui/data-cards';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { CheckboxField, useLocationOptions } from '@/components/admin/settings-shared';
 import { variantLabel, VariantPicker } from '@/components/admin/inventory-variant-picker';
@@ -24,6 +25,7 @@ import { goodsReceiptsApi, supplierProductsApi, UnplannedReceiptInput } from '@/
 import { formatMoney } from '@/lib/format';
 import { t } from '@/i18n';
 import { QUANTITY_TEXT } from '@/lib/pos/quantity';
+import { randomId } from '@/lib/uuid';
 
 interface Line {
   variantId: string;
@@ -36,9 +38,7 @@ interface Line {
 }
 
 const newKey = () =>
-  typeof crypto !== 'undefined' && 'randomUUID' in crypto
-    ? crypto.randomUUID()
-    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  randomId();
 
 /**
  * Receive goods from a supplier without a purchase order (needs "Receive goods
@@ -56,6 +56,7 @@ export function UnplannedReceiptDialog({ onClose, onDone }: { onClose: () => voi
   const [lines, setLines] = useState<Line[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [idempotencyKey] = useState(newKey);
+  const smallScreen = useSmallScreen();
 
   const { data: supplierProducts = [] } = useQuery({
     queryKey: ['supplier-products', supplierId],
@@ -65,6 +66,56 @@ export function UnplannedReceiptDialog({ onClose, onDone }: { onClose: () => voi
 
   const update = (variantId: string, patch: Partial<Line>) =>
     setLines((prev) => prev.map((l) => (l.variantId === variantId ? { ...l, ...patch } : l)));
+
+  // Line controls, shared by the table (desktop) and the cards (phones)
+  const goodInput = (line: Line, className?: string) => (
+    <Input
+      inputMode="numeric"
+      value={line.quantity}
+      onChange={(e) => update(line.variantId, { quantity: e.target.value })}
+      className={className}
+      aria-label={t('Received quantity for {sku}', { sku: line.sku })}
+    />
+  );
+  const damagedInput = (line: Line, className?: string) => (
+    <Input
+      inputMode="numeric"
+      placeholder="0"
+      value={line.damaged}
+      onChange={(e) => update(line.variantId, { damaged: e.target.value })}
+      className={className}
+      aria-label={t('Damaged quantity for {sku}', { sku: line.sku })}
+    />
+  );
+  const acceptDamaged = (line: Line) =>
+    Number(line.damaged) > 0 && (
+      <CheckboxField
+        label={t('Accept into stock')}
+        checked={line.accepted}
+        onChange={(e) => update(line.variantId, { accepted: e.target.checked })}
+      />
+    );
+  const costInput = (line: Line, className?: string) => (
+    <Input
+      inputMode="decimal"
+      value={line.unitCost}
+      onChange={(e) => update(line.variantId, { unitCost: e.target.value })}
+      className={className}
+      aria-label={t('Unit cost for {sku}', { sku: line.sku })}
+    />
+  );
+  const removeButton = (line: Line) => (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      className="h-8 w-8 text-red-600"
+      aria-label={t('Remove {sku}', { sku: line.sku })}
+      onClick={() => setLines((prev) => prev.filter((l) => l.variantId !== line.variantId))}
+    >
+      <X className="h-4 w-4" />
+    </Button>
+  );
 
   const receive = useMutation({
     mutationFn: (input: UnplannedReceiptInput) => goodsReceiptsApi.unplanned(input),
@@ -190,7 +241,38 @@ export function UnplannedReceiptDialog({ onClose, onDone }: { onClose: () => voi
             )}
           />
 
-          {lines.length > 0 && (
+          {lines.length > 0 && smallScreen && (
+            // Phones: one card per line, every box in view (the table scrolls sideways)
+            <div className="space-y-2">
+              {lines.map((line) => (
+                <div key={line.variantId} className="space-y-2 rounded-md border p-3 text-sm">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="break-words font-medium">{line.label}</div>
+                      <div className="font-mono text-xs text-gray-500">{line.sku}</div>
+                    </div>
+                    {removeButton(line)}
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <label className="block space-y-1">
+                      <span className="text-xs text-gray-500">{t('Good')}</span>
+                      {goodInput(line, 'h-10 w-full')}
+                    </label>
+                    <label className="block space-y-1">
+                      <span className="text-xs text-gray-500">{t('Damaged')}</span>
+                      {damagedInput(line, 'h-10 w-full')}
+                    </label>
+                    <label className="block space-y-1">
+                      <span className="text-xs text-gray-500">{t('Unit cost')}</span>
+                      {costInput(line, 'h-10 w-full')}
+                    </label>
+                  </div>
+                  {acceptDamaged(line)}
+                </div>
+              ))}
+            </div>
+          )}
+          {lines.length > 0 && !smallScreen && (
             <div className="overflow-x-auto rounded-md border">
               <table className="w-full text-sm">
                 <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
@@ -209,50 +291,13 @@ export function UnplannedReceiptDialog({ onClose, onDone }: { onClose: () => voi
                         <div className="font-medium">{line.label}</div>
                         <div className="font-mono text-xs text-gray-500">{line.sku}</div>
                       </td>
+                      <td className="px-2 py-2">{goodInput(line)}</td>
                       <td className="px-2 py-2">
-                        <Input
-                          inputMode="numeric"
-                          value={line.quantity}
-                          onChange={(e) => update(line.variantId, { quantity: e.target.value })}
-                          aria-label={t('Received quantity for {sku}', { sku: line.sku })}
-                        />
+                        {damagedInput(line)}
+                        {acceptDamaged(line)}
                       </td>
-                      <td className="px-2 py-2">
-                        <Input
-                          inputMode="numeric"
-                          placeholder="0"
-                          value={line.damaged}
-                          onChange={(e) => update(line.variantId, { damaged: e.target.value })}
-                          aria-label={t('Damaged quantity for {sku}', { sku: line.sku })}
-                        />
-                        {Number(line.damaged) > 0 && (
-                          <CheckboxField
-                            label={t('Accept into stock')}
-                            checked={line.accepted}
-                            onChange={(e) => update(line.variantId, { accepted: e.target.checked })}
-                          />
-                        )}
-                      </td>
-                      <td className="px-2 py-2">
-                        <Input
-                          inputMode="decimal"
-                          value={line.unitCost}
-                          onChange={(e) => update(line.variantId, { unitCost: e.target.value })}
-                          aria-label={t('Unit cost for {sku}', { sku: line.sku })}
-                        />
-                      </td>
-                      <td className="px-2 py-2">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-red-600"
-                          aria-label={t('Remove {sku}', { sku: line.sku })}
-                          onClick={() => setLines((prev) => prev.filter((l) => l.variantId !== line.variantId))}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </td>
+                      <td className="px-2 py-2">{costInput(line)}</td>
+                      <td className="px-2 py-2">{removeButton(line)}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, dialogStickyFooter } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { formatMoney } from '@/lib/format';
 import type { CartItem } from '@/stores/pos-store';
@@ -111,7 +112,7 @@ function PriceForm({
               className="h-12 text-right text-lg"
             />
           </Field>
-          <div className="flex justify-between gap-2">
+          <div className={cn('flex justify-between gap-2', dialogStickyFooter)}>
             <Button
               type="button"
               variant="outline"

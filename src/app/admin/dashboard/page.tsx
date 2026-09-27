@@ -7,6 +7,13 @@ import { AlertTriangle, CloudOff, FileBarChart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Table, THead, TBody, Th, Td, EmptyRow } from '@/components/ui/table';
+import {
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import { ExchangeRateCard } from '@/components/admin/exchange-rate-card';
 import { PendingInvitations } from '@/components/auth/pending-invitations';
@@ -34,6 +41,7 @@ export default function DashboardPage() {
   const currency = useCurrency();
   const [range, setRange] = useState<DateRange>(() => presetRange('7d'));
   const [branchId, setBranchId] = useState('');
+  const smallScreen = useSmallScreen();
 
   // Group days in the browser's timezone so "today" matches the cashier's day
   const [timezone] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone);
@@ -226,6 +234,28 @@ export default function DashboardPage() {
 
           {data.otherCurrencies.length > 0 && (
             <Section title={t('Sales in other currencies')}>
+              {smallScreen ? (
+                <DataCards items={data.otherCurrencies} getKey={(row) => row.currencyCode}>
+                  {(row) => {
+                    const m = (value: number) => formatMoney(value, row.currencyCode);
+                    return (
+                      <>
+                        <DataCardHeader
+                          title={row.currencyCode}
+                          subtitle={plural(row.saleCount, '{count} sale', '{count} sales')}
+                        />
+                        <DataCardFields>
+                          <DataCardField label={t('Net sales (excl. tax)')}>{m(row.netSales)}</DataCardField>
+                          <DataCardField label={t('Net tax')}>{m(row.netTax)}</DataCardField>
+                          <DataCardField label={t('Average order value')}>{m(row.averageOrderValue)}</DataCardField>
+                          <DataCardField label={t('Total collected (incl. tax)')}>{m(row.totalCollectedInclTax)}</DataCardField>
+                          {showCost && <DataCardField label={t('Gross profit')}>{m(row.grossProfit ?? 0)}</DataCardField>}
+                        </DataCardFields>
+                      </>
+                    );
+                  }}
+                </DataCards>
+              ) : (
               <Table>
                 <THead>
                   <tr>
@@ -255,6 +285,7 @@ export default function DashboardPage() {
                   })}
                 </TBody>
               </Table>
+              )}
             </Section>
           )}
 
@@ -298,6 +329,27 @@ export default function DashboardPage() {
             </Section>
 
             <Section title={t('Sales by cashier')} hint={t('Net sales excl. tax, in {currency}', { currency: storeCurrency })}>
+              {smallScreen ? (
+                // Phones: a plain list (name, sales count / net sales) instead of a table
+                data.byCashier.length === 0 ? (
+                  <p className="px-4 py-10 text-center text-sm text-gray-400">{t('No sales in this period')}</p>
+                ) : (
+                  <ul className="divide-y">
+                    {data.byCashier.map((row) => (
+                      <li key={row.userId} className="flex items-start justify-between gap-3 px-4 py-3 text-sm">
+                        <div className="min-w-0 break-words">
+                          <div className="font-medium">{row.name || row.email}</div>
+                          {row.name && <div className="text-xs text-gray-500">{row.email}</div>}
+                        </div>
+                        <div className="shrink-0 text-right">
+                          <div>{storeMoney(row.total)}</div>
+                          <div className="text-xs text-gray-500">{plural(row.saleCount, '{count} sale', '{count} sales')}</div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )
+              ) : (
               <Table>
                 <THead>
                   <tr>
@@ -323,10 +375,36 @@ export default function DashboardPage() {
                   )}
                 </TBody>
               </Table>
+              )}
             </Section>
           </div>
 
           <Section title={t('Top products')} hint={t('Revenue excl. tax, in {currency}', { currency: storeCurrency })}>
+            {smallScreen ? (
+              data.topProducts.length === 0 ? (
+                <p className="px-4 py-10 text-center text-sm text-gray-400">{t('No sales in this period')}</p>
+              ) : (
+                <ul className="divide-y">
+                  {data.topProducts.map((row) => (
+                    <li key={row.variantId} className="flex items-start justify-between gap-3 px-4 py-3 text-sm">
+                      <div className="min-w-0 break-words">
+                        <div className="font-medium">
+                          {row.productName}
+                          {row.variantName && <span className="font-normal text-gray-500"> · {row.variantName}</span>}
+                        </div>
+                        <div className="font-mono text-xs text-gray-500">{row.sku}</div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <div>{storeMoney(row.revenue)}</div>
+                        <div className="text-xs text-gray-500">
+                          {t('Quantity')}: {Number(row.quantity).toLocaleString()}
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )
+            ) : (
             <Table>
               <THead>
                 <tr>
@@ -354,6 +432,7 @@ export default function DashboardPage() {
                 )}
               </TBody>
             </Table>
+            )}
           </Section>
         </>
       )}

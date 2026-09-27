@@ -57,7 +57,7 @@ export default function SettingsPage() {
             aria-selected={tab === item.id}
             onClick={() => setTab(item.id)}
             className={cn(
-              '-mb-px whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium',
+              '-mb-px shrink-0 whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium max-md:py-2.5',
               tab === item.id
                 ? 'border-blue-600 text-blue-700'
                 : 'border-transparent text-gray-500 hover:text-gray-800'

@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { DataCardField, DataCardFields, useSmallScreen } from '@/components/ui/data-cards';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { CheckboxField, useLocationOptions } from '@/components/admin/settings-shared';
 import { useApproval } from '@/components/approval-dialog';
@@ -30,6 +31,7 @@ import {
 import { formatDate, formatDateTime, formatMoney } from '@/lib/format';
 import { plural, t } from '@/i18n';
 import { addQty, QUANTITY_TEXT, subQty } from '@/lib/pos/quantity';
+import { randomId } from '@/lib/uuid';
 
 export const poStatusLabels: Record<PurchaseOrderStatus, string> = {
   draft: 'Draft',
@@ -63,9 +65,7 @@ export const outstanding = (item: PurchaseOrderItem) =>
 
 // One key per receipt attempt: retries of the same submission reuse it
 const newReceiptKey = () =>
-  typeof crypto !== 'undefined' && 'randomUUID' in crypto
-    ? crypto.randomUUID()
-    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  randomId();
 
 type Action = 'submit' | 'approve' | 'reject' | 'issue' | 'cancel' | 'close';
 
@@ -91,6 +91,7 @@ export function PurchaseOrderDetailDialog({
   const [message, setMessage] = useState<string | null>(null);
   const [receiving, setReceiving] = useState(false);
   const [printing, setPrinting] = useState(false);
+  const smallScreen = useSmallScreen();
 
   const { data: order, error: loadError } = useQuery({
     queryKey: ['purchase-orders', 'detail', id],
@@ -217,6 +218,74 @@ export function PurchaseOrderDetailDialog({
 
           {order && !receiving && (
             <>
+              {smallScreen ? (
+                // Phones: one card per line and the totals below (the table scrolls sideways)
+                <div className="space-y-2">
+                  {order.items.map((item) => (
+                    <div key={item.id} className="space-y-2 rounded-md border p-3 text-sm">
+                      <div>
+                        <div className="break-words font-medium">{item.productName}</div>
+                        <div className="break-words font-mono text-xs text-gray-500">
+                          {item.sku}
+                          {item.supplierSku && ` · ${t('supplier code {code}', { code: item.supplierSku })}`}
+                          {item.unitOfMeasure && ` · ${item.unitOfMeasure}`}
+                        </div>
+                      </div>
+                      <DataCardFields>
+                        <DataCardField label={t('Ordered')}>{item.quantityOrdered}</DataCardField>
+                        <DataCardField label={t('Received')}>
+                          <span
+                            className={
+                              item.quantityReceived > item.quantityOrdered ? 'font-medium text-orange-600' : undefined
+                            }
+                          >
+                            {item.quantityReceived}
+                          </span>
+                        </DataCardField>
+                        {anyCancelled && (
+                          <DataCardField label={t('Cancelled')}>{item.quantityCancelled ?? 0}</DataCardField>
+                        )}
+                        <DataCardField label={t('Unit cost')}>
+                          {formatMoney(item.unitCost, currency)}
+                          {Number(item.discountPercent ?? 0) > 0 && (
+                            <div className="text-xs text-gray-500">
+                              {t('−{percent}% discount', { percent: Number(item.discountPercent) })}
+                            </div>
+                          )}
+                        </DataCardField>
+                        {anyTax && (
+                          <DataCardField label={t('Tax')}>{formatMoney(item.taxAmount ?? 0, currency)}</DataCardField>
+                        )}
+                        <DataCardField label={t('Total')}>
+                          <span className="font-medium">{formatMoney(item.total, currency)}</span>
+                        </DataCardField>
+                      </DataCardFields>
+                    </div>
+                  ))}
+                  <dl className="space-y-1 rounded-md border p-3 text-sm">
+                    <div className="flex justify-between">
+                      <dt className="text-gray-500">{t('Subtotal')}</dt>
+                      <dd>{formatMoney(order.subtotal, currency)}</dd>
+                    </div>
+                    {order.taxAmount > 0 && (
+                      <div className="flex justify-between">
+                        <dt className="text-gray-500">{t('Tax')}</dt>
+                        <dd>{formatMoney(order.taxAmount, currency)}</dd>
+                      </div>
+                    )}
+                    {order.shippingCost > 0 && (
+                      <div className="flex justify-between">
+                        <dt className="text-gray-500">{t('Shipping')}</dt>
+                        <dd>{formatMoney(order.shippingCost, currency)}</dd>
+                      </div>
+                    )}
+                    <div className="flex justify-between font-semibold">
+                      <dt>{t('Total')}</dt>
+                      <dd>{formatMoney(order.total, currency)}</dd>
+                    </div>
+                  </dl>
+                </div>
+              ) : (
               <div className="overflow-x-auto rounded-md border">
                 <table className="w-full text-sm">
                   <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
@@ -297,6 +366,7 @@ export function PurchaseOrderDetailDialog({
                   </tfoot>
                 </table>
               </div>
+              )}
 
               <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
                 <div className="space-y-1 text-gray-600">
@@ -594,6 +664,46 @@ function ReceiveForm({
   const [error, setError] = useState<string | null>(null);
   // Same key for every retry of this receipt, so a double submit never posts twice
   const [idempotencyKey] = useState(newReceiptKey);
+  const smallScreen = useSmallScreen();
+
+  // Line inputs, shared by the table (desktop) and the cards (phones)
+  const receivedInput = (item: PurchaseOrderItem, className?: string) => (
+    <Input
+      inputMode="numeric"
+      value={quantities[item.id] ?? ''}
+      onChange={(e) => setQuantities((prev) => ({ ...prev, [item.id]: e.target.value }))}
+      className={className}
+      aria-label={t('Received quantity for {sku}', { sku: item.sku })}
+    />
+  );
+  const damagedInput = (item: PurchaseOrderItem, className?: string) => (
+    <Input
+      inputMode="numeric"
+      placeholder="0"
+      value={damaged[item.id] ?? ''}
+      onChange={(e) => setDamaged((prev) => ({ ...prev, [item.id]: e.target.value }))}
+      className={className}
+      aria-label={t('Damaged quantity for {sku}', { sku: item.sku })}
+    />
+  );
+  const acceptDamaged = (item: PurchaseOrderItem) =>
+    Number(damaged[item.id]) > 0 && (
+      <CheckboxField
+        label={t('Accept into stock')}
+        checked={!!accepted[item.id]}
+        onChange={(e) => setAccepted((prev) => ({ ...prev, [item.id]: e.target.checked }))}
+        aria-label={t('Accept damaged units of {sku}', { sku: item.sku })}
+      />
+    );
+  const costInput = (item: PurchaseOrderItem, className?: string) => (
+    <Input
+      inputMode="decimal"
+      value={costs[item.id] ?? ''}
+      onChange={(e) => setCosts((prev) => ({ ...prev, [item.id]: e.target.value }))}
+      className={className}
+      aria-label={t('Unit cost for {sku}', { sku: item.sku })}
+    />
+  );
 
   const intoStock = (item: PurchaseOrderItem) =>
     (Number(quantities[item.id]) || 0) + (accepted[item.id] ? Number(damaged[item.id]) || 0 : 0);
@@ -661,6 +771,40 @@ function ReceiveForm({
         {t('Enter what arrived. Anything left is still outstanding and can be received later.')}{' '}
         {t('Damaged units go into stock only if you accept them; rejected ones are recorded without stock.')}
       </p>
+      {smallScreen ? (
+        // Phones: one card per open line, every box in view (the table scrolls sideways)
+        <div className="space-y-2">
+          {open.map((item) => (
+            <div key={item.id} className="space-y-2 rounded-md border p-3 text-sm">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="break-words font-medium">{item.productName}</div>
+                  <div className="font-mono text-xs text-gray-500">{item.sku}</div>
+                </div>
+                <div className="shrink-0 text-right text-xs text-gray-500">
+                  {t('Outstanding')}
+                  <div className="text-sm font-medium text-gray-900">{outstanding(item)}</div>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <label className="block space-y-1">
+                  <span className="text-xs text-gray-500">{t('Received now')}</span>
+                  {receivedInput(item, 'h-10 w-full')}
+                </label>
+                <label className="block space-y-1">
+                  <span className="text-xs text-gray-500">{t('Damaged')}</span>
+                  {damagedInput(item, 'h-10 w-full')}
+                </label>
+                <label className="block space-y-1">
+                  <span className="text-xs text-gray-500">{t('Unit cost ({currency})', { currency })}</span>
+                  {costInput(item, 'h-10 w-full')}
+                </label>
+              </div>
+              {acceptDamaged(item)}
+            </div>
+          ))}
+        </div>
+      ) : (
       <div className="overflow-x-auto rounded-md border">
         <table className="w-full text-sm">
           <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
@@ -680,44 +824,18 @@ function ReceiveForm({
                   <div className="font-mono text-xs text-gray-500">{item.sku}</div>
                 </td>
                 <td className="px-3 py-2 text-right">{outstanding(item)}</td>
+                <td className="px-3 py-2">{receivedInput(item)}</td>
                 <td className="px-3 py-2">
-                  <Input
-                    inputMode="numeric"
-                    value={quantities[item.id] ?? ''}
-                    onChange={(e) => setQuantities((prev) => ({ ...prev, [item.id]: e.target.value }))}
-                    aria-label={t('Received quantity for {sku}', { sku: item.sku })}
-                  />
+                  {damagedInput(item)}
+                  {acceptDamaged(item)}
                 </td>
-                <td className="px-3 py-2">
-                  <Input
-                    inputMode="numeric"
-                    placeholder="0"
-                    value={damaged[item.id] ?? ''}
-                    onChange={(e) => setDamaged((prev) => ({ ...prev, [item.id]: e.target.value }))}
-                    aria-label={t('Damaged quantity for {sku}', { sku: item.sku })}
-                  />
-                  {Number(damaged[item.id]) > 0 && (
-                    <CheckboxField
-                      label={t('Accept into stock')}
-                      checked={!!accepted[item.id]}
-                      onChange={(e) => setAccepted((prev) => ({ ...prev, [item.id]: e.target.checked }))}
-                      aria-label={t('Accept damaged units of {sku}', { sku: item.sku })}
-                    />
-                  )}
-                </td>
-                <td className="px-3 py-2">
-                  <Input
-                    inputMode="decimal"
-                    value={costs[item.id] ?? ''}
-                    onChange={(e) => setCosts((prev) => ({ ...prev, [item.id]: e.target.value }))}
-                    aria-label={t('Unit cost for {sku}', { sku: item.sku })}
-                  />
-                </td>
+                <td className="px-3 py-2">{costInput(item)}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      )}
       {overReceived.length > 0 && (
         <p className="rounded-md bg-orange-50 p-3 text-sm text-orange-800">
           {t(

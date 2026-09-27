@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { CheckCircle2, Download, FileSpreadsheet, FileText, Printer, ShieldCheck, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Select } from '@/components/ui/select';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
 import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import {
@@ -102,8 +103,31 @@ export default function ReportsPage() {
         }
       />
 
-      <div className="grid gap-4 lg:grid-cols-[15rem_1fr]">
-        <Card className="h-fit bg-white p-2">
+      {/* Phones: the report list becomes a picker */}
+      <Card className="space-y-2 bg-white p-3 md:hidden">
+        <Select value={selected} onChange={(e) => setSelected(e.target.value)} aria-label={t('Report')}>
+          {groups.map(([group, reports]) => (
+            <optgroup key={group} label={t(group)}>
+              {reports.map((r) => (
+                <option key={r.key} value={r.key}>
+                  {t(r.title)}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+          <option value={RECONCILIATION}>{t('Reconciliation')}</option>
+        </Select>
+        {canExport && (
+          <Button variant="outline" className="w-full" onClick={() => void printDailySummary()} disabled={printing}>
+            <Printer className="h-4 w-4" />
+            {printing ? t('Preparing...') : t('Daily summary (PDF)')}
+          </Button>
+        )}
+        {printError && <p className="text-xs text-red-600">{printError}</p>}
+      </Card>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[15rem_1fr]">
+        <Card className="h-fit bg-white p-2 max-md:hidden">
           {groups.map(([group, reports]) => (
             <div key={group} className="pb-2">
               <div className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wide text-gray-400">{t(group)}</div>

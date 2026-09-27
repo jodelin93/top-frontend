@@ -83,3 +83,19 @@ describe('calculateSale: measured quantities (same fixtures as the server)', () 
     expect(result).toMatchObject({ subtotal: 4.99, taxAmount: 0.41, total: 5.4 });
   });
 });
+
+describe('calculateSale: customer group discount (same as the server)', () => {
+  it('takes the group % off each line after its manual discount and reports it apart', () => {
+    const result = calculateSale(
+      [line({ key: 'a', unitPrice: 100, discountPercent: 10 }), line({ key: 'b', productId: 'p2', unitPrice: 50 })],
+      { taxRate: 0, pricesIncludeTax: false, groupDiscountPercent: 10 }
+    );
+    expect(result.groupDiscountAmount).toBe(14);
+    expect(result.discountAmount).toBe(24);
+    expect(result.total).toBe(126);
+  });
+
+  it('has no group amount without a group discount', () => {
+    expect(calculateSale([line()], { taxRate: 0, pricesIncludeTax: false })).not.toHaveProperty('groupDiscountAmount');
+  });
+});

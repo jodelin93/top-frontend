@@ -2,15 +2,27 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV === "development";
 
-/** Origin of the API (NEXT_PUBLIC_API_URL is inlined at build time, same as in lib/api/client.ts). */
+/**
+ * Origin of the API (NEXT_PUBLIC_API_URL is inlined at build time, same as in
+ * lib/api/client.ts). A relative URL such as "/api/v1" means the API is reached
+ * through this server (see rewrites below): same origin, covered by 'self'.
+ */
 function apiOrigin(): string {
   const url = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/v1";
+  if (url.startsWith("/")) return "'self'";
   try {
     return new URL(url).origin;
   } catch {
     return "http://localhost:3000";
   }
 }
+
+/**
+ * Backend the relative API path is forwarded to. With NEXT_PUBLIC_API_URL=/api/v1
+ * the browser only talks to this server, so the app works from any address the
+ * machine has (localhost, a LAN IP that changes with the network) without CORS.
+ */
+const BACKEND_URL = (process.env.BACKEND_URL || "http://localhost:3000").replace(/\/+$/, "");
 
 // Local print bridge (print-bridge/, always on the till itself)
 const PRINT_BRIDGE = ["http://127.0.0.1:17777", "http://localhost:17777"];
@@ -55,6 +67,14 @@ function contentSecurityPolicy(): string {
 const nextConfig: NextConfig = {
   // Self-contained server bundle for the Docker image
   output: "standalone",
+
+  // Dev server: phones and tills on the local network may open the app (the
+  // machine's LAN address changes with the network)
+  allowedDevOrigins: ["192.168.*.*", "10.*.*.*", "172.16.*.*", "*.local"],
+
+  async rewrites() {
+    return [{ source: "/api/v1/:path*", destination: `${BACKEND_URL}/api/v1/:path*` }];
+  },
 
   async headers() {
     return [

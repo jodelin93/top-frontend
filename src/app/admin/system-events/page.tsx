@@ -8,6 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select } from '@/components/ui/select';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import { getErrorMessage } from '@/lib/api/client';
 import { CheckRun, OutboxEventRow, OutboxStatus, systemEventsApi } from '@/lib/api/system-events';
@@ -141,6 +149,7 @@ function OutboxEvents({ onError }: { onError: (message: string | null) => void }
   const [status, setStatus] = useState<OutboxStatus | 'all'>('failed');
   const [page, setPage] = useState(1);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
   const { data, isLoading } = useQuery({
     queryKey: ['system-events', 'outbox', status, page],
     queryFn: () => systemEventsApi.outbox({ status, page, limit: 25 }),
@@ -171,7 +180,7 @@ function OutboxEvents({ onError }: { onError: (message: string | null) => void }
 
   return (
     <Card className="bg-white">
-      <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0">
+      <CardHeader className="flex flex-col gap-2 space-y-0 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <CardTitle>{t('Outbox events')}</CardTitle>
           <CardDescription>
@@ -184,7 +193,7 @@ function OutboxEvents({ onError }: { onError: (message: string | null) => void }
             setStatus(e.target.value as OutboxStatus | 'all');
             setPage(1);
           }}
-          className="w-48 shrink-0"
+          className="shrink-0 sm:w-48"
           aria-label={t('Status')}
         >
           {STATUS_FILTERS.map((f) => (
@@ -195,6 +204,65 @@ function OutboxEvents({ onError }: { onError: (message: string | null) => void }
         </Select>
       </CardHeader>
       <CardContent className="p-0">
+        {smallScreen ? (
+          // Phones: one card per event instead of a table that scrolls sideways
+          <DataCards
+            items={rows}
+            getKey={(row) => row.id}
+            loading={isLoading}
+            loadingText={t('Loading...')}
+            emptyText={t('No events match.')}
+          >
+            {(row) => (
+              <>
+                <DataCardHeader
+                  title={<span className="break-all font-mono text-xs">{row.eventType}</span>}
+                  subtitle={formatDateTime(row.occurredAt)}
+                  badge={<Badge variant={statusBadge(row.status)}>{statusLabel(row.status)}</Badge>}
+                />
+                <DataCardFields>
+                  <DataCardField label={t('Attempts')}>{row.attempts}</DataCardField>
+                  <DataCardField label={t('Event')} full>
+                    <span className="break-all font-mono text-xs text-gray-500">
+                      {row.aggregateType} {row.aggregateId}
+                    </span>
+                  </DataCardField>
+                  {row.lastError && (
+                    <DataCardField label={t('Last error')} full>
+                      <span className="line-clamp-2 text-xs text-gray-600">{row.lastError}</span>
+                    </DataCardField>
+                  )}
+                </DataCardFields>
+                {expanded === row.id && (
+                  <div className="rounded-md bg-gray-50 p-3">
+                    <EventDetails row={row} />
+                  </div>
+                )}
+                <DataCardActions>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="mr-auto"
+                    onClick={() => setExpanded(expanded === row.id ? null : row.id)}
+                    aria-label={t('Details')}
+                  >
+                    {expanded === row.id ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                    {t('Details')}
+                  </Button>
+                  {row.status !== 'published' && (
+                    <Button size="sm" variant="outline" onClick={() => retry.mutate(row.id)} disabled={retry.isPending}>
+                      <RotateCcw className="h-3 w-3" />
+                      {t('Retry')}
+                    </Button>
+                  )}
+                  <Button size="sm" variant="ghost" onClick={() => confirmReplay(row)} disabled={replay.isPending}>
+                    {t('Replay')}
+                  </Button>
+                </DataCardActions>
+              </>
+            )}
+          </DataCards>
+        ) : (
         <Table>
           <THead>
             <tr>
@@ -263,6 +331,7 @@ function OutboxEvents({ onError }: { onError: (message: string | null) => void }
             )}
           </TBody>
         </Table>
+        )}
         {meta && meta.totalPages > 1 && (
           <div className="flex items-center justify-between border-t p-3 text-sm text-gray-600">
             <span>{t('Page {page} of {total}', { page: meta.page, total: meta.totalPages })}</span>
@@ -285,14 +354,14 @@ function EventDetails({ row }: { row: OutboxEventRow }) {
   const { data } = useQuery({ queryKey: ['system-events', 'event', row.id], queryFn: () => systemEventsApi.event(row.id) });
   return (
     <div className="grid gap-3 text-xs md:grid-cols-2">
-      <div className="space-y-1">
+      <div className="min-w-0 space-y-1">
         <div className="font-semibold text-gray-700">{t('Payload')}</div>
         <pre className="max-h-64 overflow-auto rounded bg-white p-2">{JSON.stringify(row.payload, null, 2)}</pre>
       </div>
-      <div className="space-y-2">
+      <div className="min-w-0 space-y-2">
         <div>
           <span className="font-semibold text-gray-700">{t('Request id')}: </span>
-          <span className="font-mono">{row.correlationId ?? '—'}</span>
+          <span className="break-all font-mono">{row.correlationId ?? '—'}</span>
         </div>
         <div>
           <span className="font-semibold text-gray-700">{t('Next attempt')}: </span>
@@ -320,6 +389,7 @@ function EventDetails({ row }: { row: OutboxEventRow }) {
 
 function CheckRuns() {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
   const { data: runs, isLoading } = useQuery({
     queryKey: ['system-events', 'checks'],
     queryFn: () => systemEventsApi.checkRuns(20),
@@ -334,6 +404,56 @@ function CheckRuns() {
         </CardDescription>
       </CardHeader>
       <CardContent className="p-0">
+        {smallScreen ? (
+          // Phones: one card per run (tap for the results) instead of a table that scrolls sideways
+          <DataCards
+            items={runs ?? []}
+            getKey={(run) => run.id}
+            onItemClick={(run) => setExpanded(expanded === run.id ? null : run.id)}
+            loading={isLoading}
+            loadingText={t('Loading...')}
+            emptyText={t('No checks have run yet.')}
+          >
+            {(run) => {
+              const failing = run.results.filter((r) => !r.passed);
+              return (
+                <>
+                  <DataCardHeader
+                    title={
+                      <span className="inline-flex items-center gap-1">
+                        {expanded === run.id ? (
+                          <ChevronDown className="h-4 w-4 shrink-0" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 shrink-0" />
+                        )}
+                        {formatDateTime(run.startedAt)}
+                      </span>
+                    }
+                    subtitle={run.trigger === 'manual' ? t('Manual') : t('Scheduled')}
+                    onTitleClick={() => setExpanded(expanded === run.id ? null : run.id)}
+                    badge={
+                      <Badge variant={run.status === 'passed' ? 'success' : run.status === 'running' ? 'default' : 'danger'}>
+                        {runStatusLabel(run.status)}
+                      </Badge>
+                    }
+                  />
+                  {(run.status === 'failed' || failing.length > 0) && (
+                    <DataCardFields>
+                      <DataCardField label={t('Checks with issues')} full>
+                        {run.status === 'failed' ? run.error : failing.map((r) => t(r.label)).join(', ')}
+                      </DataCardField>
+                    </DataCardFields>
+                  )}
+                  {expanded === run.id && (
+                    <div className="rounded-md bg-gray-50 p-3">
+                      <RunResults run={run} />
+                    </div>
+                  )}
+                </>
+              );
+            }}
+          </DataCards>
+        ) : (
         <Table>
           <THead>
             <tr>
@@ -376,31 +496,7 @@ function CheckRuns() {
                     {expanded === run.id && (
                       <tr>
                         <td colSpan={5} className="bg-gray-50 px-4 py-3">
-                          <ul className="space-y-2 text-sm">
-                            {run.results.map((result) => (
-                              <li key={result.key}>
-                                <div className="flex items-center gap-2">
-                                  <Badge variant={result.passed ? 'success' : 'danger'}>
-                                    {result.passed ? t('OK') : plural(result.issueCount, '{count} issue', '{count} issues')}
-                                  </Badge>
-                                  <span>{t(result.label)}</span>
-                                </div>
-                                {!result.passed && (
-                                  <ul className="ml-6 mt-1 list-disc text-xs text-gray-600">
-                                    {result.issues.map((issue, index) => (
-                                      <li key={index}>
-                                        <span className="font-mono">{issue.reference}</span>
-                                        {issue.expected !== undefined && issue.expected !== null && (
-                                          <> · {t('expected {expected}, found {actual}', { expected: issue.expected, actual: issue.actual ?? '—' })}</>
-                                        )}
-                                        {issue.detail && <> · {issue.detail}</>}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                )}
-                              </li>
-                            ))}
-                          </ul>
+                          <RunResults run={run} />
                         </td>
                       </tr>
                     )}
@@ -410,7 +506,39 @@ function CheckRuns() {
             )}
           </TBody>
         </Table>
+        )}
       </CardContent>
     </Card>
+  );
+}
+
+/** Result of each check in one run, with the issues found */
+function RunResults({ run }: { run: CheckRun }) {
+  return (
+    <ul className="space-y-2 text-sm">
+      {run.results.map((result) => (
+        <li key={result.key}>
+          <div className="flex items-center gap-2">
+            <Badge variant={result.passed ? 'success' : 'danger'}>
+              {result.passed ? t('OK') : plural(result.issueCount, '{count} issue', '{count} issues')}
+            </Badge>
+            <span>{t(result.label)}</span>
+          </div>
+          {!result.passed && (
+            <ul className="ml-6 mt-1 list-disc text-xs text-gray-600">
+              {result.issues.map((issue, index) => (
+                <li key={index}>
+                  <span className="font-mono">{issue.reference}</span>
+                  {issue.expected !== undefined && issue.expected !== null && (
+                    <> · {t('expected {expected}, found {actual}', { expected: issue.expected, actual: issue.actual ?? '—' })}</>
+                  )}
+                  {issue.detail && <> · {issue.detail}</>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
   );
 }

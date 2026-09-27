@@ -360,3 +360,33 @@ describe('Receipt: measured (weighed) lines', () => {
     expect(screen.getByText(`2 × ${usd(15)}`)).toBeInTheDocument();
   });
 });
+
+describe('Receipt: customer group discount', () => {
+  const grouped = () =>
+    baseSale({
+      discountAmount: 5,
+      metadata: { groupDiscount: { groupId: 'g1', name: 'Trade', percent: 10, amount: 5 } },
+    });
+
+  it('prints the group discount as its own line under the discounts', () => {
+    render(<Receipt sale={grouped()} settings={settings} />);
+    expect(row('Discounts')).toHaveTextContent(`-${usd(5)}`);
+    expect(row('Group discount (Trade, 10%)')).toHaveTextContent(`-${usd(5)}`);
+  });
+
+  it('prints it as "Remise de groupe" in French, on the invoice layout too', async () => {
+    const { useI18nStore } = await import('@/i18n');
+    useI18nStore.setState({ personal: 'fr' });
+    try {
+      render(<Receipt sale={grouped()} settings={{ ...settings, receiptFormat: 'a4' }} />);
+      expect(screen.getByText('Remise de groupe (Trade, 10 %)')).toBeInTheDocument();
+    } finally {
+      useI18nStore.setState({ personal: null });
+    }
+  });
+
+  it('prints nothing more without a group discount', () => {
+    render(<Receipt sale={baseSale()} settings={settings} />);
+    expect(screen.queryByText(/Group discount/)).not.toBeInTheDocument();
+  });
+});

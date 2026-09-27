@@ -10,6 +10,14 @@ import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
 import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -47,6 +55,7 @@ export function TaxCategoriesSection() {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<TaxCategory | 'new' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const { data: categories = [], isLoading, error: loadError } = useQuery({
     queryKey: ['tax-categories'],
@@ -72,6 +81,39 @@ export function TaxCategoriesSection() {
     remove.mutate(category);
   };
 
+  // Shared by the table row and the phone card
+  const rateLabel = (category: TaxCategory) =>
+    category.taxRate ? (
+      `${text(category.taxRate.name, category.taxRate.code)} (${Number(category.taxRate.rate)}${
+        category.taxRate.taxType === 'percentage' ? '%' : ''
+      })`
+    ) : (
+      <Badge variant="info">{t('Tax exempt')}</Badge>
+    );
+
+  const rowActions = (category: TaxCategory) => (
+    <>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8"
+        onClick={() => setEditing(category)}
+        aria-label={t('Edit {code}', { code: category.code })}
+      >
+        <Pencil className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 text-red-600 hover:text-red-700"
+        onClick={() => handleDelete(category)}
+        aria-label={t('Delete {code}', { code: category.code })}
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    </>
+  );
+
   return (
     <Card className="bg-white">
       <div className="flex flex-col gap-2 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -91,6 +133,33 @@ export function TaxCategoriesSection() {
       <div className="empty:hidden p-4 pb-0">
         <ErrorMessage>{error ?? (loadError && getErrorMessage(loadError, 'Could not load tax categories'))}</ErrorMessage>
       </div>
+      {smallScreen ? (
+        // Phones: one card per category instead of a table that scrolls sideways
+        <DataCards
+          items={categories}
+          getKey={(category) => category.id}
+          loading={isLoading}
+          loadingText={t('Loading tax categories...')}
+          emptyText={t('No tax categories yet. Every product uses the default tax rate.')}
+        >
+          {(category) => (
+            <>
+              <DataCardHeader title={text(category.name, '—')} subtitle={<span className="font-mono">{category.code}</span>} />
+              <DataCardFields>
+                <DataCardField label={t('Tax rate')} full>
+                  {rateLabel(category)}
+                </DataCardField>
+                {category.description && (
+                  <DataCardField label={t('Description')} full>
+                    <span className="text-gray-600">{category.description}</span>
+                  </DataCardField>
+                )}
+              </DataCardFields>
+              <DataCardActions>{rowActions(category)}</DataCardActions>
+            </>
+          )}
+        </DataCards>
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -112,35 +181,12 @@ export function TaxCategoriesSection() {
                 <Td className="font-mono text-xs">{category.code}</Td>
                 <Td className="font-medium">{text(category.name, '—')}</Td>
                 <Td>
-                  {category.taxRate ? (
-                    `${text(category.taxRate.name, category.taxRate.code)} (${Number(category.taxRate.rate)}${
-                      category.taxRate.taxType === 'percentage' ? '%' : ''
-                    })`
-                  ) : (
-                    <Badge variant="info">{t('Tax exempt')}</Badge>
-                  )}
+                  {rateLabel(category)}
                 </Td>
                 <Td className="text-gray-600">{category.description ?? '—'}</Td>
                 <Td>
                   <div className="flex justify-end gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => setEditing(category)}
-                      aria-label={t('Edit {code}', { code: category.code })}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-red-600 hover:text-red-700"
-                      onClick={() => handleDelete(category)}
-                      aria-label={t('Delete {code}', { code: category.code })}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {rowActions(category)}
                   </div>
                 </Td>
               </tr>
@@ -148,6 +194,7 @@ export function TaxCategoriesSection() {
           )}
         </TBody>
       </Table>
+      )}
 
       <TaxCategoryDialog
         // Keyed so the form starts fresh for each category

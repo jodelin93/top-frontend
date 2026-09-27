@@ -35,7 +35,7 @@ describe('SignupPage with an existing two-factor account', () => {
   it('asks for a code and sends it with the sign-up', async () => {
     api.signup
       .mockRejectedValueOnce(mfaRequired)
-      .mockResolvedValueOnce({ accessToken: 'token', requiresMfa: false, tenant: { id: 't', name: 'Shop', slug: 'shop' } });
+      .mockResolvedValueOnce({ requiresMfa: false, tenant: { id: 't', name: 'Shop', slug: 'shop' } });
     render(<SignupPage />, { wrapper });
 
     await userEvent.type(await screen.findByLabelText('Store name'), 'My Shop');

@@ -22,7 +22,7 @@ type MfaFormData = z.infer<typeof mfaSchema>;
 
 export default function MfaVerifyPage() {
   const router = useRouter();
-  const { setUser, setTokens, setRequiresMfa } = useAuthStore();
+  const { setUser, setRequiresMfa } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,8 +41,7 @@ export default function MfaVerifyPage() {
     try {
       const response = await authApi.verifyMfa(data.token);
 
-      // Store full access token and user
-      setTokens(response.accessToken);
+      // Signed in: the API set the session cookie; keep the profile
       if (response.user) {
         setUser(response.user);
       }
@@ -81,6 +80,8 @@ export default function MfaVerifyPage() {
                 type="text"
                 placeholder="000000"
                 maxLength={6}
+                inputMode="numeric"
+                autoComplete="one-time-code"
                 className="text-center text-2xl tracking-widest"
                 {...register('token')}
                 disabled={isLoading}

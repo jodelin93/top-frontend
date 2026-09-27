@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { Printer, RotateCcw, ShoppingCart, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, dialogStickyFooter } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import { ErrorMessage } from '@/components/admin/page-header';
 import type { Sale } from '@/lib/api/sales';
 import type { StoreSettings } from '@/lib/api/settings';
@@ -175,7 +176,7 @@ export function ReceiptDialog({
           </div>
         )}
         {sale && !offline && hasPermission(user, 'sales.reprint') && <ReceiptShare sale={sale} />}
-        <div className="grid grid-cols-2 gap-2">
+        <div className={cn('grid grid-cols-2 gap-2', dialogStickyFooter)}>
           <Button
             variant="outline"
             className="h-12"

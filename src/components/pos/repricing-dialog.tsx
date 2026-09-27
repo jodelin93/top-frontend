@@ -72,7 +72,7 @@ export function RepricingDialog({
         {result && (
           <>
             {result.lines.length > 0 && (
-              <ul className="max-h-[45vh] divide-y overflow-y-auto rounded-md border" aria-label={t('Changed lines')}>
+              <ul className="max-h-[45vh] divide-y overflow-y-auto rounded-md border max-sm:max-h-none" aria-label={t('Changed lines')}>
                 {result.lines.map((line) => (
                   <li
                     key={line.key}

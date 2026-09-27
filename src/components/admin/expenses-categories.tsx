@@ -7,6 +7,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { RowActions, SettingsSection } from '@/components/admin/settings-shared';
@@ -20,6 +28,7 @@ import { t } from '@/i18n';
 export function ExpenseCategoriesSection({ canManage }: { canManage: boolean }) {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<ExpenseCategory | 'new' | null>(null);
+  const smallScreen = useSmallScreen();
   const {
     data = [],
     isLoading,
@@ -51,6 +60,43 @@ export function ExpenseCategoriesSection({ canManage }: { canManage: boolean }) 
           <ErrorMessage>{getErrorMessage(error ?? remove.error, 'Something went wrong')}</ErrorMessage>
         </div>
       )}
+      {smallScreen ? (
+        <DataCards
+          items={data}
+          getKey={(c) => c.id}
+          loading={isLoading}
+          loadingText={t('Loading...')}
+          emptyText={t('No categories yet.')}
+        >
+          {(c) => (
+            <>
+              <DataCardHeader
+                title={c.name}
+                subtitle={<span className="font-mono">{c.code}</span>}
+                badge={<Badge variant={c.isActive ? 'success' : 'warning'}>{c.isActive ? t('active') : t('inactive')}</Badge>}
+              />
+              {c.description && (
+                <DataCardFields>
+                  <DataCardField label={t('Description')} full>
+                    <span className="text-gray-600">{c.description}</span>
+                  </DataCardField>
+                </DataCardFields>
+              )}
+              {canManage && (
+                <DataCardActions>
+                  <RowActions
+                    label={c.name}
+                    onEdit={() => setEditing(c)}
+                    onDelete={() => {
+                      if (window.confirm(t('Delete {name}?', { name: c.name }))) remove.mutate(c.id);
+                    }}
+                  />
+                </DataCardActions>
+              )}
+            </>
+          )}
+        </DataCards>
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -91,6 +137,7 @@ export function ExpenseCategoriesSection({ canManage }: { canManage: boolean }) 
           )}
         </TBody>
       </Table>
+      )}
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
         <DialogContent className="max-w-sm">
           {editing && (

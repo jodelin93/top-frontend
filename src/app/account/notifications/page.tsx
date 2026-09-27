@@ -37,7 +37,7 @@ function NotificationsCentre() {
   const backHref = canUseAdmin(user) ? '/admin' : '/pos';
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-3 sm:p-6">
       <div className="mx-auto max-w-3xl space-y-4">
         <Link href={backHref} className="inline-flex items-center gap-1 text-sm text-gray-600 hover:underline">
           <ArrowLeft className="h-4 w-4" />
@@ -67,14 +67,14 @@ function NotificationList() {
 
   return (
     <Card className="bg-white">
-      <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0">
+      <CardHeader className="flex flex-col gap-3 space-y-0 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
         <div>
           <CardTitle>{t('Notifications')}</CardTitle>
           <CardDescription>
             {t('Alerts about stock, approvals, cash, payments, devices and the system. Reading one acknowledges it for everyone who received it.')}
           </CardDescription>
         </div>
-        <div className="flex shrink-0 gap-2">
+        <div className="flex shrink-0 flex-wrap gap-2">
           <Select
             value={unreadOnly ? 'unread' : 'all'}
             onChange={(e) => {
@@ -144,7 +144,7 @@ function NotificationList() {
           </ul>
         )}
         {meta && meta.totalPages > 1 && (
-          <div className="flex items-center justify-between pt-2 text-sm text-gray-600">
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-2 text-sm text-gray-600">
             <span>{t('Page {page} of {total}', { page: meta.page, total: meta.totalPages })}</span>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>

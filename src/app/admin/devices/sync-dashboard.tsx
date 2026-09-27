@@ -10,6 +10,13 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage } from '@/components/admin/page-header';
 import { getErrorMessage } from '@/lib/api/client';
 import type { Device } from '@/lib/api/devices';
@@ -59,6 +66,7 @@ export function SyncDashboard({ devices }: { devices: Device[] }) {
   const currency = useCurrency();
   const [filter, setFilter] = useState<SyncFilter>('all');
   const [search, setSearch] = useState('');
+  const smallScreen = useSmallScreen();
   const [now] = useState(() => Date.now());
   const shown = useMemo(() => filterDevices(devices, filter, search, now), [devices, filter, search, now]);
   const active = devices.filter((d) => !d.revokedAt);
@@ -105,6 +113,47 @@ export function SyncDashboard({ devices }: { devices: Device[] }) {
         />
       </div>
 
+      {smallScreen ? (
+        // Phones: one card per device instead of a table that scrolls sideways
+        <DataCards
+          items={shown}
+          getKey={(d) => d.id}
+          emptyText={t('No devices match.')}
+          className="p-0"
+          itemClassName={(d) => (d.revokedAt ? 'opacity-60' : undefined)}
+        >
+          {(d) => (
+            <>
+              <DataCardHeader
+                title={d.name}
+                badge={needsReviewOf(d) > 0 ? <Badge variant="danger">{t('Needs review')}: {needsReviewOf(d)}</Badge> : undefined}
+              />
+              <DataCardFields>
+                <DataCardField label={t('Unsynced')}>{d.pendingSales}</DataCardField>
+                <DataCardField label={t('Last sync')}>{formatDateTime(d.lastSyncAt)}</DataCardField>
+                {/* Queue details only when something is waiting, so idle tills stay short */}
+                {d.pendingSales > 0 && (
+                  <>
+                    <DataCardField label={t('Queue age')}>{ageOf(d.oldestPendingAt, now)}</DataCardField>
+                    <DataCardField label={t('At stake')}>{formatMoney(d.pendingAmount ?? 0, currency)}</DataCardField>
+                  </>
+                )}
+                {(d.syncRetries ?? 0) > 0 && <DataCardField label={t('Retries')}>{d.syncRetries}</DataCardField>}
+                {(d.openConflicts ?? 0) > 0 && (
+                  <DataCardField label={t('Review cases')}>
+                    <Link className="text-blue-600 underline" href={`/admin/review?deviceId=${d.id}`}>
+                      {d.openConflicts}
+                    </Link>
+                  </DataCardField>
+                )}
+                <DataCardField label={t('Lease ends')}>
+                  {d.revokedAt ? '—' : leaseExpired(d, now) ? t('Expired') : formatDateTime(d.leaseExpiresAt)}
+                </DataCardField>
+              </DataCardFields>
+            </>
+          )}
+        </DataCards>
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -153,6 +202,7 @@ export function SyncDashboard({ devices }: { devices: Device[] }) {
           )}
         </TBody>
       </Table>
+      )}
     </Card>
   );
 }

@@ -35,6 +35,7 @@ import {
   type ScannerConfig,
 } from '@/lib/hardware/scanner';
 import { t } from '@/i18n';
+import { randomId } from '@/lib/uuid';
 
 const bridgeMessage = (error: unknown) => {
   if (error instanceof BridgeError) {
@@ -124,7 +125,7 @@ export function BridgeSection() {
     setNotice(null);
     try {
       const result = await bridgePrint(testPageEscPos(pairing?.widthMm ?? 80, settings?.storeName ?? ''), {
-        commandId: crypto.randomUUID(),
+        commandId: randomId(),
       });
       if (result.status === 'printed') setNotice(t('Test receipt printed.'));
       else setError(t('The printer did not print: {error}', { error: result.error ?? result.status }));

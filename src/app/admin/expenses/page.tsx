@@ -9,6 +9,14 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ErrorMessage, Field, PageHeader } from '@/components/admin/page-header';
 import { ExpenseFormDialog } from '@/components/admin/expenses-form-dialog';
@@ -46,6 +54,7 @@ export default function ExpensesPage() {
   const [rejecting, setRejecting] = useState<Expense | null>(null);
   const [paying, setPaying] = useState<Expense | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -83,6 +92,55 @@ export default function ExpensesPage() {
   });
 
   const approve = (e: Expense) => action.mutate(() => withApproval((headers) => expensesApi.approve(e.id, headers)));
+
+  // Row buttons, shared by the table and the phone cards
+  const rowActions = (e: Expense, mine: boolean, editable: boolean) => (
+    <>
+      {editable && (
+        <Button size="sm" variant="ghost" onClick={() => setEditing(e)}>
+          {t('Edit')}
+        </Button>
+      )}
+      {e.status === 'draft' && (mine || canApprove) && (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => action.mutate(() => expensesApi.submit(e.id))}
+        >
+          {t('Submit')}
+        </Button>
+      )}
+      {e.status === 'submitted' && (
+        <Button size="sm" onClick={() => approve(e)} disabled={action.isPending}>
+          {t('Approve')}
+        </Button>
+      )}
+      {(e.status === 'submitted' || e.status === 'approved') && canApprove && (
+        <Button size="sm" variant="ghost" onClick={() => setRejecting(e)}>
+          {t('Reject')}
+        </Button>
+      )}
+      {e.status === 'approved' && (
+        <Button size="sm" onClick={() => setPaying(e)}>
+          {t('Pay')}
+        </Button>
+      )}
+      {editable && (
+        <Button
+          size="sm"
+          variant="ghost"
+          className="text-red-600"
+          onClick={() => {
+            if (window.confirm(t('Delete {name}?', { name: e.expenseNumber }))) {
+              action.mutate(() => expensesApi.remove(e.id));
+            }
+          }}
+        >
+          {t('Delete')}
+        </Button>
+      )}
+    </>
+  );
 
   return (
     <div className="mx-auto max-w-6xl space-y-4">
@@ -170,6 +228,62 @@ export default function ExpensesPage() {
             </div>
           )}
 
+          {smallScreen ? (
+            <DataCards
+              items={rows}
+              getKey={(e) => e.id}
+              loading={isLoading}
+              loadingText={t('Loading...')}
+              emptyText={t('No expenses match.')}
+            >
+              {(e) => {
+                const mine = e.createdById === user?.id;
+                const editable = (e.status === 'draft' || e.status === 'rejected') && (mine || canApprove);
+                const actions = rowActions(e, mine, editable);
+                return (
+                  <>
+                    <DataCardHeader
+                      title={e.description}
+                      subtitle={e.expenseNumber}
+                      badge={<Badge variant={STATUS_VARIANT[e.status]}>{t(e.status)}</Badge>}
+                    />
+                    <DataCardFields>
+                      <DataCardField label={t('Amount')}>
+                        <span className="font-medium tabular-nums">{formatMoney(e.amount, e.currencyCode)}</span>
+                      </DataCardField>
+                      <DataCardField label={t('Date')}>{formatDate(`${e.expenseDate}T12:00:00`)}</DataCardField>
+                      <DataCardField label={t('Category')}>{e.categoryName ?? '—'}</DataCardField>
+                      <DataCardField label={t('Paid by')}>{t(PAYMENT_METHOD_LABELS[e.paymentMethod])}</DataCardField>
+                      {(e.payee || e.receiptReference || e.createdByName || e.approvedByName) && (
+                        <DataCardField label={t('Details')} full>
+                          <span className="text-xs text-gray-600">
+                            {[
+                              e.payee,
+                              e.receiptReference && t('Receipt {reference}', { reference: e.receiptReference }),
+                              e.createdByName,
+                              e.approvedByName && e.status !== 'rejected' && t('by {name}', { name: e.approvedByName }),
+                            ]
+                              .filter(Boolean)
+                              .join(' · ')}
+                          </span>
+                        </DataCardField>
+                      )}
+                      {e.status === 'rejected' && e.rejectionReason && (
+                        <DataCardField label={t('Status')} full>
+                          <span className="text-xs text-red-600">
+                            {t('Rejected: {reason}', { reason: e.rejectionReason })}
+                          </span>
+                        </DataCardField>
+                      )}
+                    </DataCardFields>
+                    {(editable || e.status === 'submitted' || e.status === 'approved') && (
+                      <DataCardActions>{actions}</DataCardActions>
+                    )}
+                  </>
+                );
+              }}
+            </DataCards>
+          ) : (
           <Table>
             <THead>
               <tr>
@@ -220,49 +334,7 @@ export default function ExpensesPage() {
                       <Td className="text-right tabular-nums">{formatMoney(e.amount, e.currencyCode)}</Td>
                       <Td>
                         <div className="flex justify-end gap-1">
-                          {editable && (
-                            <Button size="sm" variant="ghost" onClick={() => setEditing(e)}>
-                              {t('Edit')}
-                            </Button>
-                          )}
-                          {e.status === 'draft' && (mine || canApprove) && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => action.mutate(() => expensesApi.submit(e.id))}
-                            >
-                              {t('Submit')}
-                            </Button>
-                          )}
-                          {e.status === 'submitted' && (
-                            <Button size="sm" onClick={() => approve(e)} disabled={action.isPending}>
-                              {t('Approve')}
-                            </Button>
-                          )}
-                          {(e.status === 'submitted' || e.status === 'approved') && canApprove && (
-                            <Button size="sm" variant="ghost" onClick={() => setRejecting(e)}>
-                              {t('Reject')}
-                            </Button>
-                          )}
-                          {e.status === 'approved' && (
-                            <Button size="sm" onClick={() => setPaying(e)}>
-                              {t('Pay')}
-                            </Button>
-                          )}
-                          {editable && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="text-red-600"
-                              onClick={() => {
-                                if (window.confirm(t('Delete {name}?', { name: e.expenseNumber }))) {
-                                  action.mutate(() => expensesApi.remove(e.id));
-                                }
-                              }}
-                            >
-                              {t('Delete')}
-                            </Button>
-                          )}
+                          {rowActions(e, mine, editable)}
                         </div>
                       </Td>
                     </tr>
@@ -271,6 +343,7 @@ export default function ExpensesPage() {
               )}
             </TBody>
           </Table>
+          )}
 
           {meta && meta.totalPages > 1 && (
             <div className="flex items-center justify-between border-t p-3 text-sm text-gray-600">

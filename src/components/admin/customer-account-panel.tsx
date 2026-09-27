@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
+import { DataCardField, DataCardFields, useSmallScreen } from '@/components/ui/data-cards';
 import { useApproval } from '@/components/approval-dialog';
 import {
   AGING_COLUMNS,
@@ -20,7 +21,7 @@ import { paymentMethodsApi, registersApi } from '@/lib/api/settings';
 import { customerName } from '@/lib/api/customers';
 import { getErrorMessage, newIdempotencyKey } from '@/lib/api/client';
 import { text } from '@/lib/api/crud';
-import { formatDate, formatDateTime, formatMoney } from '@/lib/format';
+import { formatDate, formatDateTime, formatMoney, todayLocalIso } from '@/lib/format';
 import { useCurrency, useStoreSettings } from '@/hooks/use-store-settings';
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
@@ -37,7 +38,7 @@ export const ENTRY_LABELS: Record<CreditEntry['type'], string> = {
   reversal: 'Reversal',
 };
 
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => todayLocalIso();
 const monthStart = () => `${today().slice(0, 8)}01`;
 
 /**
@@ -52,6 +53,7 @@ export function CustomerAccountPanel({ customerId }: { customerId: string }) {
   const canManage = hasPermission(user, 'customers.credit.manage');
   const money = (value: number) => formatMoney(value, currency);
   const { withApproval, approvalDialog } = useApproval();
+  const smallScreen = useSmallScreen();
 
   const { data: account, error } = useQuery({
     queryKey: ['customer-account', customerId],
@@ -175,30 +177,51 @@ export function CustomerAccountPanel({ customerId }: { customerId: string }) {
         )}
       </div>
 
-      <div className="overflow-x-auto rounded-md border">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-xs text-gray-500">
-            <tr>
-              {AGING_COLUMNS.map(([key, label]) => (
-                <th key={key} className="px-3 py-2 text-right font-medium">
-                  {t(label)}
-                </th>
-              ))}
-              <th className="px-3 py-2 text-right font-medium">{t('Total')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              {AGING_COLUMNS.map(([key]) => (
-                <td key={key} className={cn('px-3 py-2 text-right', key !== 'current' && account.aging[key] > 0 && 'text-red-600')}>
+      {smallScreen ? (
+        // Phones: the age buckets as label / value pairs instead of a six-column row
+        <div className="rounded-md border p-3 text-sm">
+          <DataCardFields>
+            {AGING_COLUMNS.map(([key, label]) => (
+              <DataCardField key={key} label={t(label)}>
+                <span className={cn(key !== 'current' && account.aging[key] > 0 && 'text-red-600')}>
                   {money(account.aging[key])}
-                </td>
-              ))}
-              <td className="px-3 py-2 text-right font-semibold">{money(account.aging.total)}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                </span>
+              </DataCardField>
+            ))}
+            <DataCardField label={t('Total')}>
+              <span className="font-semibold">{money(account.aging.total)}</span>
+            </DataCardField>
+          </DataCardFields>
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-md border">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-xs text-gray-500">
+              <tr>
+                {AGING_COLUMNS.map(([key, label]) => (
+                  <th key={key} className="px-3 py-2 text-right font-medium">
+                    {t(label)}
+                  </th>
+                ))}
+                <th className="px-3 py-2 text-right font-medium">{t('Total')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {AGING_COLUMNS.map(([key]) => (
+                  <td
+                    key={key}
+                    className={cn('px-3 py-2 text-right', key !== 'current' && account.aging[key] > 0 && 'text-red-600')}
+                  >
+                    {money(account.aging[key])}
+                  </td>
+                ))}
+                <td className="px-3 py-2 text-right font-semibold">{money(account.aging.total)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2">
         {canReceive && (
@@ -285,7 +308,7 @@ export function CustomerAccountPanel({ customerId }: { customerId: string }) {
               value={adjustReason}
               onChange={(e) => setAdjustReason(e.target.value)}
               placeholder={t('Reason (required)')}
-              className="min-w-64"
+              className="min-w-64 max-md:min-w-0"
             />
           </Field>
           <Button type="submit" disabled={adjust.isPending || !Number(adjustAmount) || !adjustReason.trim()}>
@@ -302,6 +325,37 @@ export function CustomerAccountPanel({ customerId }: { customerId: string }) {
         <div className="max-h-64 overflow-y-auto rounded-md border text-sm">
           {!entries?.data.length ? (
             <p className="p-3 text-center text-gray-400">{t('No account activity yet.')}</p>
+          ) : smallScreen ? (
+            // Phones: one stacked row per entry (what / amount, then date / balance after)
+            <ul className="divide-y">
+              {entries.data.map((entry) => (
+                <li key={entry.id} className="space-y-0.5 px-3 py-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 break-words">
+                      {t(ENTRY_LABELS[entry.type] ?? entry.type)}
+                      {(entry.note || entry.paymentRef) && (
+                        <span className="block text-xs text-gray-500">
+                          {[entry.note && translateServerNote(entry.note), entry.paymentRef].filter(Boolean).join(' · ')}
+                        </span>
+                      )}
+                      {entry.dueDate && entry.amount > 0 && (
+                        <span className="block text-xs text-gray-500">
+                          {t('Due {date}', { date: formatDate(entry.dueDate) })}
+                        </span>
+                      )}
+                    </div>
+                    <span className={cn('shrink-0 font-medium', entry.amount > 0 ? 'text-red-600' : 'text-green-700')}>
+                      {entry.amount > 0 ? '+' : ''}
+                      {money(entry.amount)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between gap-2 text-xs text-gray-500">
+                    <span>{formatDateTime(entry.createdAt)}</span>
+                    <span>{money(entry.balanceAfter)}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
           ) : (
             <table className="w-full">
               <tbody className="divide-y">
@@ -342,10 +396,10 @@ export function CustomerAccountPanel({ customerId }: { customerId: string }) {
           }}
         >
           <Field label={t('From')} htmlFor="statement-from">
-            <Input id="statement-from" type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+            <Input id="statement-from" type="date" max={to || undefined} value={from} onChange={(e) => setFrom(e.target.value)} />
           </Field>
           <Field label={t('To')} htmlFor="statement-to">
-            <Input id="statement-to" type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+            <Input id="statement-to" type="date" min={from || undefined} value={to} onChange={(e) => setTo(e.target.value)} />
           </Field>
           <Button type="submit" variant="outline" disabled={statementQuery.isPending || !from || !to}>
             {t('Show statement')}

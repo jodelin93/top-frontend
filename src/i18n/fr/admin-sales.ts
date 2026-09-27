@@ -297,6 +297,7 @@ export const adminSales: Record<string, string> = {
   'other': 'autre',
   'Provider for {name}': 'Prestataire pour {name}',
   'Detailed reports for any period, with CSV and Excel export, plus a reconciliation check.': 'Rapports détaillés pour n\'importe quelle période, avec export CSV et Excel, ainsi qu\'un contrôle de rapprochement.',
+  Report: 'Rapport',
   'Reconciliation': 'Rapprochement',
   'Loading reports...': 'Chargement des rapports...',
   'Shows the current state; the date range does not apply.': 'Affiche l\'état actuel ; la période choisie ne s\'applique pas.',

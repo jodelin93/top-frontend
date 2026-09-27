@@ -7,6 +7,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardField,
+  DataCardFields,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage } from '@/components/admin/page-header';
 import { CloseShiftDialog } from '@/components/shifts/close-shift-dialog';
 import { ZReportView } from '@/components/shifts/z-report';
@@ -183,6 +189,7 @@ function ShiftDetailBody({ shiftId, storeName }: { shiftId: string; storeName?: 
 
 function ShiftSummaryView({ shift, currency }: { shift: ShiftDetail; currency: string }) {
   const money = (v: number | null | undefined) => formatMoney(v, currency);
+  const smallScreen = useSmallScreen();
   const variance = shift.variance;
   // Per-sale rows live in the drawer ledger
   const movements = shift.movements.filter((m) => m.type !== 'sale');
@@ -260,6 +267,40 @@ function ShiftSummaryView({ shift, currency }: { shift: ShiftDetail; currency: s
 
       <div>
         <div className="mb-1 text-sm font-semibold">{t('Cash movements')}</div>
+        {smallScreen ? (
+          // Phones: one card per movement
+          <DataCards
+            items={movements}
+            getKey={(m) => m.id}
+            emptyText={t('No cash movements.')}
+            className="p-0"
+          >
+            {(m) => (
+              <>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="font-medium">{t(MOVEMENT_LABELS[m.type])}</div>
+                    <div className="text-xs text-gray-500">
+                      {formatDateTime(m.createdAt)} · {m.userName ?? '—'}
+                    </div>
+                  </div>
+                  <span
+                    className={cn('shrink-0 tabular-nums', isCashIn(m.type) ? 'text-green-700' : 'text-gray-900')}
+                  >
+                    {movesNoCash(m.type) ? '—' : `${isCashIn(m.type) ? '+' : '−'}${money(m.amount)}`}
+                  </span>
+                </div>
+                {m.reason && (
+                  <DataCardFields>
+                    <DataCardField label={t('Reason')} full>
+                      {m.reason}
+                    </DataCardField>
+                  </DataCardFields>
+                )}
+              </>
+            )}
+          </DataCards>
+        ) : (
         <Table>
           <THead>
             <tr>
@@ -288,6 +329,7 @@ function ShiftSummaryView({ shift, currency }: { shift: ShiftDetail; currency: s
             )}
           </TBody>
         </Table>
+        )}
       </div>
     </div>
   );

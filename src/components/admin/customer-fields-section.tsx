@@ -10,6 +10,14 @@ import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
 import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -64,6 +72,7 @@ export function CustomerFieldsSection() {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<CustomerFieldDefinition | 'new' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const { data: fields = [], isLoading, error: loadError } = useQuery({
     queryKey: ['customer-fields'],
@@ -75,6 +84,33 @@ export function CustomerFieldsSection() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['customer-fields'] }),
     onError: (err) => setError(getErrorMessage(err, 'Could not delete field')),
   });
+
+  // Edit / delete buttons, shared by the table row and the phone card
+  const rowActions = (field: CustomerFieldDefinition) => (
+    <>
+      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing(field)} aria-label={t('Edit {name}', { name: field.key })}>
+        <Pencil className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 text-red-600"
+        onClick={() => {
+          if (window.confirm(
+              t('Delete field "{label}"? Values already saved on customers are kept but hidden.', {
+                label: field.label,
+              })
+            )) {
+            setError(null);
+            remove.mutate(field);
+          }
+        }}
+        aria-label={t('Delete {name}', { name: field.key })}
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    </>
+  );
 
   return (
     <Card className="bg-white">
@@ -92,6 +128,34 @@ export function CustomerFieldsSection() {
       <div className="empty:hidden p-4 pb-0">
         <ErrorMessage>{error ?? (loadError && getErrorMessage(loadError, 'Could not load fields'))}</ErrorMessage>
       </div>
+      {smallScreen ? (
+        // Phones: one card per field instead of a table that scrolls sideways
+        <DataCards
+          items={fields}
+          getKey={(field) => field.id}
+          loading={isLoading}
+          loadingText={t('Loading fields...')}
+          emptyText={t('No custom fields yet.')}
+        >
+          {(field) => (
+            <>
+              <DataCardHeader
+                title={field.label}
+                subtitle={<span className="font-mono">{field.key}</span>}
+                badge={<Badge variant={field.isActive ? 'success' : 'warning'}>{field.isActive ? t('Active') : t('Hidden')}</Badge>}
+              />
+              <DataCardFields>
+                <DataCardField label={t('Type')}>
+                  {t(typeLabels[field.fieldType])}
+                  {field.options?.length ? <span className="text-gray-500"> ({field.options.join(', ')})</span> : null}
+                </DataCardField>
+                <DataCardField label={t('Required')}>{field.isRequired ? t('Yes') : t('No')}</DataCardField>
+              </DataCardFields>
+              <DataCardActions>{rowActions(field)}</DataCardActions>
+            </>
+          )}
+        </DataCards>
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -123,27 +187,7 @@ export function CustomerFieldsSection() {
                 </Td>
                 <Td>
                   <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing(field)} aria-label={t('Edit {name}', { name: field.key })}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-red-600"
-                      onClick={() => {
-                        if (window.confirm(
-                            t('Delete field "{label}"? Values already saved on customers are kept but hidden.', {
-                              label: field.label,
-                            })
-                          )) {
-                          setError(null);
-                          remove.mutate(field);
-                        }
-                      }}
-                      aria-label={t('Delete {name}', { name: field.key })}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {rowActions(field)}
                   </div>
                 </Td>
               </tr>
@@ -151,6 +195,7 @@ export function CustomerFieldsSection() {
           )}
         </TBody>
       </Table>
+      )}
 
       <FieldDialog
         key={editing === null ? 'closed' : editing === 'new' ? 'new' : editing.id}

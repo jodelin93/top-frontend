@@ -7,19 +7,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
+import { useSmallScreen } from '@/components/ui/data-cards';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { useLocationOptions } from '@/components/admin/settings-shared';
 import { useCurrency } from '@/hooks/use-store-settings';
 import { getErrorMessage } from '@/lib/api/client';
 import { purchaseOrdersApi, ReorderGroup, reorderApi } from '@/lib/api/purchasing';
-import { formatMoney } from '@/lib/format';
+import { formatMoney, addDaysLocalIso } from '@/lib/format';
 import { t } from '@/i18n';
 
-const addDaysIso = (days: number) => {
-  const date = new Date();
-  date.setDate(date.getDate() + days);
-  return date.toISOString().slice(0, 10);
-};
+const addDaysIso = (days: number) => addDaysLocalIso(days);
 
 /**
  * Products at or below their reorder point (counting what is already on order),
@@ -98,6 +95,7 @@ function ReorderGroupCard({
   );
   const [locationId, setLocationId] = useState(defaultLocationId);
   const [error, setError] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const create = useMutation({
     mutationFn: async () => {
@@ -133,10 +131,29 @@ function ReorderGroupCard({
       setError(err instanceof Error && !('response' in err) ? err.message : getErrorMessage(err, 'Could not create the order')),
   });
 
-  const total = group.lines.reduce(
-    (sum, l) => sum + (Number(quantities[l.variantId]) || 0) * (l.unitCost ?? 0),
-    0
+  // Shared by the table (desktop) and the phone cards
+  type Line = ReorderGroup['lines'][number];
+  const quantityInput = (line: Line, className?: string) => (
+    <Input
+      inputMode="numeric"
+      value={quantities[line.variantId] ?? ''}
+      onChange={(e) => setQuantities((prev) => ({ ...prev, [line.variantId]: e.target.value }))}
+      className={className}
+      aria-label={t('Quantity to order for {sku}', { sku: line.sku })}
+    />
   );
+  const lineProduct = (line: Line) => (
+    <>
+      <div className="font-medium">{line.productName}</div>
+      <div className="font-mono text-xs text-gray-500">
+        {line.sku}
+        {line.supplierSku && ` · ${line.supplierSku}`}
+        {line.minOrderQty && ` · ${t('min. {count}', { count: line.minOrderQty })}`}
+      </div>
+    </>
+  );
+
+  const total = group.lines.reduce((sum, l) => sum + (Number(quantities[l.variantId]) || 0) * (l.unitCost ?? 0), 0);
 
   return (
     <Card className="bg-white">
@@ -182,48 +199,61 @@ function ReorderGroupCard({
           <ErrorMessage>{error}</ErrorMessage>
         </div>
       )}
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
-            <tr>
-              <th className="px-4 py-2 font-medium">{t('Product')}</th>
-              <th className="px-3 py-2 text-right font-medium">{t('On hand')}</th>
-              <th className="px-3 py-2 text-right font-medium">{t('On order')}</th>
-              <th className="px-3 py-2 text-right font-medium">{t('Reorder point')}</th>
-              <th className="px-3 py-2 text-right font-medium">{t('Unit cost')}</th>
-              <th className="w-28 px-3 py-2 font-medium">{t('Order')}</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {group.lines.map((line) => (
-              <tr key={line.variantId}>
-                <td className="px-4 py-2">
-                  <div className="font-medium">{line.productName}</div>
-                  <div className="font-mono text-xs text-gray-500">
-                    {line.sku}
-                    {line.supplierSku && ` · ${line.supplierSku}`}
-                    {line.minOrderQty && ` · ${t('min. {count}', { count: line.minOrderQty })}`}
-                  </div>
-                </td>
-                <td className="px-3 py-2 text-right">{line.onHand}</td>
-                <td className="px-3 py-2 text-right">{line.onOrder}</td>
-                <td className="px-3 py-2 text-right">{line.reorderPoint}</td>
-                <td className="px-3 py-2 text-right">
-                  {line.unitCost != null ? formatMoney(line.unitCost, currency) : '—'}
-                </td>
-                <td className="px-3 py-2">
-                  <Input
-                    inputMode="numeric"
-                    value={quantities[line.variantId] ?? ''}
-                    onChange={(e) => setQuantities((prev) => ({ ...prev, [line.variantId]: e.target.value }))}
-                    aria-label={t('Quantity to order for {sku}', { sku: line.sku })}
-                  />
-                </td>
+      {smallScreen ? (
+        // Phones: one line per product with the quantity box in view (the table scrolls sideways)
+        <div className="divide-y">
+          {group.lines.map((line) => (
+            <div key={line.variantId} className="space-y-2 px-4 py-3 text-sm">
+              <div className="break-words">{lineProduct(line)}</div>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-600">
+                <span>
+                  {t('On hand')}: {line.onHand}
+                </span>
+                <span>
+                  {t('On order')}: {line.onOrder}
+                </span>
+                <span>
+                  {t('Reorder point')}: {line.reorderPoint}
+                </span>
+                <span>
+                  {t('Unit cost')}: {line.unitCost != null ? formatMoney(line.unitCost, currency) : '—'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span>{t('Order')}</span>
+                {quantityInput(line, 'h-10 w-28')}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
+              <tr>
+                <th className="px-4 py-2 font-medium">{t('Product')}</th>
+                <th className="px-3 py-2 text-right font-medium">{t('On hand')}</th>
+                <th className="px-3 py-2 text-right font-medium">{t('On order')}</th>
+                <th className="px-3 py-2 text-right font-medium">{t('Reorder point')}</th>
+                <th className="px-3 py-2 text-right font-medium">{t('Unit cost')}</th>
+                <th className="w-28 px-3 py-2 font-medium">{t('Order')}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="divide-y">
+              {group.lines.map((line) => (
+                <tr key={line.variantId}>
+                  <td className="px-4 py-2">{lineProduct(line)}</td>
+                  <td className="px-3 py-2 text-right">{line.onHand}</td>
+                  <td className="px-3 py-2 text-right">{line.onOrder}</td>
+                  <td className="px-3 py-2 text-right">{line.reorderPoint}</td>
+                  <td className="px-3 py-2 text-right">{line.unitCost != null ? formatMoney(line.unitCost, currency) : '—'}</td>
+                  <td className="px-3 py-2">{quantityInput(line)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
       <div className="border-t px-4 py-2 text-right text-sm text-gray-600">
         {t('Estimated total {amount}', { amount: formatMoney(Math.round(total * 100) / 100, currency) })}
       </div>

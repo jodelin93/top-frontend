@@ -36,6 +36,7 @@ import {
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
 import { currentLocale, t } from '@/i18n';
 import { SAME_REASON_LABELS } from '@/components/admin/customer-duplicates-section';
+import { todayLocalIso } from '@/lib/format';
 
 // zod messages are English; translated when shown
 const tr = (message?: string) => (message ? t(message) : undefined);
@@ -49,7 +50,10 @@ const customerSchema = z.object({
   email: z.union([z.literal(''), z.string().trim().email('Enter a valid email').max(255)]),
   phone: z.string().max(50),
   taxNumber: z.string().max(100),
-  dateOfBirth: z.string(),
+  dateOfBirth: z
+    .string()
+    .refine((v) => !v || v <= todayLocalIso(), 'The date cannot be in the future')
+    .refine((v) => !v || v >= '1900-01-01', 'The date cannot be before 1900'),
   creditLimit: z.string().regex(/^\d*(\.\d{0,2})?$/, 'Must be a positive amount'),
   paymentTermDays: z.string().regex(/^\d{0,4}$/, 'Must be a whole number of days'),
   creditHold: z.boolean(),
@@ -309,8 +313,8 @@ export function CustomerFormDialog({ open, onOpenChange, customer }: CustomerFor
               <Input id="phone" type="tel" {...register('phone')} />
             </Field>
 
-            <Field label={t('Date of birth')} htmlFor="dateOfBirth">
-              <Input id="dateOfBirth" type="date" {...register('dateOfBirth')} />
+            <Field label={t('Date of birth')} htmlFor="dateOfBirth" error={tr(errors.dateOfBirth?.message)}>
+              <Input id="dateOfBirth" type="date" min="1900-01-01" max={todayLocalIso()} {...register('dateOfBirth')} />
             </Field>
             {canSeeFinance && (
               <Field label={t('Credit limit')} htmlFor="creditLimit" error={tr(errors.creditLimit?.message)}>

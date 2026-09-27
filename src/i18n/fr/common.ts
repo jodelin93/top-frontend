@@ -48,6 +48,9 @@ export const common: Record<string, string> = {
   // Admin layout and navigation
   Admin: 'Administration',
   'Account security': 'Sécurité du compte',
+  'Open menu': 'Ouvrir le menu',
+  'Close menu': 'Fermer le menu',
+  'Admin menu': 'Menu d’administration',
   'Back to POS': 'Retour à la caisse',
   'Sign out': 'Se déconnecter',
   Sales: 'Ventes',

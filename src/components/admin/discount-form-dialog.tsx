@@ -25,6 +25,7 @@ import { LocalizedText, text } from '@/lib/api/crud';
 import { Discount, DiscountScope, DiscountType, discountsApi } from '@/lib/api/discounts';
 import { productsApi } from '@/lib/api/products';
 import { t } from '@/i18n';
+import { nowLocalInput } from '@/lib/format';
 
 const amount = z.string().regex(/^\d*(\.\d{0,4})?$/, 'Must be a positive number');
 const count = z.string().regex(/^\d*$/, 'Must be a whole number');
@@ -241,6 +242,11 @@ export function DiscountFormDialog({ open, onOpenChange, discount }: DiscountFor
 
   const onSubmit = async (data: DiscountFormData) => {
     setError(null);
+    // A new or changed end date can't already be over (an unchanged one is kept)
+    if (data.validTo && data.validTo !== toLocalInput(discount?.validTo) && data.validTo < nowLocalInput()) {
+      setError(t('The end date cannot be in the past'));
+      return;
+    }
     try {
       await save.mutateAsync(toInput(data, discount));
       handleOpenChange(false);
@@ -393,7 +399,7 @@ export function DiscountFormDialog({ open, onOpenChange, discount }: DiscountFor
               <Input id="validFrom" type="datetime-local" {...register('validFrom')} />
             </Field>
             <Field label={t('Valid until')} htmlFor="validTo" error={errors.validTo?.message && t(errors.validTo.message)}>
-              <Input id="validTo" type="datetime-local" {...register('validTo')} />
+              <Input id="validTo" type="datetime-local" min={isEdit ? undefined : nowLocalInput()} {...register('validTo')} />
             </Field>
 
             {isEdit && (

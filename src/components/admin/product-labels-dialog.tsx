@@ -22,6 +22,7 @@ import { usePrintDocument } from '@/lib/hardware/use-print-document';
 import { formatMoney } from '@/lib/format';
 import { Label, LabelLanguage, MAX_LABEL_COPIES, MAX_LABELS, productsApi } from '@/lib/api/products';
 import { LANGUAGES, plural, t, useLang } from '@/i18n';
+import { randomId } from '@/lib/uuid';
 
 interface LabelLine {
   variantId: string;
@@ -141,7 +142,7 @@ export function ProductLabelsDialog({ open, onOpenChange }: { open: boolean; onO
                   <ArrowLeft className="h-4 w-4" />
                   {t('Back')}
                 </Button>
-                <Button onClick={() => printer.print('label', crypto.randomUUID())} disabled={labels.length === 0}>
+                <Button onClick={() => printer.print('label', randomId())} disabled={labels.length === 0}>
                   <Printer className="h-4 w-4" />
                   {t('Print')}
                 </Button>

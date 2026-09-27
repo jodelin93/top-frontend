@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { ErrorMessage } from '@/components/admin/page-header';
 import { variantLabel, VariantPicker } from '@/components/admin/inventory-variant-picker';
+import { useSmallScreen } from '@/components/ui/data-cards';
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
 import { getErrorMessage } from '@/lib/api/client';
 import { Supplier, SupplierProduct, SupplierProductInput, supplierProductsApi } from '@/lib/api/purchasing';
@@ -54,6 +55,7 @@ export function SupplierProductsDialog({ supplier, onClose }: { supplier: Suppli
   const [rows, setRows] = useState<Row[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
+  const smallScreen = useSmallScreen();
 
   const { data, isLoading, error: loadError } = useQuery({
     queryKey: ['supplier-products', supplier.id],
@@ -64,6 +66,61 @@ export function SupplierProductsDialog({ supplier, onClose }: { supplier: Suppli
   const edit = (next: Row[]) => setRows(next);
   const update = (variantId: string, patch: Partial<Row>) =>
     edit(list.map((r) => (r.variantId === variantId ? { ...r, ...patch } : r)));
+
+  // Line inputs, shared by the table (desktop) and the cards (phones)
+  const supplierSkuInput = (row: Row, className?: string) => (
+    <Input
+      value={row.supplierSku}
+      disabled={!canManage}
+      maxLength={100}
+      onChange={(e) => update(row.variantId, { supplierSku: e.target.value })}
+      className={className}
+      aria-label={t('Supplier code for {sku}', { sku: row.sku })}
+    />
+  );
+  const lastCostInput = (row: Row, className?: string) => (
+    <Input
+      inputMode="decimal"
+      value={row.lastCost}
+      disabled={!canManage}
+      onChange={(e) => update(row.variantId, { lastCost: e.target.value })}
+      className={className}
+      aria-label={t('Last cost for {sku}', { sku: row.sku })}
+    />
+  );
+  const minOrderInput = (row: Row, className?: string) => (
+    <Input
+      inputMode="numeric"
+      value={row.minOrderQty}
+      disabled={!canManage}
+      onChange={(e) => update(row.variantId, { minOrderQty: e.target.value })}
+      className={className}
+      aria-label={t('Minimum order quantity for {sku}', { sku: row.sku })}
+    />
+  );
+  const preferredCheckbox = (row: Row) => (
+    <input
+      type="checkbox"
+      className="h-4 w-4"
+      checked={row.isPreferred}
+      disabled={!canManage}
+      onChange={(e) => update(row.variantId, { isPreferred: e.target.checked })}
+      aria-label={t('Preferred supplier for {sku}', { sku: row.sku })}
+    />
+  );
+  const removeButton = (row: Row) =>
+    canManage && (
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 text-red-600"
+        aria-label={t('Remove {sku}', { sku: row.sku })}
+        onClick={() => edit(list.filter((r) => r.variantId !== row.variantId))}
+      >
+        <X className="h-4 w-4" />
+      </Button>
+    );
 
   const save = useMutation({
     mutationFn: (items: SupplierProductInput[]) => supplierProductsApi.save(supplier.id, items),
@@ -143,6 +200,48 @@ export function SupplierProductsDialog({ supplier, onClose }: { supplier: Suppli
           />
         )}
 
+        {smallScreen ? (
+          // Phones: one card per product, every box in view (the table scrolls sideways)
+          <div className="space-y-2">
+            {isLoading ? (
+              <p className="rounded-md border p-3 text-center text-sm text-gray-400">{t('Loading...')}</p>
+            ) : list.length === 0 ? (
+              <p className="rounded-md border p-3 text-center text-sm text-gray-400">
+                {t('No products yet. Receiving goods from this supplier adds them automatically.')}
+              </p>
+            ) : (
+              list.map((row) => (
+                <div key={row.variantId} className="space-y-2 rounded-md border p-3 text-sm">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="break-words font-medium">{row.label}</div>
+                      <div className="font-mono text-xs text-gray-500">{row.sku}</div>
+                    </div>
+                    {removeButton(row)}
+                  </div>
+                  <label className="block space-y-1">
+                    <span className="text-xs text-gray-500">{t('Supplier code')}</span>
+                    {supplierSkuInput(row, 'h-10 w-full')}
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="block space-y-1">
+                      <span className="text-xs text-gray-500">{t('Last cost')}</span>
+                      {lastCostInput(row, 'h-10 w-full')}
+                    </label>
+                    <label className="block space-y-1">
+                      <span className="text-xs text-gray-500">{t('Min. order')}</span>
+                      {minOrderInput(row, 'h-10 w-full')}
+                    </label>
+                  </div>
+                  <label className="flex items-center gap-2">
+                    {preferredCheckbox(row)}
+                    <span>{t('Preferred')}</span>
+                  </label>
+                </div>
+              ))
+            )}
+          </div>
+        ) : (
         <div className="max-h-96 overflow-auto rounded-md border">
           <table className="w-full text-sm">
             <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
@@ -176,55 +275,19 @@ export function SupplierProductsDialog({ supplier, onClose }: { supplier: Suppli
                       <div className="font-mono text-xs text-gray-500">{row.sku}</div>
                     </td>
                     <td className="px-2 py-2">
-                      <Input
-                        value={row.supplierSku}
-                        disabled={!canManage}
-                        maxLength={100}
-                        onChange={(e) => update(row.variantId, { supplierSku: e.target.value })}
-                        aria-label={t('Supplier code for {sku}', { sku: row.sku })}
-                      />
+                      {supplierSkuInput(row)}
                     </td>
                     <td className="px-2 py-2">
-                      <Input
-                        inputMode="decimal"
-                        value={row.lastCost}
-                        disabled={!canManage}
-                        onChange={(e) => update(row.variantId, { lastCost: e.target.value })}
-                        aria-label={t('Last cost for {sku}', { sku: row.sku })}
-                      />
+                      {lastCostInput(row)}
                     </td>
                     <td className="px-2 py-2">
-                      <Input
-                        inputMode="numeric"
-                        value={row.minOrderQty}
-                        disabled={!canManage}
-                        onChange={(e) => update(row.variantId, { minOrderQty: e.target.value })}
-                        aria-label={t('Minimum order quantity for {sku}', { sku: row.sku })}
-                      />
+                      {minOrderInput(row)}
                     </td>
                     <td className="px-2 py-2 text-center">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4"
-                        checked={row.isPreferred}
-                        disabled={!canManage}
-                        onChange={(e) => update(row.variantId, { isPreferred: e.target.checked })}
-                        aria-label={t('Preferred supplier for {sku}', { sku: row.sku })}
-                      />
+                      {preferredCheckbox(row)}
                     </td>
                     <td className="px-2 py-2">
-                      {canManage && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-red-600"
-                          aria-label={t('Remove {sku}', { sku: row.sku })}
-                          onClick={() => edit(list.filter((r) => r.variantId !== row.variantId))}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      )}
+                      {removeButton(row)}
                     </td>
                   </tr>
                 ))
@@ -232,6 +295,7 @@ export function SupplierProductsDialog({ supplier, onClose }: { supplier: Suppli
             </tbody>
           </table>
         </div>
+        )}
 
         <DialogFooter className="sm:justify-between">
           <div>

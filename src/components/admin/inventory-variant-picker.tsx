@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useSmallScreen } from '@/components/ui/data-cards';
 import { useCurrency } from '@/hooks/use-store-settings';
 import { getErrorMessage } from '@/lib/api/client';
 import { text } from '@/lib/api/crud';
@@ -170,6 +171,7 @@ export function InventoryLineList({
   // Second quantity column for units that arrived damaged
   showDamaged?: boolean;
 }) {
+  const smallScreen = useSmallScreen();
   const update = (variantId: string, patch: Partial<InventoryLine>) =>
     onChange(lines.map((line) => (line.variantId === variantId ? { ...line, ...patch } : line)));
 
@@ -178,6 +180,86 @@ export function InventoryLineList({
       <p className="rounded-md border border-dashed px-3 py-4 text-center text-sm text-gray-400">
         {t('No products added yet. Search above and click Add.')}
       </p>
+    );
+  }
+
+  // The same inputs in the table and the phone cards
+  const quantityInput = (line: InventoryLine, className?: string) => (
+    <Input
+      inputMode="numeric"
+      value={line.quantity}
+      onChange={(e) => update(line.variantId, { quantity: e.target.value })}
+      aria-label={t('{label} for {sku}', { label: quantityLabel, sku: line.sku })}
+      className={className}
+    />
+  );
+  const damagedInput = (line: InventoryLine, className?: string) => (
+    <Input
+      inputMode="numeric"
+      placeholder="0"
+      value={line.damaged ?? ''}
+      onChange={(e) => update(line.variantId, { damaged: e.target.value })}
+      aria-label={t('Damaged quantity for {sku}', { sku: line.sku })}
+      className={className}
+    />
+  );
+  const costInput = (line: InventoryLine, className?: string) => (
+    <Input
+      inputMode="decimal"
+      placeholder={t('Optional')}
+      value={line.cost}
+      onChange={(e) => update(line.variantId, { cost: e.target.value })}
+      aria-label={t('Unit cost for {sku}', { sku: line.sku })}
+      className={className}
+    />
+  );
+  const removeButton = (line: InventoryLine) => (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      className="h-8 w-8 shrink-0 text-red-600 hover:text-red-700"
+      onClick={() => onChange(lines.filter((l) => l.variantId !== line.variantId))}
+      aria-label={t('Remove {sku}', { sku: line.sku })}
+    >
+      <X className="h-4 w-4" />
+    </Button>
+  );
+
+  if (smallScreen) {
+    // Phones: one card per line, every box in view (the table would scroll sideways)
+    return (
+      <div className="space-y-2">
+        {lines.map((line) => (
+          <div key={line.variantId} className="space-y-2 rounded-md border p-3 text-sm">
+            <div className="flex items-start gap-2">
+              <div className="min-w-0 flex-1">
+                <div className="break-words font-medium">{line.label}</div>
+                <div className="font-mono text-xs text-gray-500">{line.sku}</div>
+              </div>
+              {removeButton(line)}
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <label className="space-y-1">
+                <span className="text-xs text-gray-500">{quantityLabel}</span>
+                {quantityInput(line, 'h-10')}
+              </label>
+              {showDamaged && (
+                <label className="space-y-1">
+                  <span className="text-xs text-gray-500">{t('Damaged')}</span>
+                  {damagedInput(line, 'h-10')}
+                </label>
+              )}
+              {showCost && (
+                <label className="space-y-1">
+                  <span className="text-xs text-gray-500">{t('Unit cost')}</span>
+                  {costInput(line, 'h-10')}
+                </label>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     );
   }
 
@@ -200,48 +282,10 @@ export function InventoryLineList({
                 <div className="font-medium">{line.label}</div>
                 <div className="font-mono text-xs text-gray-500">{line.sku}</div>
               </td>
-              <td className="px-3 py-2">
-                <Input
-                  inputMode="numeric"
-                  value={line.quantity}
-                  onChange={(e) => update(line.variantId, { quantity: e.target.value })}
-                  aria-label={t('{label} for {sku}', { label: quantityLabel, sku: line.sku })}
-                />
-              </td>
-              {showDamaged && (
-                <td className="px-3 py-2">
-                  <Input
-                    inputMode="numeric"
-                    placeholder="0"
-                    value={line.damaged ?? ''}
-                    onChange={(e) => update(line.variantId, { damaged: e.target.value })}
-                    aria-label={t('Damaged quantity for {sku}', { sku: line.sku })}
-                  />
-                </td>
-              )}
-              {showCost && (
-                <td className="px-3 py-2">
-                  <Input
-                    inputMode="decimal"
-                    placeholder={t('Optional')}
-                    value={line.cost}
-                    onChange={(e) => update(line.variantId, { cost: e.target.value })}
-                    aria-label={t('Unit cost for {sku}', { sku: line.sku })}
-                  />
-                </td>
-              )}
-              <td className="px-3 py-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-red-600 hover:text-red-700"
-                  onClick={() => onChange(lines.filter((l) => l.variantId !== line.variantId))}
-                  aria-label={t('Remove {sku}', { sku: line.sku })}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </td>
+              <td className="px-3 py-2">{quantityInput(line)}</td>
+              {showDamaged && <td className="px-3 py-2">{damagedInput(line)}</td>}
+              {showCost && <td className="px-3 py-2">{costInput(line)}</td>}
+              <td className="px-3 py-2">{removeButton(line)}</td>
             </tr>
           ))}
         </tbody>

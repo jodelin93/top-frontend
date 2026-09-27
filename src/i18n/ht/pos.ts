@@ -490,4 +490,18 @@ export const pos: Record<string, string> = {
   'Keep cart and go back': 'Kenbe panye a epi retounen',
   'Continue with the new prices': 'Kontinye ak nouvo pri yo',
   'New prices applied: {before} → {after}.': 'Nouvo pri yo aplike: {before} → {after}.',
+  // Till on phones
+  '{count} item': '{count} atik',
+  '{count} items': '{count} atik',
+  'More actions': 'Plis aksyon',
+  'Till views': 'Vi kès la',
+  'Cart ({count})': 'Panye ({count})',
+  'Added: {product}': 'Ajoute: {product}',
+  'Search or scan a barcode...': 'Chèche oswa eskane yon kòd ba...',
+  'View cart: {items}, {total}': 'Wè panye a: {items}, {total}',
+  'Group discount ({name}, {percent}%)': 'Rabè gwoup ({name}, {percent}%)',
+  'Group discount ({percent}%)': 'Rabè gwoup ({percent}%)',
+  'Group {name}: group prices and a {percent}% group discount apply.': 'Gwoup {name}: pri gwoup la ak yon rabè gwoup {percent}% aplike.',
+  'Group {name}: group prices apply.': 'Gwoup {name}: pri gwoup la aplike.',
+  'Could not load the customer group prices. They are applied at checkout.': 'Pa t kapab chaje pri gwoup kliyan an. Y ap aplike yo lè w ap touche.',
 };

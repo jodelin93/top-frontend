@@ -11,6 +11,13 @@ import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
 import {
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
+import {
   Dialog,
   DialogContent,
   DialogFooter,
@@ -58,6 +65,7 @@ function ReturnsScreen() {
   // Opening from a sale ("Return items" in the sales history) starts a return right away
   const [creating, setCreating] = useState(!!saleFromLink);
   const [viewingId, setViewingId] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -125,6 +133,47 @@ function ReturnsScreen() {
           </div>
         )}
 
+        {smallScreen ? (
+          <DataCards
+            items={rows}
+            getKey={(row) => row.id}
+            onItemClick={(row) => setViewingId(row.id)}
+            loading={isLoading}
+            loadingText={t('Loading...')}
+            emptyText={debounced || status ? t('No returns match.') : t('No returns yet.')}
+          >
+            {(row) => (
+              <>
+                <DataCardHeader
+                  title={<span className="font-mono text-xs">{row.returnNumber}</span>}
+                  onTitleClick={() => setViewingId(row.id)}
+                  badge={
+                    <>
+                      {row.returnType && typeLabel[row.returnType] && (
+                        <Badge variant="default">{t(typeLabel[row.returnType])}</Badge>
+                      )}
+                      <Badge variant={statusLabel[row.status].variant}>{t(statusLabel[row.status].label)}</Badge>
+                    </>
+                  }
+                />
+                <DataCardFields>
+                  <DataCardField label={t('Date')}>{formatDateTime(row.createdAt)}</DataCardField>
+                  <DataCardField label={t('Refund')}>
+                    <span className="font-medium">{formatMoney(row.total, row.currencyCode)}</span>
+                  </DataCardField>
+                  <DataCardField label={t('Original sale')}>
+                    <span className="font-mono text-xs">{row.originalSale?.saleNumber ?? '—'}</span>
+                  </DataCardField>
+                  {row.reason && (
+                    <DataCardField label={t('Reason')} full>
+                      {row.reason}
+                    </DataCardField>
+                  )}
+                </DataCardFields>
+              </>
+            )}
+          </DataCards>
+        ) : (
         <Table>
           <THead>
             <tr>
@@ -166,6 +215,7 @@ function ReturnsScreen() {
             )}
           </TBody>
         </Table>
+        )}
 
         {meta && meta.totalPages > 1 && (
           <div className="flex items-center justify-between border-t p-3 text-sm text-gray-600">

@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useSmallScreen } from '@/components/ui/data-cards';
 import { ErrorMessage } from '@/components/admin/page-header';
 import { VariantPicker } from '@/components/admin/inventory-variant-picker';
 import { getErrorMessage } from '@/lib/api/client';
@@ -69,6 +70,7 @@ export function PriceListEntries({ priceList, onClose }: { priceList: PriceList;
   const [pickerOpen, setPickerOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const smallScreen = useSmallScreen();
 
   const { data: entries = [], isLoading, error: loadError } = useQuery({
     queryKey,
@@ -152,6 +154,48 @@ export function PriceListEntries({ priceList, onClose }: { priceList: PriceList;
 
   const existingIds = new Set([...entries.map((e) => e.variantId), ...added.map((r) => r.variantId)]);
 
+  // Saved and added prices, as table rows or (phones) cards
+  const renderRows = (card: boolean) => (
+    <>
+      {entries.map((entry) => {
+        const values = edits[entry.variantId] ?? entryValues(entry);
+        const changed = changedEntries.includes(entry);
+        return (
+          <PriceRow
+            key={entry.id}
+            card={card}
+            productName={text(entry.variant?.product?.name, '—')}
+            variantName={text(entry.variant?.name)}
+            sku={entry.variant?.sku ?? '—'}
+            basePrice={entry.variant?.price ?? null}
+            currency={currency}
+            values={values}
+            highlight={changed ? 'changed' : undefined}
+            onChange={(next) => setEdits({ ...edits, [entry.variantId]: next })}
+            onRemove={() => handleRemove(entry)}
+          />
+        );
+      })}
+      {added.map((row) => (
+        <PriceRow
+          key={row.variantId}
+          card={card}
+          productName={row.productName}
+          variantName={row.variantName}
+          sku={row.sku}
+          basePrice={row.basePrice}
+          currency={currency}
+          values={row}
+          highlight="new"
+          onChange={(next) =>
+            setAdded(added.map((r) => (r.variantId === row.variantId ? { ...r, ...next } : r)))
+          }
+          onRemove={() => setAdded(added.filter((r) => r.variantId !== row.variantId))}
+        />
+      ))}
+    </>
+  );
+
   return (
     <Card className="bg-white">
       <div className="flex flex-col gap-2 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -181,6 +225,18 @@ export function PriceListEntries({ priceList, onClose }: { priceList: PriceList;
         )}
       </div>
 
+      {smallScreen ? (
+        // Phones: one card per price with full-width inputs instead of a table that scrolls sideways
+        isLoading ? (
+          <p className="px-4 py-10 text-center text-sm text-gray-400">{t('Loading prices...')}</p>
+        ) : entries.length === 0 && added.length === 0 ? (
+          <p className="px-4 py-10 text-center text-sm text-gray-400">
+            {t('No prices yet. Click "Add products" to start.')}
+          </p>
+        ) : (
+          <div className="space-y-2 p-3">{renderRows(true)}</div>
+        )
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -198,45 +254,11 @@ export function PriceListEntries({ priceList, onClose }: { priceList: PriceList;
           ) : entries.length === 0 && added.length === 0 ? (
             <EmptyRow colSpan={6}>{t('No prices yet. Click "Add products" to start.')}</EmptyRow>
           ) : (
-            <>
-              {entries.map((entry) => {
-                const values = edits[entry.variantId] ?? entryValues(entry);
-                const changed = changedEntries.includes(entry);
-                return (
-                  <PriceRow
-                    key={entry.id}
-                    productName={text(entry.variant?.product?.name, '—')}
-                    variantName={text(entry.variant?.name)}
-                    sku={entry.variant?.sku ?? '—'}
-                    basePrice={entry.variant?.price ?? null}
-                    currency={currency}
-                    values={values}
-                    highlight={changed ? 'changed' : undefined}
-                    onChange={(next) => setEdits({ ...edits, [entry.variantId]: next })}
-                    onRemove={() => handleRemove(entry)}
-                  />
-                );
-              })}
-              {added.map((row) => (
-                <PriceRow
-                  key={row.variantId}
-                  productName={row.productName}
-                  variantName={row.variantName}
-                  sku={row.sku}
-                  basePrice={row.basePrice}
-                  currency={currency}
-                  values={row}
-                  highlight="new"
-                  onChange={(next) =>
-                    setAdded(added.map((r) => (r.variantId === row.variantId ? { ...r, ...next } : r)))
-                  }
-                  onRemove={() => setAdded(added.filter((r) => r.variantId !== row.variantId))}
-                />
-              ))}
-            </>
+            renderRows(false)
           )}
         </TBody>
       </Table>
+      )}
 
       <div className="flex items-center justify-end gap-2 border-t p-4">
         {hasChanges && (
@@ -298,6 +320,7 @@ export function PriceListEntries({ priceList, onClose }: { priceList: PriceList;
 }
 
 function PriceRow({
+  card,
   productName,
   variantName,
   sku,
@@ -308,6 +331,8 @@ function PriceRow({
   onChange,
   onRemove,
 }: {
+  /** Phones: a card with full-width inputs instead of a table row */
+  card?: boolean;
   productName: string;
   variantName: string;
   sku: string;
@@ -318,50 +343,86 @@ function PriceRow({
   onChange: (values: RowValues) => void;
   onRemove: () => void;
 }) {
+  const priceInput = (className?: string) => (
+    <Input
+      inputMode="decimal"
+      value={values.price}
+      onChange={(e) => onChange({ ...values, price: e.target.value })}
+      aria-label={t('List price for {sku}', { sku })}
+      className={className}
+    />
+  );
+  const minQuantityInput = (className?: string) => (
+    <Input
+      inputMode="numeric"
+      placeholder="1"
+      value={values.minQuantity}
+      onChange={(e) => onChange({ ...values, minQuantity: e.target.value })}
+      aria-label={t('Minimum quantity for {sku}', { sku })}
+      className={className}
+    />
+  );
+  const removeButton = (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="h-8 w-8 text-red-600 hover:text-red-700"
+      onClick={onRemove}
+      aria-label={t('Remove {sku}', { sku })}
+    >
+      <Trash2 className="h-4 w-4" />
+    </Button>
+  );
+  const name = (
+    <>
+      <div className="font-medium">
+        {productName}
+        {highlight === 'new' && (
+          <Badge variant="info" className="ml-2">
+            {t('New')}
+          </Badge>
+        )}
+      </div>
+      {variantName && <div className="text-xs text-gray-500">{variantName}</div>}
+    </>
+  );
+
+  if (card) {
+    return (
+      <div className={cn('space-y-2 rounded-lg border p-3 text-sm', highlight ? 'bg-blue-50/60' : 'bg-white')}>
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1 break-words">
+            {name}
+            <div className="font-mono text-xs text-gray-500">{sku}</div>
+          </div>
+          {removeButton}
+        </div>
+        <div className="text-xs text-gray-500">
+          {t('Base price')}: {basePrice == null ? '—' : formatMoney(basePrice, currency)}
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <label className="space-y-1">
+            <span className="text-xs text-gray-500">{t('List price')}</span>
+            {priceInput('h-10')}
+          </label>
+          <label className="space-y-1">
+            <span className="text-xs text-gray-500">{t('Min qty')}</span>
+            {minQuantityInput('h-10')}
+          </label>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <tr className={cn(highlight ? 'bg-blue-50/60' : 'hover:bg-gray-50')}>
-      <Td>
-        <div className="font-medium">
-          {productName}
-          {highlight === 'new' && (
-            <Badge variant="info" className="ml-2">
-              {t('New')}
-            </Badge>
-          )}
-        </div>
-        {variantName && <div className="text-xs text-gray-500">{variantName}</div>}
-      </Td>
+      <Td>{name}</Td>
       <Td className="font-mono text-xs">{sku}</Td>
       <Td className="text-right text-gray-600">{basePrice == null ? '—' : formatMoney(basePrice, currency)}</Td>
+      <Td>{priceInput()}</Td>
+      <Td>{minQuantityInput()}</Td>
       <Td>
-        <Input
-          inputMode="decimal"
-          value={values.price}
-          onChange={(e) => onChange({ ...values, price: e.target.value })}
-          aria-label={t('List price for {sku}', { sku })}
-        />
-      </Td>
-      <Td>
-        <Input
-          inputMode="numeric"
-          placeholder="1"
-          value={values.minQuantity}
-          onChange={(e) => onChange({ ...values, minQuantity: e.target.value })}
-          aria-label={t('Minimum quantity for {sku}', { sku })}
-        />
-      </Td>
-      <Td>
-        <div className="flex justify-end">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-red-600 hover:text-red-700"
-            onClick={onRemove}
-            aria-label={t('Remove {sku}', { sku })}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
+        <div className="flex justify-end">{removeButton}</div>
       </Td>
     </tr>
   );

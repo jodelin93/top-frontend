@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import { DataCardActions, DataCardField, DataCardFields, DataCards, useSmallScreen } from '@/components/ui/data-cards';
 import { ErrorMessage } from '@/components/admin/page-header';
 import { CustomerMergeDialog } from '@/components/admin/customer-merge-dialog';
 import { getErrorMessage } from '@/lib/api/client';
@@ -19,6 +20,21 @@ export const SAME_REASON_LABELS: Record<DuplicateReason, string> = {
   phone: 'same phone',
   name: 'same name',
 };
+
+function Reasons({ pair }: { pair: DuplicatePair }) {
+  return (
+    <div className="flex flex-wrap gap-1">
+      {pair.reasons.map((reason) => (
+        <Badge key={reason} variant={reason === 'name' ? 'warning' : 'info'}>
+          {t(SAME_REASON_LABELS[reason] ?? reason)}
+        </Badge>
+      ))}
+      {pair.reasons.length === 1 && pair.reasons[0] === 'name' && pair.score < 1 && (
+        <span className="text-xs text-gray-500">{t('{percent}% similar', { percent: Math.round(pair.score * 100) })}</span>
+      )}
+    </div>
+  );
+}
 
 function Who({ customer }: { customer: Customer }) {
   return (
@@ -36,6 +52,7 @@ function Who({ customer }: { customer: Customer }) {
 /** Likely duplicate customers to review and merge */
 export function CustomerDuplicatesSection() {
   const [merging, setMerging] = useState<DuplicatePair | null>(null);
+  const smallScreen = useSmallScreen();
   const { data: pairs = [], isLoading, error, refetch } = useQuery({
     queryKey: ['customer-duplicates'],
     queryFn: () => customersApi.duplicates(100),
@@ -53,6 +70,38 @@ export function CustomerDuplicatesSection() {
           <ErrorMessage>{getErrorMessage(error, 'Could not load duplicates')}</ErrorMessage>
         </div>
       )}
+      {smallScreen ? (
+        // Phones: one card per pair instead of a table that scrolls sideways
+        <DataCards
+          items={pairs}
+          getKey={(pair) => `${pair.a.id}-${pair.b.id}`}
+          loading={isLoading}
+          loadingText={t('Looking for duplicates...')}
+          emptyText={t('No likely duplicates found.')}
+        >
+          {(pair) => (
+            <>
+              <DataCardFields>
+                <DataCardField label={t('Customer')} full>
+                  <Who customer={pair.a} />
+                </DataCardField>
+                <DataCardField label={t('Possible duplicate')} full>
+                  <Who customer={pair.b} />
+                </DataCardField>
+                <DataCardField label={t('Why')} full>
+                  <Reasons pair={pair} />
+                </DataCardField>
+              </DataCardFields>
+              <DataCardActions>
+                <Button variant="outline" size="sm" onClick={() => setMerging(pair)}>
+                  <GitMerge className="h-4 w-4" />
+                  {t('Review & merge')}
+                </Button>
+              </DataCardActions>
+            </>
+          )}
+        </DataCards>
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -77,16 +126,7 @@ export function CustomerDuplicatesSection() {
                   <Who customer={pair.b} />
                 </Td>
                 <Td>
-                  <div className="flex flex-wrap gap-1">
-                    {pair.reasons.map((reason) => (
-                      <Badge key={reason} variant={reason === 'name' ? 'warning' : 'info'}>
-                        {t(SAME_REASON_LABELS[reason] ?? reason)}
-                      </Badge>
-                    ))}
-                    {pair.reasons.length === 1 && pair.reasons[0] === 'name' && pair.score < 1 && (
-                      <span className="text-xs text-gray-500">{t('{percent}% similar', { percent: Math.round(pair.score * 100) })}</span>
-                    )}
-                  </div>
+                  <Reasons pair={pair} />
                 </Td>
                 <Td>
                   <div className="flex justify-end">
@@ -101,6 +141,7 @@ export function CustomerDuplicatesSection() {
           )}
         </TBody>
       </Table>
+      )}
 
       <CustomerMergeDialog
         key={merging ? `${merging.a.id}-${merging.b.id}` : 'closed'}

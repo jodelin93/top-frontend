@@ -98,6 +98,28 @@ export function statusText(status: string): string {
       return t('failed|state');
     case 'posted':
       return t('posted|state');
+    case 'requested':
+      return t('requested|state');
+    case 'dispatched':
+      return t('dispatched|state');
+    case 'partially dispatched':
+      return t('partially dispatched|state');
+    case 'partially received':
+      return t('partially received|state');
+    case 'issued':
+      return t('issued|state');
+    case 'suspended':
+      return t('suspended|state');
+    case 'invited':
+      return t('invited|state');
+    case 'queued':
+      return t('queued|state');
+    case 'printing':
+      return t('printing|state');
+    case 'printed':
+      return t('printed|state');
+    case 'discontinued':
+      return t('discontinued|state');
     default:
       return status.replace(/_/g, ' ');
   }
@@ -108,6 +130,64 @@ export function statusText(status: string): string {
 
 // Entity names used by the server's generic messages ("Supplier not found"...)
 const entityName = (name: string) => exact(name) || name;
+
+// An action refused by a status check, as the verb to use in the sentence
+// ("A draft transfer cannot be dispatched", "Cannot pay an expense that is draft")
+function actionVerb(action: string): string {
+  switch (action.trim()) {
+    case 'edit':
+    case 'edited':
+      return t('edit|transition');
+    case 'submit':
+    case 'submitted':
+      return t('submit|transition');
+    case 'submitted for approval':
+      return t('submit for approval|transition');
+    case 'approve':
+    case 'approved':
+      return t('approve|transition');
+    case 'reject':
+    case 'rejected':
+      return t('reject|transition');
+    case 'dispatch':
+    case 'dispatched':
+      return t('dispatch|transition');
+    case 'receive':
+    case 'received':
+      return t('receive|transition');
+    case 'written off':
+      return t('write off|transition');
+    case 'cancel':
+    case 'cancelled':
+      return t('cancel|transition');
+    case 'issue':
+    case 'issued':
+      return t('issue|transition');
+    case 'revise':
+    case 'revised':
+      return t('revise|transition');
+    case 'close':
+    case 'closed':
+      return t('close|transition');
+    case 'pay':
+    case 'paid':
+      return t('pay|transition');
+    default:
+      return action;
+  }
+}
+
+// Field named by a class-validator message ("each value in tags" for arrays)
+const field = (m: RegExpMatchArray) => (m[1] ? t('each value in {field}', { field: m[2] }) : m[2]);
+const FIELD = '(each value in )?([\\w.[\\]-]+)';
+const validation = (rest: string) => new RegExp(`^${FIELD} ${rest}$`);
+
+// Permission keys listed by the server, as their names
+const permissionList = (keys: string) =>
+  keys
+    .split(', ')
+    .map((key) => permissionLabel(key))
+    .join(', ');
 
 const errorRules = (): Rule[] => [
   // Stock
@@ -254,7 +334,108 @@ const errorRules = (): Rule[] => [
   [/^(.+) is not a currency code$/, (m) => t('{code} is not a currency code', { code: m[1] })],
   [/^(.+) is the store currency; it needs no exchange rate$/, (m) => t('{code} is the store currency; it needs no exchange rate', { code: m[1] })],
   [/^The (.+) rate must be a positive number$/, (m) => t('The {code} rate must be a positive number', { code: m[1] })],
+  // Product import: problems of a row of the file
+  [/^Not imported: ([\s\S]+)$/, (m) => t('Not imported: {reason}', { reason: translateServerError(m[1]) })],
+  [/^Batch (\d+) of (\d+) failed: ([\s\S]+)$/, (m) => t('Batch {batch} of {total} failed: {reason}', { batch: m[1], total: m[2], reason: translateServerError(m[3]) })],
+  [/^Duplicate SKU \(also on line (\d+)\)$/, (m) => t('Duplicate SKU (also on line {line})', { line: m[1] })],
+  [/^Duplicate barcode \(also on line (\d+)\)$/, (m) => t('Duplicate barcode (also on line {line})', { line: m[1] })],
+  [/^Unknown category code "(.*)"$/, (m) => t('Unknown category code "{code}"', { code: m[1] })],
+  [/^Unknown tax category code "(.*)"$/, (m) => t('Unknown tax category code "{code}"', { code: m[1] })],
+  [/^product_type can't be changed by import \(the product is (\w+)\)$/, (m) => t("product_type can't be changed by import (the product is {type})", { type: m[1] })],
+  [/^(\w+) can only be imported for simple products; set it on the variants$/, (m) => t('{column} can only be imported for simple products; set it on the variants', { column: m[1] })],
+  [/^(\w+) must be a positive number \(got "(.*)"\)$/, (m) => t('{column} must be a positive number (got "{value}")', { column: m[1], value: m[2] })],
+  [/^(\w+) must be a whole number \(got "(.*)"\)$/, (m) => t('{column} must be a whole number (got "{value}")', { column: m[1], value: m[2] })],
+  [/^(\w+) must be one of (.+) \(got "(.*)"\)$/, (m) => t('{column} must be one of {values} (got "{value}")', { column: m[1], values: m[2], value: m[3] })],
+  [/^(\w+) is too large$/, (m) => t('{column} is too large', { column: m[1] })],
+  // Customer fields defined by the store (the field's name is the store's own)
+  [/^Unknown customer field "(.*)"$/, (m) => t('Unknown customer field "{key}"', { key: m[1] })],
+  [/^(?!(?:A|An|The|This|Your) )(.+) is longer than (\d+) characters$/, (m) => t('{name} is longer than {max} characters', { name: m[1], max: m[2] })],
+  [/^(?!(?:A|An|The|This|Your) )(.+) must be text$/, (m) => t('{name} must be text', { name: m[1] })],
+  [/^(?!(?:A|An|The|This|Your) )(.+) must be a date \(YYYY-MM-DD\)$/, (m) => t('{name} must be a date (YYYY-MM-DD)', { name: m[1] })],
+  [/^(?!(?:A|An|The|This|Your) )(.+) must be yes or no$/, (m) => t('{name} must be yes or no', { name: m[1] })],
+  [/^(?!(?:A|An|The|This|Your) )(.+) must be one of: (.*)$/, (m) => t('{name} must be one of: {values}', { name: m[1], values: m[2] })],
+  // Status checks (transfers, purchase orders, expenses, print jobs...)
+  [/^A (.+) transfer cannot be (.+)$/, (m) => t('A {status} transfer cannot be {action}', { status: statusText(m[1]), action: actionVerb(m[2]) })],
+  [/^A (.+) purchase order cannot be (.+)$/, (m) => t('A {status} purchase order cannot be {action}', { status: statusText(m[1]), action: actionVerb(m[2]) })],
+  [/^Cannot (\w+) an expense that is (\w+)$/, (m) => t('Cannot {action} an expense that is {status}', { action: actionVerb(m[1]), status: statusText(m[2]) })],
+  [/^Cannot mark a print job that is (\w+) as (\w+)$/, (m) => t('Cannot mark a print job that is {status} as {to}', { status: statusText(m[1]), to: statusText(m[2]) })],
+  [/^This case is already (\w+)$/, (m) => t('This case is already {status}', { status: statusText(m[1]) })],
+  [/^Only (.+) unit\(s\) can be dispatched on a line \((.+) given\)$/, (m) => t('Only {count} unit(s) can be dispatched on a line ({given} given)', { count: m[1], given: m[2] })],
+  [/^Only (.+) unit\(s\) can be received on a line \((.+) given\)$/, (m) => t('Only {count} unit(s) can be received on a line ({given} given)', { count: m[1], given: m[2] })],
+  [/^Only (.+) unit\(s\) can be written off on a line \((.+) given\)$/, (m) => t('Only {count} unit(s) can be written off on a line ({given} given)', { count: m[1], given: m[2] })],
+  // Inventory, catalog, purchasing, payments
+  [/^The store already uses (\w+)$/, (m) => t('The store already uses {method}', { method: m[1] === 'average' ? t('average cost|costing') : m[1] === 'fifo' ? 'FIFO' : m[1] })],
+  [/^Stock movement (.+) was already posted with another quantity$/, (m) => t('Stock movement {id} was already posted with another quantity', { id: m[1] })],
+  [/^(.+) is not a variant attribute$/, (m) => t('{name} is not a variant attribute', { name: m[1] })],
+  [/^(.+) is not an option of (.+)$/, (m) => t('{values} is not an option of {name}', { values: m[1], name: m[2] })],
+  [/^The check digit of this (.+) barcode is wrong: check it for a typo$/, (m) => t('The check digit of this {format} barcode is wrong: check it for a typo', { format: m[1] })],
+  [/^Unknown payment provider "(.*)"$/, (m) => t('Unknown payment provider "{name}"', { name: m[1] })],
+  [/^Payment provider (.+) is not available$/, (m) => t('Payment provider {name} is not available', { name: m[1] })],
+  [/^Row (\d+): (\w+) "(.*)" is not a valid amount$/, (m) => t('Row {row}: {column} "{value}" is not a valid amount', { row: m[1], column: m[2], value: m[3] })],
+  [/^Price (.+)% above the order \(tolerance (.+)%\)$/, (m) => t('Price {percent}% above the order (tolerance {tolerance}%)', { percent: m[1], tolerance: m[2] })],
+  [/^Billed (.+) unit\(s\) more than received and not yet invoiced$/, (m) => t('Billed {count} unit(s) more than received and not yet invoiced', { count: m[1] })],
+  // Sales: discounts and approvals
+  [/^Discounts above (.+)% need a manager(?:'s)? approval$/, (m) => t("Discounts above {max}% need a manager's approval", { max: m[1] })],
+  [/^Line (\d+): (.+)% discount \(limit (.+)%\)$/, (m) => t('Line {line}: {percent}% discount (limit {max}%)', { line: m[1], percent: m[2], max: m[3] })],
+  [/^Line (\d+): price (.+) → (.+)$/, (m) => t('Line {line}: price {from} → {to}', { line: m[1], from: m[2], to: m[3] })],
+  [/^Cart discount of (.+)% \(limit (.+)%\)$/, (m) => t('Cart discount of {percent}% (limit {max}%)', { percent: m[1], max: m[2] })],
+  [/^Minimum purchase of (.+) required for (.+)$/, (m) => t('Minimum purchase of {amount} required for {code}', { amount: m[1], code: m[2] })],
+  [/^No items in the cart qualify for (.+)$/, (m) => t('No items in the cart qualify for {code}', { code: m[1] })],
+  [/^A gift card code has (\d+) to (\d+) characters, with letters and digits$/, (m) => t('A gift card code has {min} to {max} characters, with letters and digits', { min: m[1], max: m[2] })],
+  [/^(.+) was not used on this sale$/, (m) => t('{method} was not used on this sale', { method: m[1] })],
+  [
+    /^Refunding to a different payment method than the sale was paid with needs a manager's approval \((.+)\)$/,
+    (m) => t("Refunding to a different payment method than the sale was paid with needs a manager's approval ({methods})", { methods: m[1] }),
+  ],
+  // Roles and reports
+  [
+    /^(.+): it includes permissions you do not have yourself \((.+)\)$/,
+    (m) => t('{action}: it includes permissions you do not have yourself ({permissions})', { action: translateServerError(m[1]), permissions: permissionList(m[2]) }),
+  ],
+  [/^Unknown permissions: (.+)$/, (m) => t('Unknown permissions: {permissions}', { permissions: m[1] })],
+  [/^Unknown report: (.+)$/, (m) => t('Unknown report: {key}', { key: m[1] })],
+  // Checks of the request's fields (class-validator); the field keeps its technical name
+  [/^property (\S+) should not exist$/, (m) => t('property {field} should not exist', { field: m[1] })],
+  [/^nested property (\S+) must be either object or array$/, (m) => t('nested property {field} must be either object or array', { field: m[1] })],
+  [validation('should not be empty'), (m) => t('{field} should not be empty', { field: field(m) })],
+  [validation('must be a string'), (m) => t('{field} must be a string', { field: field(m) })],
+  [validation('must be a UUID'), (m) => t('{field} must be a UUID', { field: field(m) })],
+  [validation('must be an email'), (m) => t('{field} must be an email', { field: field(m) })],
+  [validation('must be a boolean value'), (m) => t('{field} must be a boolean value', { field: field(m) })],
+  [validation('must be an integer number'), (m) => t('{field} must be an integer number', { field: field(m) })],
+  [validation('must be a number conforming to the specified constraints'), (m) => t('{field} must be a number', { field: field(m) })],
+  [validation('must be a number with at most 4 decimals'), (m) => t('{field} must be a number with at most 4 decimals', { field: field(m) })],
+  // Also the store's own customer fields ("Loyalty tier must be a number")
+  [/^(each value in )?(?!(?:A|An|The|This|Your) )(.+) must be a number$/, (m) => t('{field} must be a number', { field: field(m) })],
+  [validation('must be an array'), (m) => t('{field} must be an array', { field: field(m) })],
+  [validation('must be an object'), (m) => t('{field} must be an object', { field: field(m) })],
+  [validation('must be a valid ISO 8601 date string'), (m) => t('{field} must be a valid date', { field: field(m) })],
+  [validation('must be a valid enum value'), (m) => t('{field} must be a valid value', { field: field(m) })],
+  [validation('must not be less than (-?[\\d.]+)'), (m) => t('{field} must not be less than {min}', { field: field(m), min: m[3] })],
+  [validation('must not be greater than (-?[\\d.]+)'), (m) => t('{field} must not be greater than {max}', { field: field(m), max: m[3] })],
+  [
+    validation('must be longer than or equal to (\\d+) and shorter than or equal to (\\d+) characters'),
+    (m) => t('{field} must be {min} to {max} characters long', { field: field(m), min: m[3], max: m[4] }),
+  ],
+  [validation('must be shorter than or equal to (\\d+) characters'), (m) => t('{field} must be at most {max} characters long', { field: field(m), max: m[3] })],
+  [validation('must be longer than or equal to (\\d+) characters'), (m) => t('{field} must be at least {min} characters long', { field: field(m), min: m[3] })],
+  [validation('must contain no more than (\\d+) elements'), (m) => t('{field} can have at most {max} items', { field: field(m), max: m[3] })],
+  [validation('must contain at least (\\d+) elements'), (m) => t('{field} needs at least {min} items', { field: field(m), min: m[3] })],
+  [validation('must be one of the following values: (.*)'), (m) => t('{field} must be one of these values: {values}', { field: field(m), values: m[3] })],
+  [validation('must match .+ regular expression'), (m) => t('{field} has an invalid format', { field: field(m) })],
+  [
+    validation('must be an object with (.+) keys and text values of at most (\\d+) characters'),
+    (m) => t('{field} must have a text for each language ({languages}) of at most {max} characters', { field: field(m), languages: m[3], max: m[4] }),
+  ],
+  [
+    validation('must be an object of at most (\\d+) bytes and (\\d+) levels deep'),
+    (m) => t('{field} must be an object of at most {bytes} bytes and {depth} levels deep', { field: field(m), bytes: m[3], depth: m[4] }),
+  ],
+  // Framework messages
+  [/^Cannot (GET|POST|PUT|PATCH|DELETE) (\S+)$/, (m) => t('This address does not exist ({request})', { request: `${m[1]} ${m[2]}` })],
   // Generic record messages ("Supplier not found"...)
+  [/^An? (.+) with this code already exists$/, (m) => t('{name}: this code already exists', { name: entityName(m[1].charAt(0).toUpperCase() + m[1].slice(1)) })],
+  [/^(?!(?:A|An|The|This|Your|No) )([^:]+) is required$/, (m) => t('{name} is required', { name: m[1] })],
   [/^(.+) is in use and cannot be deleted\. Deactivate it instead\.$/, (m) => t('{name} is in use and cannot be deleted. Deactivate it instead.', { name: entityName(m[1]) })],
   [/^(.+) not found$/, (m) => t('{name} not found', { name: entityName(m[1]) })],
 ];
@@ -338,6 +519,10 @@ const noteRules = (): Rule[] => [
   [/^Exchange credit refunded \(return (\S+)\)$/, (m) => t('Exchange credit refunded (return {number})', { number: m[1] })],
   // The due date is a calendar day: read at local midnight, not UTC
   [/^Invoice due (\d{4}-\d{2}-\d{2})$/, (m) => t('Invoice due {date}', { date: formatDate(`${m[1]}T00:00:00`) })],
+  [/^Handed over from (\S+)$/, (m) => t('Handed over from {number}', { number: m[1] })],
+  // Card settlement lines matched to payments
+  [/^Reference found but the amount differs \(payment (.+)\)$/, (m) => t('Reference found but the amount differs (payment {amount})', { amount: m[1] })],
+  [/^(\d+) payments have this amount; match it by hand$/, (m) => t('{count} payments have this amount; match it by hand', { count: m[1] })],
 ];
 
 /** A note the server wrote on an account entry or statement line ("Sale MAIN-000123") */

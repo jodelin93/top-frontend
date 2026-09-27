@@ -8,6 +8,13 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import { auditApi, AuditLogEntry } from '@/lib/api/audit';
 import { getErrorMessage } from '@/lib/api/client';
@@ -35,6 +42,7 @@ export default function AuditPage() {
   const [debounced, setDebounced] = useState('');
   const [page, setPage] = useState(1);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -99,6 +107,56 @@ export default function AuditPage() {
           </div>
         )}
 
+        {smallScreen ? (
+          // Phones: one card per event (tap for the details) instead of a table that scrolls sideways
+          <DataCards
+            items={rows}
+            getKey={(row) => row.id}
+            onItemClick={(row) => setExpanded(expanded === row.id ? null : row.id)}
+            loading={isLoading}
+            loadingText={t('Loading...')}
+            emptyText={t('No events match.')}
+          >
+            {(row) => (
+              <>
+                <DataCardHeader
+                  title={
+                    <span className="inline-flex items-center gap-1 font-mono text-xs">
+                      {expanded === row.id ? (
+                        <ChevronDown className="h-4 w-4 shrink-0" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4 shrink-0" />
+                      )}
+                      {row.action}
+                    </span>
+                  }
+                  subtitle={formatDateTime(row.createdAt)}
+                  onTitleClick={() => setExpanded(expanded === row.id ? null : row.id)}
+                />
+                <DataCardFields>
+                  <DataCardField label={t('Who')}>{row.actorName ?? t('System')}</DataCardField>
+                  <DataCardField label={t('Approved by')}>{row.approverName ?? '—'}</DataCardField>
+                  <DataCardField label={t('Target')} full>
+                    <span className="text-xs text-gray-600">
+                      {row.entityType}
+                      {row.entityId && <span className="block break-all font-mono">{row.entityId}</span>}
+                    </span>
+                  </DataCardField>
+                  {row.reason && (
+                    <DataCardField label={t('Reason')} full>
+                      {row.reason}
+                    </DataCardField>
+                  )}
+                </DataCardFields>
+                {expanded === row.id && (
+                  <div className="rounded-md bg-gray-50 p-3">
+                    <AuditDetails row={row} />
+                  </div>
+                )}
+              </>
+            )}
+          </DataCards>
+        ) : (
         <Table>
           <THead>
             <tr>
@@ -143,6 +201,7 @@ export default function AuditPage() {
             )}
           </TBody>
         </Table>
+        )}
 
         {meta && meta.totalPages > 1 && (
           <div className="flex items-center justify-between border-t p-3 text-sm text-gray-600">
@@ -172,7 +231,7 @@ function AuditDetails({ row }: { row: AuditLogEntry }) {
 
   return (
     <div className="space-y-2 text-xs">
-      <div className="text-gray-500">
+      <div className="break-all text-gray-500">
         {t('IP {ip} · request {request}', { ip: row.ip ?? '—', request: row.requestId ?? '—' })}
       </div>
       <div className="grid gap-3 md:grid-cols-2">
@@ -186,7 +245,7 @@ function AuditDetails({ row }: { row: AuditLogEntry }) {
 
 function JsonBlock({ title, value }: { title: string; value: unknown }) {
   return (
-    <div>
+    <div className="min-w-0">
       <div className="mb-1 font-semibold">{title}</div>
       <pre className="max-h-64 overflow-auto rounded border bg-white p-2">{JSON.stringify(value, null, 2)}</pre>
     </div>

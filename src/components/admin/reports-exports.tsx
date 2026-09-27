@@ -129,7 +129,7 @@ export function ExportJobsPanel({ reportTitle }: { reportTitle: (key: string) =>
         {jobs.map((job) => (
           <li key={job.id} className="flex flex-wrap items-center gap-3 px-3 py-2">
             <StatusIcon job={job} />
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 max-md:basis-40">
               <div className="truncate font-medium">
                 {reportTitle(job.reportKey)} · {FORMAT_LABELS[job.format]}
               </div>

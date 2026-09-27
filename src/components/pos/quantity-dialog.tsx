@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { Delete } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, dialogStickyFooter } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { formatMoney } from '@/lib/format';
 import { formatQuantity, parseQuantity, unitPrecision, type CatalogUnit } from '@/lib/pos/quantity';
@@ -156,7 +157,7 @@ function QuantityForm({
             <Delete className="h-5 w-5" aria-hidden />
           </Button>
         </div>
-        <div className="flex justify-end gap-2">
+        <div className={cn('flex justify-end gap-2', dialogStickyFooter)}>
           <Button type="button" variant="outline" className="h-11" onClick={onClose}>
             {t('Cancel')}
           </Button>

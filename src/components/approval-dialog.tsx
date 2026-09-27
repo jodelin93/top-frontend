@@ -5,13 +5,8 @@ import { ShieldAlert } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, dialogStickyFooter } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { APPROVAL_HEADER, approvablePermission, approvalAction, approvalsApi } from '@/lib/api/approvals';
 import { rolesApi } from '@/lib/api/roles';
@@ -185,7 +180,7 @@ function ApprovalDialog({
               autoComplete="off"
             />
           </Field>
-          <div className="flex justify-end gap-2">
+          <div className={cn('flex justify-end gap-2', dialogStickyFooter)}>
             <Button type="button" variant="outline" onClick={() => { reset(); onCancel(); }} disabled={busy}>
               {t('Cancel')}
             </Button>

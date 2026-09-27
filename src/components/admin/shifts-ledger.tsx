@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import { DataCards, useSmallScreen } from '@/components/ui/data-cards';
 import { ErrorMessage } from '@/components/admin/page-header';
 import { getErrorMessage } from '@/lib/api/client';
 import { MOVEMENT_LABELS, shiftsApi } from '@/lib/api/shifts';
@@ -20,6 +21,7 @@ export function ShiftLedgerPanel({ shiftId }: { shiftId: string }) {
     queryKey: ['shifts', 'ledger', shiftId],
     queryFn: () => shiftsApi.ledger(shiftId),
   });
+  const smallScreen = useSmallScreen();
 
   if (isLoading) return <p className="text-sm text-gray-500">{t('Loading...')}</p>;
   if (error || !data) return <ErrorMessage>{getErrorMessage(error, 'Could not load the drawer ledger')}</ErrorMessage>;
@@ -32,6 +34,43 @@ export function ShiftLedgerPanel({ shiftId }: { shiftId: string }) {
         {plural(data.noSaleCount, '{count} drawer opening without a sale', '{count} drawer openings without a sale')}
       </p>
       <div className="max-h-[50vh] overflow-y-auto">
+        {smallScreen ? (
+          // Phones: one card per ledger entry
+          <DataCards items={data.entries} getKey={(e) => e.id} emptyText={t('No cash movements.')} className="p-0">
+            {(e) => (
+              <>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="font-medium">
+                      {t(MOVEMENT_LABELS[e.type])}
+                      {!e.inExpectedCash && (
+                        <Badge variant="default" className="ml-1" title={t('Trace only: cash sales are counted from the payments')}>
+                          {t('not in expected')}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {formatDateTime(e.createdAt)} · {e.userName ?? '—'}
+                    </div>
+                  </div>
+                  <span
+                    className={cn(
+                      'shrink-0 tabular-nums',
+                      e.direction === 'in' ? 'text-green-700' : e.direction === 'none' ? 'text-gray-500' : 'text-gray-900'
+                    )}
+                  >
+                    {e.direction === 'none' ? '—' : `${e.direction === 'in' ? '+' : '−'}${money(e.amount)}`}
+                  </span>
+                </div>
+                {(e.reference || e.reason) && (
+                  <div className="break-words text-xs text-gray-600">
+                    {[e.reference, e.reason].filter(Boolean).join(' · ')}
+                  </div>
+                )}
+              </>
+            )}
+          </DataCards>
+        ) : (
         <Table>
           <THead>
             <tr>
@@ -72,6 +111,7 @@ export function ShiftLedgerPanel({ shiftId }: { shiftId: string }) {
             )}
           </TBody>
         </Table>
+        )}
       </div>
     </div>
   );

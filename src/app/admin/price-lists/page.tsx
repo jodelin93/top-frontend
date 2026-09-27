@@ -7,6 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge, statusVariant } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import { PriceListFormDialog, priceListTypes } from '@/components/admin/price-lists-form-dialog';
 import { PriceListEntries } from '@/components/admin/price-lists-entries';
@@ -54,6 +62,7 @@ export default function PriceListsPage() {
   const [editing, setEditing] = useState<PriceList | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const { data: priceLists = [], isLoading, error: loadError } = useQuery({
     queryKey: ['price-lists'],
@@ -117,6 +126,67 @@ export default function PriceListsPage() {
         <div className="empty:hidden p-4 pb-0">
           <ErrorMessage>{error ?? (loadError && getErrorMessage(loadError, 'Could not load price lists'))}</ErrorMessage>
         </div>
+        {smallScreen ? (
+          // Phones: one card per price list instead of a table that scrolls sideways
+          <DataCards
+            items={priceLists}
+            getKey={(priceList) => priceList.id}
+            onItemClick={(priceList) => setSelectedId(priceList.id)}
+            loading={isLoading}
+            loadingText={t('Loading price lists...')}
+            emptyText={t('No price lists yet. Create your first one.')}
+            itemClassName={(priceList) => (priceList.id === selectedId ? 'border-blue-300 bg-blue-50' : undefined)}
+          >
+            {(priceList) => (
+              <>
+                <DataCardHeader
+                  title={text(priceList.name, '—')}
+                  subtitle={<span className="font-mono">{priceList.code}</span>}
+                  onTitleClick={() => setSelectedId(priceList.id)}
+                  badge={
+                    <>
+                      <Badge variant={typeVariant[priceList.priceListType]}>
+                        {t(
+                          priceListTypes.find((type) => type.value === priceList.priceListType)?.label ??
+                            priceList.priceListType
+                        )}
+                      </Badge>
+                      <Badge variant={statusVariant(priceList.status)}>{t(statusLabels[priceList.status] ?? priceList.status)}</Badge>
+                    </>
+                  }
+                />
+                <DataCardFields>
+                  <DataCardField label={t('Currency')}>{priceList.currencyCode}</DataCardField>
+                  <DataCardField label={t('Priority')}>{priceList.priority}</DataCardField>
+                  <DataCardField label={t('Branch')}>
+                    {priceList.branchId ? branchNames.get(priceList.branchId) ?? '—' : t('All branches')}
+                  </DataCardField>
+                  <DataCardField label={t('Validity')}>{validity(priceList)}</DataCardField>
+                </DataCardFields>
+                <DataCardActions>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => openDialog(priceList)}
+                    aria-label={t('Edit {code}', { code: priceList.code })}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-red-600 hover:text-red-700"
+                    onClick={() => handleDelete(priceList)}
+                    aria-label={t('Delete {code}', { code: priceList.code })}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </DataCardActions>
+              </>
+            )}
+          </DataCards>
+        ) : (
         <Table>
           <THead>
             <tr>
@@ -190,6 +260,7 @@ export default function PriceListsPage() {
             )}
           </TBody>
         </Table>
+        )}
       </Card>
 
       {selected && (

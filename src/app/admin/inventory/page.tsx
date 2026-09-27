@@ -9,6 +9,13 @@ import { Select } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import { useLocationOptions } from '@/components/admin/settings-shared';
 import {
@@ -63,7 +70,7 @@ export default function InventoryPage() {
             aria-selected={tab === item.id}
             onClick={() => setTab(item.id)}
             className={cn(
-              '-mb-px border-b-2 px-4 py-2 text-sm font-medium',
+              '-mb-px shrink-0 whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium max-md:py-2.5',
               tab === item.id
                 ? 'border-blue-600 text-blue-700'
                 : 'border-transparent text-gray-500 hover:text-gray-800'
@@ -97,6 +104,7 @@ function StockTab() {
   const [result, setResult] = useState<InventoryResult | null>(null);
   const debouncedSearch = useDebouncedValue(search.trim());
   const threshold = settings?.lowStockThreshold ?? 5;
+  const smallScreen = useSmallScreen();
 
   const { data: rows = [], isLoading, error } = useQuery({
     queryKey: ['inventory', 'stock', debouncedSearch, locationId, lowStock, sellableOnly],
@@ -204,6 +212,81 @@ function StockTab() {
           </div>
         )}
 
+        {smallScreen ? (
+          // Phones: one card per product and location instead of a ten-column table
+          <DataCards
+            items={rows}
+            getKey={(row) => `${row.variantId}-${row.locationId}`}
+            loading={isLoading}
+            loadingText={t('Loading stock...')}
+            emptyText={
+              locations.length === 0
+                ? t('No stock locations yet. Create one under Settings → Warehouses & locations.')
+                : search || locationId || lowStock || sellableOnly
+                  ? t('No stock matches your filters.')
+                  : t('No products yet.')
+            }
+            itemClassName={(row) =>
+              row.quantityOnHand <= (row.reorderPoint ?? threshold) ? 'border-red-200 bg-red-50/60' : undefined
+            }
+          >
+            {(row) => {
+              const reorderAt = row.reorderPoint ?? threshold;
+              const isLow = row.quantityOnHand <= reorderAt;
+              const variantName = text(row.variantName);
+              const unit = stockRowUnit(row);
+              const qty = (value: number) => formatQuantity(Number(value), unit);
+              return (
+                <>
+                  <DataCardHeader
+                    title={text(row.productName, '—')}
+                    subtitle={
+                      <>
+                        {variantName && `${variantName} · `}
+                        <span className="font-mono">{row.sku}</span>
+                        {row.barcode && <span className="font-mono"> · {row.barcode}</span>}
+                      </>
+                    }
+                    badge={
+                      <>
+                        {row.stockStatus && row.stockStatus !== 'sellable' && (
+                          <Badge
+                            variant={row.stockStatus === 'damaged' ? 'danger' : 'warning'}
+                            title={t('Not available for sale')}
+                          >
+                            {t(stockStatusLabels[row.stockStatus])}
+                          </Badge>
+                        )}
+                        {isLow && (
+                          <Badge variant="danger" title={t('Reorder point: {count}', { count: reorderAt })}>
+                            {t('Low')}
+                          </Badge>
+                        )}
+                      </>
+                    }
+                  />
+                  <DataCardFields>
+                    <DataCardField label={t('Location')} full>
+                      {labelFor(row.locationId, row.locationName || row.locationCode)}
+                    </DataCardField>
+                    <DataCardField label={t('On hand')}>
+                      <span className={cn('font-medium', isLow && 'text-red-700')}>{qty(row.quantityOnHand)}</span>
+                    </DataCardField>
+                    <DataCardField label={t('Available')}>{qty(row.quantityAvailable)}</DataCardField>
+                    {Number(row.quantityReserved) > 0 && (
+                      <DataCardField label={t('Reserved')}>{qty(row.quantityReserved)}</DataCardField>
+                    )}
+                    {Number(row.quantityInTransit) > 0 && (
+                      <DataCardField label={t('In transit')}>{qty(row.quantityInTransit)}</DataCardField>
+                    )}
+                    <DataCardField label={t('Last counted')}>{formatDate(row.lastCountedAt)}</DataCardField>
+                    <DataCardField label={t('Last received')}>{formatDate(row.lastReceivedAt)}</DataCardField>
+                  </DataCardFields>
+                </>
+              );
+            }}
+          </DataCards>
+        ) : (
         <Table>
           <THead>
             <tr>
@@ -284,6 +367,7 @@ function StockTab() {
             )}
           </TBody>
         </Table>
+        )}
         {rows.length > 0 && (
           <p className="border-t px-4 py-2 text-xs text-gray-500">
             {t(
@@ -340,6 +424,7 @@ function MovementsTab() {
   const [locationId, setLocationId] = useState('');
   const [rebuilding, setRebuilding] = useState(false);
   const canAdjust = hasPermission(useAuthStore((s) => s.user), 'inventory.adjust');
+  const smallScreen = useSmallScreen();
 
   const { data: movements = [], isLoading, error } = useQuery({
     queryKey: ['inventory', 'movements', locationId],
@@ -403,6 +488,59 @@ function MovementsTab() {
         </div>
       )}
 
+      {smallScreen ? (
+        // Phones: one card per movement
+        <DataCards
+          items={movements}
+          getKey={(movement) => movement.id}
+          loading={isLoading}
+          loadingText={t('Loading movements...')}
+          emptyText={t('No stock movements yet.')}
+        >
+          {(movement) => {
+            const quantity = signedQuantity(movement);
+            const variantName = text(movement.variant?.name);
+            return (
+              <>
+                <DataCardHeader
+                  title={text(movement.variant?.product?.name, '—')}
+                  subtitle={
+                    <>
+                      {variantName && `${variantName} · `}
+                      <span className="font-mono">{movement.variant?.sku}</span>
+                    </>
+                  }
+                  badge={
+                    <Badge>{movementLabels[movement.movementType] ? t(movementLabels[movement.movementType]) : movement.movementType}</Badge>
+                  }
+                />
+                <DataCardFields>
+                  <DataCardField label={t('Date')}>{formatDateTime(movement.movementDate)}</DataCardField>
+                  <DataCardField label={t('Quantity')}>
+                    <span className={cn('font-medium', quantity.className)}>{quantity.text}</span>
+                  </DataCardField>
+                  <DataCardField label={t('Location')} full>
+                    {locationText(movement)}
+                  </DataCardField>
+                  {movement.referenceNumber && (
+                    <DataCardField label={t('Reference')} full>
+                      <span className="font-mono text-xs">{movement.referenceNumber}</span>
+                    </DataCardField>
+                  )}
+                  {(movement.notes || movement.movementType === 'revaluation') && (
+                    <DataCardField label={t('Notes')} full>
+                      {movement.movementType === 'revaluation' && (
+                        <RevaluationSummary movement={movement} currency={currency} />
+                      )}
+                      {movement.notes}
+                    </DataCardField>
+                  )}
+                </DataCardFields>
+              </>
+            );
+          }}
+        </DataCards>
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -454,6 +592,7 @@ function MovementsTab() {
           )}
         </TBody>
       </Table>
+      )}
     </Card>
   );
 }

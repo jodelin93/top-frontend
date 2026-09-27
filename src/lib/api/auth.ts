@@ -8,8 +8,8 @@ export interface LoginCredentials {
   password: string;
 }
 
+// The session token is never in the response: the API sets it as an HttpOnly cookie
 export interface LoginResponse {
-  accessToken: string;
   requiresMfa: boolean;
   // Signed in with a restricted token: the store requires two-factor for this role
   mfaSetupRequired?: boolean;
@@ -55,7 +55,7 @@ export const authApi = {
     return data;
   },
 
-  // Confirm MFA setup; returns a fresh, unrestricted token for this session
+  // Confirm MFA setup; the API re-issues an unrestricted session cookie
   confirmMfa: async (token: string): Promise<{ success: boolean; session?: LoginResponse }> => {
     const { data } = await apiClient.post('/auth/mfa/confirm', { token });
     return data;
@@ -73,9 +73,9 @@ export const authApi = {
     return data;
   },
 
-  // Revoke the session behind `token` (sent explicitly: the local copy is cleared at once)
-  logout: async (token: string): Promise<void> => {
-    await apiClient.post('/auth/logout', null, { headers: { Authorization: `Bearer ${token}` } });
+  // Revoke the current session; the API also clears the session cookie
+  logout: async (): Promise<void> => {
+    await apiClient.post('/auth/logout');
   },
 
   // Stores this account belongs to
@@ -84,7 +84,7 @@ export const authApi = {
     return data;
   },
 
-  // Continue the session in another store (new token)
+  // Continue the session in another store (the API re-issues the session cookie)
   switchStore: async (tenantId: string): Promise<LoginResponse> => {
     const { data } = await apiClient.post('/auth/switch-store', { tenantId });
     return data;

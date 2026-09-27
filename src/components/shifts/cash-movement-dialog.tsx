@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, dialogStickyFooter } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { useApproval } from '@/components/approval-dialog';
 import { getErrorMessage } from '@/lib/api/client';
@@ -117,7 +118,7 @@ function MovementForm({ shiftId, type, onClose }: { shiftId: string; type: Manua
             onChange={(e) => setReference(e.target.value)}
           />
         </Field>
-        <div className="flex justify-end gap-2">
+        <div className={cn('flex justify-end gap-2', dialogStickyFooter)}>
           <Button type="button" variant="outline" onClick={onClose} disabled={busy}>
             {t('Cancel')}
           </Button>

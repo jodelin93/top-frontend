@@ -9,6 +9,13 @@ import { Select } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
 import {
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -39,6 +46,7 @@ export function SupplierReturnsTab() {
   const [supplierId, setSupplierId] = useState('');
   const [creating, setCreating] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const { data: returns = [], isLoading, error } = useQuery({
     queryKey: ['supplier-returns', supplierId],
@@ -79,6 +87,39 @@ export function SupplierReturnsTab() {
           <ErrorMessage>{getErrorMessage(error, 'Could not load supplier returns')}</ErrorMessage>
         </div>
       )}
+      {smallScreen ? (
+        // Phones: one card per return instead of a table that scrolls sideways
+        <DataCards
+          items={returns}
+          getKey={(r) => r.id}
+          loading={isLoading}
+          loadingText={t('Loading...')}
+          emptyText={t('No supplier returns yet.')}
+        >
+          {(r) => (
+            <>
+              <DataCardHeader
+                title={<span className="font-mono text-xs">{r.returnNumber}</span>}
+                subtitle={r.supplier?.name ?? '—'}
+                badge={<span className="font-medium">{formatMoney(r.totalAmount, r.currencyCode)}</span>}
+              />
+              <DataCardFields>
+                <DataCardField label={t('Date')}>{formatDateTime(r.returnedAt)}</DataCardField>
+                <DataCardField label={t('Receipt')}>
+                  <span className="font-mono text-xs">{r.receipt?.receiptNumber ?? '—'}</span>
+                </DataCardField>
+                <DataCardField label={t('Units')}>{addQty(...r.items.map((i) => Number(i.quantity)))}</DataCardField>
+                <DataCardField label={t('Reason')} full>
+                  {r.reason}
+                  {r.reference && (
+                    <div className="text-xs text-gray-500">{t('RMA {reference}', { reference: r.reference })}</div>
+                  )}
+                </DataCardField>
+              </DataCardFields>
+            </>
+          )}
+        </DataCards>
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -114,6 +155,7 @@ export function SupplierReturnsTab() {
           )}
         </TBody>
       </Table>
+      )}
       {creating && (
         <SupplierReturnDialog
           initialSupplierId={supplierId}
@@ -146,6 +188,7 @@ function SupplierReturnDialog({
   const [reason, setReason] = useState('');
   const [reference, setReference] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const { data: receipts = [], isLoading } = useQuery({
     queryKey: ['goods-receipts', supplierId],
@@ -199,6 +242,29 @@ function SupplierReturnDialog({
       ...(reference.trim() && { reference: reference.trim() }),
     });
   };
+
+  // How many of a received line go back; shared by the table and the phone cards
+  const returnInput = (item: NonNullable<typeof receipt>['items'][number], className?: string) => (
+    <Input
+      inputMode="numeric"
+      placeholder="0"
+      disabled={item.returnable === 0}
+      value={quantities[item.id] ?? ''}
+      onChange={(e) => setQuantities((prev) => ({ ...prev, [item.id]: e.target.value }))}
+      className={className}
+      aria-label={t('Quantity to return for {sku}', { sku: item.sku })}
+    />
+  );
+  const itemDetails = (item: NonNullable<typeof receipt>['items'][number]) => (
+    <>
+      <div className="font-medium">{item.productName}</div>
+      <div className="font-mono text-xs text-gray-500">
+        {item.sku}
+        {item.condition === 'damaged' &&
+          ` · ${item.accepted ? t('damaged, accepted') : t('damaged, rejected (not in stock)')}`}
+      </div>
+    </>
+  );
 
   const total = (receipt?.items ?? []).reduce(
     (sum, i) => sum + (Number(quantities[i.id]) || 0) * Number(i.unitCost),
@@ -262,7 +328,35 @@ function SupplierReturnDialog({
             </Field>
           </div>
 
-          {receipt && (
+          {receipt && smallScreen && (
+            // Phones: one card per received line, the quantity box in view
+            <div className="space-y-2">
+              {receipt.items.map((item) => (
+                <div
+                  key={item.id}
+                  className={`space-y-2 rounded-md border p-3 text-sm ${item.returnable === 0 ? 'text-gray-400' : ''}`}
+                >
+                  <div className="break-words">{itemDetails(item)}</div>
+                  <div className="flex justify-between gap-2 text-xs text-gray-600">
+                    <span>
+                      {t('Received')}: {item.quantity}
+                    </span>
+                    <span>
+                      {t('Can return')}: {item.returnable}
+                    </span>
+                    <span>
+                      {t('Unit cost')}: {formatMoney(item.unitCost, currency)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span>{t('Return')}</span>
+                    {returnInput(item, 'h-10 w-24')}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {receipt && !smallScreen && (
             <div className="overflow-x-auto rounded-md border">
               <table className="w-full text-sm">
                 <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
@@ -277,26 +371,12 @@ function SupplierReturnDialog({
                 <tbody className="divide-y">
                   {receipt.items.map((item) => (
                     <tr key={item.id} className={item.returnable === 0 ? 'text-gray-400' : ''}>
-                      <td className="px-3 py-2">
-                        <div className="font-medium">{item.productName}</div>
-                        <div className="font-mono text-xs text-gray-500">
-                          {item.sku}
-                          {item.condition === 'damaged' &&
-                            ` · ${item.accepted ? t('damaged, accepted') : t('damaged, rejected (not in stock)')}`}
-                        </div>
-                      </td>
+                      <td className="px-3 py-2">{itemDetails(item)}</td>
                       <td className="px-3 py-2 text-right">{item.quantity}</td>
                       <td className="px-3 py-2 text-right">{item.returnable}</td>
                       <td className="px-3 py-2 text-right">{formatMoney(item.unitCost, currency)}</td>
                       <td className="px-3 py-2">
-                        <Input
-                          inputMode="numeric"
-                          placeholder="0"
-                          disabled={item.returnable === 0}
-                          value={quantities[item.id] ?? ''}
-                          onChange={(e) => setQuantities((prev) => ({ ...prev, [item.id]: e.target.value }))}
-                          aria-label={t('Quantity to return for {sku}', { sku: item.sku })}
-                        />
+                        {returnInput(item)}
                       </td>
                     </tr>
                   ))}

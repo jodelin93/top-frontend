@@ -3,6 +3,7 @@ import { useI18nStore } from '@/i18n';
 import {
   permissionLabel,
   roleLabel,
+  statusText as translateStatus,
   translateNotificationText,
   translateServerError,
   translateServerNote,
@@ -29,6 +30,52 @@ describe('server texts', () => {
     expect(named.startsWith('Apples: ')).toBe(true);
     expect(named).not.toContain('Quantity');
     expect(translateServerError('Some brand new message')).toBe('Some brand new message');
+  });
+
+  it('translate product import row problems, keeping columns and values', () => {
+    french();
+    expect(translateServerError('Duplicate SKU (also on line 4)')).toBe('SKU en double (aussi à la ligne 4)');
+    expect(translateServerError('price must be a positive number (got "abc")')).toBe('price doit être un nombre positif (reçu « abc »)');
+    expect(translateServerError('status must be one of active, inactive (got "old")')).toContain('active, inactive');
+    expect(translateServerError('Not imported: Unknown category code "FOOD"')).toBe('Non importé : Code de catégorie inconnu « FOOD »');
+    useI18nStore.setState({ personal: 'ht' });
+    expect(translateServerError('Unknown tax category code "VAT"')).toBe('Kòd kategori taks "VAT" enkoni');
+    useI18nStore.setState({ personal: 'es' });
+    expect(translateServerError('cost can only be imported for simple products; set it on the variants')).toBe(
+      'cost solo se puede importar para productos simples; defínalo en las variantes'
+    );
+  });
+
+  it('translate status checks with their state and action', () => {
+    french();
+    expect(translateServerError('A partially dispatched transfer cannot be edited')).toBe(
+      'Impossible de modifier un transfert au statut « partiellement expédié »'
+    );
+    expect(translateServerError('Cannot pay an expense that is draft')).toBe('Impossible de payer une dépense au statut « brouillon »');
+    useI18nStore.setState({ personal: 'ht' });
+    expect(translateServerError('A pending approval purchase order cannot be received')).toBe(
+      `Ou pa ka resevwa yon bon kòmand ki gen estati « ${translateStatus('pending approval')} »`
+    );
+    useI18nStore.setState({ personal: 'es' });
+    expect(translateServerError('Only 3 unit(s) can be written off on a line (5 given)')).toBe(
+      'Solo se pueden dar de baja 3 unidad(es) en una línea (se indicaron 5)'
+    );
+    expect(translateServerError('You cannot create this role: it includes permissions you do not have yourself (sales.void)')).not.toMatch(
+      /permissions you|sales\.void/
+    );
+  });
+
+  it('translate class-validator messages, keeping the field name', () => {
+    french();
+    expect(translateServerError('email must be an email')).toBe('email doit être une adresse e-mail');
+    expect(translateServerError('each value in tags must be a string')).toBe('chaque valeur de tags doit être du texte');
+    expect(translateServerError('items.0.quantity must not be less than 0')).toBe('items.0.quantity ne doit pas être inférieur à 0');
+    useI18nStore.setState({ personal: 'ht' });
+    expect(translateServerError('name should not be empty')).toBe('name pa dwe vid');
+    useI18nStore.setState({ personal: 'es' });
+    expect(translateServerError('price must be a number conforming to the specified constraints')).toBe('price debe ser un número');
+    expect(translateServerError('property foo should not exist')).toBe('el campo foo no está permitido');
+    expect(translateServerError('code must be shorter than or equal to 50 characters')).toBe('code debe tener como máximo 50 caracteres');
   });
 
   it('translate notifications line by line', () => {

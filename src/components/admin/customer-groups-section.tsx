@@ -10,6 +10,14 @@ import { Select } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
 import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -49,6 +57,7 @@ export function CustomerGroupsSection() {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<CustomerGroup | 'new' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const { data: groups = [], isLoading, error: loadError } = useQuery({
     queryKey: ['customer-groups'],
@@ -62,6 +71,29 @@ export function CustomerGroupsSection() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['customer-groups'] }),
     onError: (err) => setError(getErrorMessage(err, 'Could not delete group')),
   });
+
+  // Edit / delete buttons, shared by the table row and the phone card
+  const rowActions = (group: CustomerGroup) => (
+    <>
+      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing(group)} aria-label={t('Edit {name}', { name: group.code })}>
+        <Pencil className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 text-red-600"
+        onClick={() => {
+          if (window.confirm(t('Delete group "{name}"? Its customers will have no group.', { name: group.name }))) {
+            setError(null);
+            remove.mutate(group);
+          }
+        }}
+        aria-label={t('Delete {name}', { name: group.code })}
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    </>
+  );
 
   return (
     <Card className="bg-white">
@@ -82,6 +114,33 @@ export function CustomerGroupsSection() {
       <div className="empty:hidden p-4 pb-0">
         <ErrorMessage>{error ?? (loadError && getErrorMessage(loadError, 'Could not load groups'))}</ErrorMessage>
       </div>
+      {smallScreen ? (
+        // Phones: one card per group instead of a table that scrolls sideways
+        <DataCards
+          items={groups}
+          getKey={(group) => group.id}
+          loading={isLoading}
+          loadingText={t('Loading groups...')}
+          emptyText={t('No customer groups yet.')}
+        >
+          {(group) => (
+            <>
+              <DataCardHeader
+                title={group.name}
+                subtitle={<span className="font-mono">{group.code}</span>}
+                badge={<Badge variant={group.isActive ? 'success' : 'warning'}>{group.isActive ? t('Active') : t('Inactive')}</Badge>}
+              />
+              <DataCardFields>
+                <DataCardField label={t('Price list')}>
+                  {group.priceListId ? (priceListNames.get(group.priceListId) ?? '—') : '—'}
+                </DataCardField>
+                <DataCardField label={t('Discount')}>{Number(group.discountPercent)}%</DataCardField>
+              </DataCardFields>
+              <DataCardActions>{rowActions(group)}</DataCardActions>
+            </>
+          )}
+        </DataCards>
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -110,23 +169,7 @@ export function CustomerGroupsSection() {
                 </Td>
                 <Td>
                   <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditing(group)} aria-label={t('Edit {name}', { name: group.code })}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-red-600"
-                      onClick={() => {
-                        if (window.confirm(t('Delete group "{name}"? Its customers will have no group.', { name: group.name }))) {
-                          setError(null);
-                          remove.mutate(group);
-                        }
-                      }}
-                      aria-label={t('Delete {name}', { name: group.code })}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {rowActions(group)}
                   </div>
                 </Td>
               </tr>
@@ -134,6 +177,7 @@ export function CustomerGroupsSection() {
           )}
         </TBody>
       </Table>
+      )}
 
       <GroupDialog
         key={editing === null ? 'closed' : editing === 'new' ? 'new' : editing.id}

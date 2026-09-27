@@ -10,6 +10,14 @@ import { Card } from '@/components/ui/card';
 import { Badge, statusVariant } from '@/components/ui/badge';
 import { Table, THead, TBody, Th, Td, EmptyRow } from '@/components/ui/table';
 import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -30,6 +38,7 @@ import { formatDate, formatDateTime, formatMoney } from '@/lib/format';
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
 import { useStoreSettings } from '@/hooks/use-store-settings';
 import { t } from '@/i18n';
+import { translateServerNote } from '@/lib/server-texts';
 
 // Amounts in the store's currency
 function useMoney() {
@@ -171,6 +180,7 @@ function Unmatched({ provider, onProvider }: { provider: string; onProvider: (va
 
   const lines = data?.lines ?? [];
   const payments = data?.payments ?? [];
+  const smallScreen = useSmallScreen();
 
   return (
     <Card className="bg-white">
@@ -201,9 +211,40 @@ function Unmatched({ provider, onProvider }: { provider: string; onProvider: (va
         </div>
       )}
 
-      <div className="grid gap-0 lg:grid-cols-2 lg:divide-x">
+      <div className="grid grid-cols-1 gap-0 lg:grid-cols-2 lg:divide-x">
         <div>
           <h3 className="px-4 pt-3 text-sm font-medium">{t('Settlement lines without a payment ({count})', { count: lines.length })}</h3>
+          {smallScreen ? (
+            <DataCards
+              items={lines}
+              getKey={(line) => line.id}
+              loading={isLoading}
+              loadingText={t('Loading...')}
+              emptyText={t('Nothing to resolve.')}
+            >
+              {(line) => (
+                <>
+                  <DataCardHeader
+                    title={
+                      <span className="font-mono text-xs">
+                        {line.reference || <span className="text-gray-400">{t('no reference')}</span>}
+                      </span>
+                    }
+                    subtitle={line.resolutionNote && <span className="text-amber-700">{translateServerNote(line.resolutionNote)}</span>}
+                  />
+                  <DataCardFields>
+                    <DataCardField label={t('Settled')}>{formatDate(line.settledDate)}</DataCardField>
+                    <DataCardField label={t('Amount')}>{money(line.amount)}</DataCardField>
+                  </DataCardFields>
+                  <DataCardActions>
+                    <Button size="sm" variant="outline" onClick={() => setResolving({ kind: 'line', line })}>
+                      {t('Resolve')}
+                    </Button>
+                  </DataCardActions>
+                </>
+              )}
+            </DataCards>
+          ) : (
           <Table>
             <THead>
               <tr>
@@ -223,7 +264,7 @@ function Unmatched({ provider, onProvider }: { provider: string; onProvider: (va
                   <tr key={line.id}>
                     <Td className="font-mono text-xs">
                       {line.reference || <span className="text-gray-400">{t('no reference')}</span>}
-                      {line.resolutionNote && <div className="font-sans text-amber-700">{line.resolutionNote}</div>}
+                      {line.resolutionNote && <div className="font-sans text-amber-700">{translateServerNote(line.resolutionNote)}</div>}
                     </Td>
                     <Td className="whitespace-nowrap">{formatDate(line.settledDate)}</Td>
                     <Td className="text-right">{money(line.amount)}</Td>
@@ -237,9 +278,39 @@ function Unmatched({ provider, onProvider }: { provider: string; onProvider: (va
               )}
             </TBody>
           </Table>
+          )}
         </div>
         <div>
           <h3 className="px-4 pt-3 text-sm font-medium">{t('Card payments not yet settled ({count})', { count: payments.length })}</h3>
+          {smallScreen ? (
+            <DataCards
+              items={payments}
+              getKey={(payment) => payment.id}
+              loading={isLoading}
+              loadingText={t('Loading...')}
+              emptyText={t('Every card payment is reconciled.')}
+            >
+              {(payment) => (
+                <>
+                  <DataCardHeader
+                    title={<span className="font-mono text-xs">{payment.saleNumber}</span>}
+                    subtitle={`${formatDateTime(payment.paymentDate)} · ${text(payment.methodName, payment.provider)}`}
+                  />
+                  <DataCardFields>
+                    <DataCardField label={t('Reference')}>
+                      <span className="font-mono text-xs">{payment.providerReference ?? payment.reference ?? '—'}</span>
+                    </DataCardField>
+                    <DataCardField label={t('Amount')}>{money(payment.amount)}</DataCardField>
+                  </DataCardFields>
+                  <DataCardActions>
+                    <Button size="sm" variant="outline" onClick={() => setResolving({ kind: 'payment', payment })}>
+                      {t('Resolve')}
+                    </Button>
+                  </DataCardActions>
+                </>
+              )}
+            </DataCards>
+          ) : (
           <Table>
             <THead>
               <tr>
@@ -275,6 +346,7 @@ function Unmatched({ provider, onProvider }: { provider: string; onProvider: (va
               )}
             </TBody>
           </Table>
+          )}
         </div>
       </div>
       <ResolveDialog target={resolving} payments={payments} onClose={() => setResolving(null)} />
@@ -394,6 +466,7 @@ function Batches({ onOpen }: { onOpen: (id: string) => void }) {
     queryFn: () => paymentsApi.batches({ limit: 25 }),
   });
   const batches = data?.data ?? [];
+  const smallScreen = useSmallScreen();
 
   return (
     <Card className="bg-white">
@@ -405,6 +478,35 @@ function Batches({ onOpen }: { onOpen: (id: string) => void }) {
           <ErrorMessage>{getErrorMessage(error, 'Could not load batches')}</ErrorMessage>
         </div>
       )}
+      {smallScreen ? (
+        <DataCards
+          items={batches}
+          getKey={(batch) => batch.id}
+          onItemClick={(batch) => onOpen(batch.id)}
+          loading={isLoading}
+          loadingText={t('Loading...')}
+          emptyText={t('No settlement imported yet.')}
+        >
+          {(batch) => (
+            <>
+              <DataCardHeader
+                title={formatDateTime(batch.createdAt)}
+                subtitle={[batch.provider, batch.reference].filter(Boolean).join(' · ')}
+                onTitleClick={() => onOpen(batch.id)}
+                badge={
+                  <Badge variant={batch.matchedCount === batch.lineCount ? 'success' : 'warning'}>
+                    {batch.matchedCount}/{batch.lineCount}
+                  </Badge>
+                }
+              />
+              <DataCardFields>
+                <DataCardField label={t('Amount')}>{money(batch.totalAmount)}</DataCardField>
+                <DataCardField label={t('Fees')}>{money(batch.totalFees)}</DataCardField>
+              </DataCardFields>
+            </>
+          )}
+        </DataCards>
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -445,6 +547,7 @@ function Batches({ onOpen }: { onOpen: (id: string) => void }) {
           )}
         </TBody>
       </Table>
+      )}
     </Card>
   );
 }
@@ -456,6 +559,7 @@ function BatchDialog({ batchId, onClose }: { batchId: string | null; onClose: ()
     queryFn: () => paymentsApi.batch(batchId!),
     enabled: !!batchId,
   });
+  const smallScreen = useSmallScreen();
 
   return (
     <Dialog open={!!batchId} onOpenChange={(open) => !open && onClose()}>
@@ -476,6 +580,37 @@ function BatchDialog({ batchId, onClose }: { batchId: string | null; onClose: ()
         </DialogHeader>
         {error && <ErrorMessage>{getErrorMessage(error, 'Could not load the batch')}</ErrorMessage>}
         <div className="max-h-[60vh] overflow-y-auto">
+          {smallScreen ? (
+            <DataCards
+              items={batch?.lines ?? []}
+              getKey={(line) => line.id}
+              loading={isLoading}
+              loadingText={t('Loading...')}
+              className="p-0"
+            >
+              {(line) => (
+                <>
+                  <DataCardHeader
+                    title={<span className="font-mono text-xs">{line.reference || '—'}</span>}
+                    subtitle={line.resolutionNote ? translateServerNote(line.resolutionNote) : undefined}
+                    badge={
+                      <Badge variant={line.status === 'unmatched' ? 'warning' : statusVariant('completed')}>
+                        {t(line.status)}
+                      </Badge>
+                    }
+                  />
+                  <DataCardFields>
+                    <DataCardField label={t('Settled')}>{formatDate(line.settledDate)}</DataCardField>
+                    <DataCardField label={t('Sale')}>
+                      <span className="font-mono text-xs">{line.saleNumber ?? '—'}</span>
+                    </DataCardField>
+                    <DataCardField label={t('Amount')}>{money(line.amount)}</DataCardField>
+                    <DataCardField label={t('Fee')}>{money(line.fee)}</DataCardField>
+                  </DataCardFields>
+                </>
+              )}
+            </DataCards>
+          ) : (
           <Table>
             <THead>
               <tr>
@@ -495,7 +630,7 @@ function BatchDialog({ batchId, onClose }: { batchId: string | null; onClose: ()
                   <tr key={line.id}>
                     <Td className="font-mono text-xs">
                       {line.reference || '—'}
-                      {line.resolutionNote && <div className="font-sans text-gray-500">{line.resolutionNote}</div>}
+                      {line.resolutionNote && <div className="font-sans text-gray-500">{translateServerNote(line.resolutionNote)}</div>}
                     </Td>
                     <Td className="whitespace-nowrap">{formatDate(line.settledDate)}</Td>
                     <Td className="text-right">{money(line.amount)}</Td>
@@ -511,6 +646,7 @@ function BatchDialog({ batchId, onClose }: { batchId: string | null; onClose: ()
               )}
             </TBody>
           </Table>
+          )}
         </div>
       </DialogContent>
     </Dialog>
@@ -554,14 +690,14 @@ function ProviderSettings() {
       ) : (
         <ul className="divide-y rounded-md border">
           {cardMethods.map((method) => (
-            <li key={method.id} className="flex items-center justify-between gap-3 p-3">
+            <li key={method.id} className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
               <span>
                 {text(method.name, method.code)} <span className="text-xs text-gray-500">({t(method.methodType)})</span>
               </span>
               <Select
                 value={method.provider ?? 'manual'}
                 onChange={(e) => update.mutate({ id: method.id, provider: e.target.value })}
-                className="w-56"
+                className="sm:w-56"
                 aria-label={t('Provider for {name}', { name: text(method.name, method.code) })}
                 disabled={update.isPending}
               >

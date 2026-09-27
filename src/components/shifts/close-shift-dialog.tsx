@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, dialogStickyFooter } from '@/components/ui/dialog';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { useApproval } from '@/components/approval-dialog';
 import { getErrorMessage } from '@/lib/api/client';
@@ -20,13 +20,12 @@ import { usePrintDocument } from '@/lib/hardware/use-print-document';
 import { CountState, countsFromState, DenominationCountForm, useDenominations } from './denomination-count';
 import { ZReportView } from './z-report';
 import { t } from '@/i18n';
+import { randomId } from '@/lib/uuid';
 
 type Step = 'start' | 'count' | 'review' | 'done';
 
 function newKey() {
-  return typeof crypto !== 'undefined' && 'randomUUID' in crypto
-    ? crypto.randomUUID()
-    : `close-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  return randomId();
 }
 
 /**
@@ -209,7 +208,7 @@ function CloseShiftBody({
               <span className="block text-gray-500">{t('Count the drawer without seeing the expected amount.')}</span>
             </span>
           </label>
-          <div className="flex justify-end gap-2">
+          <div className={cn('flex justify-end gap-2', dialogStickyFooter)}>
             <Button variant="outline" onClick={onDone} disabled={busy}>
               {t('Cancel')}
             </Button>
@@ -355,7 +354,7 @@ function CloseShiftBody({
               onChange={(e) => setNotes(e.target.value)}
             />
           </Field>
-          <div className="flex justify-end gap-2">
+          <div className={cn('flex justify-end gap-2', dialogStickyFooter)}>
             <Button variant="outline" onClick={() => setStep('count')} disabled={busy}>
               {t('Recount')}
             </Button>
@@ -389,7 +388,7 @@ function CloseShiftBody({
             <ZReportView report={report} storeName={storeName} copy={printer.copy} />
           </div>
           <ErrorMessage>{printer.error}</ErrorMessage>
-          <div className="grid grid-cols-2 gap-2">
+          <div className={cn('grid grid-cols-2 gap-2', dialogStickyFooter)}>
             <Button variant="outline" onClick={() => printer.print('z_report', shift.id)}>
               <Printer className="h-4 w-4" />
               {t('Print Z-report')}

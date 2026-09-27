@@ -96,7 +96,7 @@ export function DateRangeFilter({
     onChange({ preset: 'custom', from: value.from && to && to < value.from ? to : value.from, to });
 
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+    <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
       <Select
         value={value.preset}
         onChange={(e) => handlePreset(e.target.value as RangePreset)}
@@ -109,12 +109,12 @@ export function DateRangeFilter({
           </option>
         ))}
       </Select>
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-0 items-center gap-2">
         <Input
           type="date"
           value={value.from}
           onChange={(e) => handleFrom(e.target.value)}
-          className="sm:w-40"
+          className="min-w-0 flex-1 max-sm:px-2 sm:w-40 sm:flex-none"
           aria-label={t('From date')}
         />
         <span className="text-sm text-gray-400">{t('to')}</span>
@@ -122,7 +122,7 @@ export function DateRangeFilter({
           type="date"
           value={value.to}
           onChange={(e) => handleTo(e.target.value)}
-          className="sm:w-40"
+          className="min-w-0 flex-1 max-sm:px-2 sm:w-40 sm:flex-none"
           aria-label={t('To date')}
         />
       </div>

@@ -1,6 +1,7 @@
 import { t } from '@/i18n';
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { translateServerError } from '@/lib/server-texts';
+import { randomId } from '@/lib/uuid';
 
 // localStorage key of this browser's registered POS device id (see lib/pos/offline-db.ts)
 export const DEVICE_ID_KEY = 'pos_device_id';
@@ -46,22 +47,26 @@ export const deviceLost = {
   },
 };
 
-// Create axios instance
+// Anti-CSRF header required by the API on every state-changing request made with
+// the session cookie (top-backend/src/auth/guards/csrf.guard.ts)
+export const CSRF_HEADER = 'X-Requested-With';
+export const CSRF_HEADER_VALUE = 'pos-web';
+
+// Create axios instance. The session is an HttpOnly cookie set by the API (never
+// readable here): withCredentials also sends it when the API is on another
+// (same-site) origin; same-origin requests (NEXT_PUBLIC_API_URL=/api/v1) send it anyway.
 export const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1',
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
+    [CSRF_HEADER]: CSRF_HEADER_VALUE,
   },
 });
 
-// Request interceptor - Add auth token
+// Request interceptor - device id (the session cookie is attached by the browser)
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Fall back to the short-lived MFA token while the second factor is pending
-    const token = localStorage.getItem('access_token') || localStorage.getItem('temp_token');
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
     // Registered POS device (lets the server tie sessions to a till)
     const deviceId = localStorage.getItem(DEVICE_ID_KEY);
     if (deviceId && config.headers) {
@@ -82,7 +87,8 @@ apiClient.interceptors.response.use(
     // (POST /auth/password answers 401 for a wrong current password: not a sign-out)
     const isAuthAttempt = /\/auth\/(login|logout|mfa\/verify|password)$|\/tenants\/signup$/.test(error.config?.url ?? '');
     if (error.response?.status === 401 && !isAuthAttempt) {
-      // Clear tokens and redirect to login
+      // Session ended or expired: forget the saved profile and go to the sign-in page
+      // (the HttpOnly cookie is invalid now; the next sign-in replaces it)
       localStorage.removeItem('access_token');
       localStorage.removeItem('temp_token');
       localStorage.removeItem('auth-storage');
@@ -114,7 +120,7 @@ apiClient.interceptors.response.use(
 // so a double-click or a retried request never runs the command twice.
 export const IDEMPOTENCY_KEY_HEADER = 'Idempotency-Key';
 
-export const newIdempotencyKey = (): string => crypto.randomUUID();
+export const newIdempotencyKey = (): string => randomId();
 
 // Headers with the Idempotency-Key (when there is one) merged over `headers` (e.g. an approval token)
 export function withIdempotencyKey(

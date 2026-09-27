@@ -30,6 +30,9 @@ export class Api {
           method,
           headers: {
             'Content-Type': 'application/json',
+            // API-client mode: the login returns the token in the body (no cookie)
+            // and the header satisfies the API's anti-CSRF check
+            'X-Auth-Mode': 'token',
             ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
           },
           body: body === undefined ? undefined : JSON.stringify(body),

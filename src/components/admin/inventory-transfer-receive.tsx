@@ -1,6 +1,7 @@
 'use client';
 
 import { Input } from '@/components/ui/input';
+import { useSmallScreen } from '@/components/ui/data-cards';
 import { text } from '@/lib/api/crud';
 import type { TransferItem, TransferReceiptLine } from '@/lib/api/inventory';
 import { cn } from '@/lib/utils';
@@ -136,9 +137,76 @@ export function ReceiveLinesTable({
     onChange({ ...entries, [itemId]: { ...(entries[itemId] ?? { good: '', damaged: '', missing: '' }), ...patch } });
   const plan = planReceive(items, entries, tolerancePercent);
   const over = 'error' in plan ? {} : plan.over;
+  const smallScreen = useSmallScreen();
+
+  // The product cell and the three boxes, the same in the table and the phone cards
+  const lineLabel = (item: TransferItem, sku: string) => (
+    <>
+      <div className="font-medium">{transferItemLabel(item)}</div>
+      <div className="font-mono text-xs text-gray-500">{sku}</div>
+      {(item.quantityMissing ?? 0) > 0 && (
+        <div className="text-xs text-amber-700">
+          {t('{count} already reported missing', { count: item.quantityMissing ?? 0 })}
+        </div>
+      )}
+      {over[item.id] ? (
+        <div className="text-xs text-amber-700">
+          {t('{count} more than in transit (over-receipt)', { count: over[item.id] })}
+        </div>
+      ) : null}
+    </>
+  );
+  const entryInput = (item: TransferItem, entry: ReceiveEntry, field: keyof ReceiveEntry, className?: string) => {
+    const sku = item.variant?.sku ?? '';
+    const label = {
+      good: t('Good quantity for {sku}', { sku }),
+      damaged: t('Damaged quantity for {sku}', { sku }),
+      missing: t('Missing quantity for {sku}', { sku }),
+    }[field];
+    return (
+      <Input
+        inputMode="numeric"
+        value={entry[field]}
+        placeholder="0"
+        onChange={(e) => set(item.id, { [field]: e.target.value })}
+        aria-label={label}
+        className={className}
+      />
+    );
+  };
 
   return (
     <div className="space-y-2">
+      {smallScreen ? (
+        // Phones: one card per line, the three boxes side by side
+        <div className="space-y-2">
+          {items.map((item) => {
+            const entry = entries[item.id] ?? { good: '', damaged: '', missing: '' };
+            const sku = item.variant?.sku ?? '';
+            return (
+              <div key={item.id} className={cn('space-y-2 rounded-md border p-3 text-sm', over[item.id] && 'bg-amber-50')}>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">{lineLabel(item, sku)}</div>
+                  <div className="shrink-0 text-right">
+                    <div className="text-xs text-gray-500">{t('In transit')}</div>
+                    <div>{inTransit(item)}</div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {(['good', 'damaged', 'missing'] as const).map((field) => (
+                    <label key={field} className="min-w-0 space-y-1">
+                      <span className="text-xs text-gray-500">
+                        {{ good: t('Good'), damaged: t('Damaged'), missing: t('Missing') }[field]}
+                      </span>
+                      {entryInput(item, entry, field, 'h-10')}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
       <div className="overflow-x-auto rounded-md border">
         <table className="w-full text-sm">
           <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
@@ -156,54 +224,18 @@ export function ReceiveLinesTable({
               const sku = item.variant?.sku ?? '';
               return (
                 <tr key={item.id} className={cn(over[item.id] && 'bg-amber-50')}>
-                  <td className="px-3 py-2">
-                    <div className="font-medium">{transferItemLabel(item)}</div>
-                    <div className="font-mono text-xs text-gray-500">{sku}</div>
-                    {(item.quantityMissing ?? 0) > 0 && (
-                      <div className="text-xs text-amber-700">
-                        {t('{count} already reported missing', { count: item.quantityMissing ?? 0 })}
-                      </div>
-                    )}
-                    {over[item.id] ? (
-                      <div className="text-xs text-amber-700">
-                        {t('{count} more than in transit (over-receipt)', { count: over[item.id] })}
-                      </div>
-                    ) : null}
-                  </td>
+                  <td className="px-3 py-2">{lineLabel(item, sku)}</td>
                   <td className="px-3 py-2 text-right">{inTransit(item)}</td>
-                  <td className="px-3 py-2">
-                    <Input
-                      inputMode="numeric"
-                      value={entry.good}
-                      placeholder="0"
-                      onChange={(e) => set(item.id, { good: e.target.value })}
-                      aria-label={t('Good quantity for {sku}', { sku })}
-                    />
-                  </td>
-                  <td className="px-3 py-2">
-                    <Input
-                      inputMode="numeric"
-                      value={entry.damaged}
-                      placeholder="0"
-                      onChange={(e) => set(item.id, { damaged: e.target.value })}
-                      aria-label={t('Damaged quantity for {sku}', { sku })}
-                    />
-                  </td>
-                  <td className="px-3 py-2">
-                    <Input
-                      inputMode="numeric"
-                      value={entry.missing}
-                      placeholder="0"
-                      onChange={(e) => set(item.id, { missing: e.target.value })}
-                      aria-label={t('Missing quantity for {sku}', { sku })}
-                    />
-                  </td>
+                  <td className="px-3 py-2">{entryInput(item, entry, 'good')}</td>
+                  <td className="px-3 py-2">{entryInput(item, entry, 'damaged')}</td>
+                  <td className="px-3 py-2">{entryInput(item, entry, 'missing')}</td>
                 </tr>
               );
             })}
           </tbody>
         </table>
       </div>
+      )}
       {'error' in plan ? (
         <p className="text-sm text-red-600" role="alert">
           {plan.error}

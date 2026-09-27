@@ -11,6 +11,13 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
 import {
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -57,6 +64,7 @@ export function CountsTab() {
   const [openId, setOpenId] = useState<string | null>(null);
   const user = useAuthStore((s) => s.user);
   const canCount = hasPermission(user, 'inventory.count');
+  const smallScreen = useSmallScreen();
 
   const {
     data: counts = [],
@@ -113,6 +121,40 @@ export function CountsTab() {
         </div>
       )}
 
+      {smallScreen ? (
+        // Phones: one card per count session
+        <DataCards
+          items={counts}
+          getKey={(count) => count.id}
+          onItemClick={(count) => setOpenId(count.id)}
+          loading={isLoading}
+          loadingText={t('Loading counts...')}
+          emptyText={t('No stock counts yet.')}
+        >
+          {(count) => (
+            <>
+              <DataCardHeader
+                title={
+                  <span className="font-mono text-xs">
+                    {count.countNumber}
+                    {count.blind && <EyeOff className="ml-1 inline h-3 w-3 text-gray-400" aria-label={t('Blind count')} />}
+                  </span>
+                }
+                subtitle={labelFor(count.locationId, count.location?.code)}
+                onTitleClick={() => setOpenId(count.id)}
+                badge={<Badge variant={countStatusVariant[count.status]}>{t(countStatusLabels[count.status])}</Badge>}
+              />
+              <DataCardFields>
+                <DataCardField label={t('Counted')}>
+                  {count.countedCount ?? 0} / {count.lineCount ?? 0}
+                </DataCardField>
+                <DataCardField label={t('Started')}>{formatDateTime(count.createdAt)}</DataCardField>
+                {count.postedAt && <DataCardField label={t('Posted')}>{formatDateTime(count.postedAt)}</DataCardField>}
+              </DataCardFields>
+            </>
+          )}
+        </DataCards>
+      ) : (
       <Table>
         <THead>
           <tr>
@@ -150,6 +192,7 @@ export function CountsTab() {
           )}
         </TBody>
       </Table>
+      )}
 
       {creating && (
         <NewCountDialog
@@ -275,6 +318,7 @@ function CountSheetDialog({ id, onClose }: { id: string; onClose: () => void }) 
   const [message, setMessage] = useState<string | null>(null);
   // Idempotency keys of submit / approve, reused on retries; new ones once an action succeeds
   const [keys, setKeys] = useState(() => ({ submit: newIdempotencyKey(), approve: newIdempotencyKey() }));
+  const smallScreen = useSmallScreen();
 
   const {
     data: count,
@@ -380,6 +424,41 @@ function CountSheetDialog({ id, onClose }: { id: string; onClose: () => void }) 
   // Once submitted, each line shows how its expected quantity was rolled forward
   const rollForward = !!count && showExpected && !editable;
 
+  // Counted and reason cells, the same in the table and the phone cards
+  const countedCell = (line: StockCountLine, className?: string) =>
+    editable ? (
+      <Input
+        inputMode="numeric"
+        value={valueOf(line)}
+        placeholder="—"
+        onChange={(e) => setEdits((prev) => ({ ...prev, [line.variantId]: e.target.value }))}
+        aria-label={t('Counted quantity for {sku}', { sku: line.sku })}
+        className={className}
+      />
+    ) : (
+      <span>{line.countedQuantity ?? '—'}</span>
+    );
+  const reasonCell = (line: StockCountLine, className?: string) =>
+    editable ? (
+      <Input
+        value={reasonEdits[line.variantId] ?? line.reason ?? ''}
+        maxLength={200}
+        placeholder={t('Optional')}
+        onChange={(e) => setReasonEdits((prev) => ({ ...prev, [line.variantId]: e.target.value }))}
+        aria-label={t('Reason for {sku}', { sku: line.sku })}
+        className={className}
+      />
+    ) : (
+      <span className="text-gray-600">{line.reason || '—'}</span>
+    );
+  const varianceClass = (variance: number | null) =>
+    cn(
+      'font-medium',
+      variance !== null && Math.abs(variance) > tolerance && 'text-red-700',
+      variance !== null && variance !== 0 && Math.abs(variance) <= tolerance && 'text-amber-700'
+    );
+  const varianceText = (variance: number | null) => (variance === null ? '—' : variance > 0 ? `+${variance}` : variance);
+
   return (
     <>
       <Dialog open onOpenChange={(open) => !open && !busy && onClose()}>
@@ -445,6 +524,76 @@ function CountSheetDialog({ id, onClose }: { id: string; onClose: () => void }) 
             </p>
           )}
 
+          {smallScreen ? (
+            // Phones: one card per line, the counted and reason boxes full width
+            <div className="max-h-[45vh] space-y-2 overflow-y-auto">
+              {isLoading ? (
+                <p className="px-3 py-6 text-center text-sm text-gray-400">{t('Loading...')}</p>
+              ) : (
+                lines.map((line) => {
+                  const variance = lineVariance(line, editable ? valueOf(line) : null);
+                  const movements = line.movementsSinceSnapshot;
+                  return (
+                    <div key={line.id} className="space-y-2 rounded-md border p-3 text-sm">
+                      <div>
+                        <div className="font-medium">{lineLabel(line)}</div>
+                        <div className="font-mono text-xs text-gray-500">{line.sku}</div>
+                      </div>
+                      {showExpected && (
+                        <dl className="grid grid-cols-3 gap-x-3 gap-y-1">
+                          <div>
+                            <dt className="text-xs text-gray-500">{rollForward ? t('Snapshot') : t('Expected')}</dt>
+                            <dd className="text-gray-600">{line.expectedQuantity ?? '—'}</dd>
+                          </div>
+                          {rollForward && (
+                            <>
+                              <div>
+                                <dt className="text-xs text-gray-500">{t('Movements while counting')}</dt>
+                                <dd className="text-gray-600">
+                                  {movements == null ? '—' : movements > 0 ? `+${movements}` : movements}
+                                </dd>
+                              </div>
+                              <div>
+                                <dt className="text-xs text-gray-500">{t('Expected at count')}</dt>
+                                <dd className="font-medium">{line.expectedAtCount ?? '—'}</dd>
+                              </div>
+                            </>
+                          )}
+                          <div>
+                            <dt className="text-xs text-gray-500">{rollForward ? t('Variance') : t('Difference')}</dt>
+                            <dd className={varianceClass(variance)}>{varianceText(variance)}</dd>
+                          </div>
+                        </dl>
+                      )}
+                      {editable ? (
+                        <div className="grid grid-cols-[7rem_1fr] gap-2">
+                          <label className="space-y-1">
+                            <span className="text-xs text-gray-500">{t('Counted')}</span>
+                            {countedCell(line, 'h-10')}
+                          </label>
+                          <label className="min-w-0 space-y-1">
+                            <span className="text-xs text-gray-500">{t('Reason')}</span>
+                            {reasonCell(line, 'h-10')}
+                          </label>
+                        </div>
+                      ) : (
+                        <dl className="grid grid-cols-3 gap-x-3">
+                          <div>
+                            <dt className="text-xs text-gray-500">{t('Counted')}</dt>
+                            <dd>{countedCell(line)}</dd>
+                          </div>
+                          <div className="col-span-2 min-w-0">
+                            <dt className="text-xs text-gray-500">{t('Reason')}</dt>
+                            <dd className="break-words">{reasonCell(line)}</dd>
+                          </div>
+                        </dl>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          ) : (
           <div className="max-h-[45vh] overflow-auto rounded-md border">
             <table className="w-full text-sm">
               <thead className="sticky top-0 border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
@@ -494,45 +643,11 @@ function CountSheetDialog({ id, onClose }: { id: string; onClose: () => void }) 
                             <td className="px-3 py-2 text-right font-medium">{line.expectedAtCount ?? '—'}</td>
                           </>
                         )}
-                        <td className="px-3 py-2">
-                          {editable ? (
-                            <Input
-                              inputMode="numeric"
-                              value={valueOf(line)}
-                              placeholder="—"
-                              onChange={(e) => setEdits((prev) => ({ ...prev, [line.variantId]: e.target.value }))}
-                              aria-label={t('Counted quantity for {sku}', { sku: line.sku })}
-                            />
-                          ) : (
-                            <span>{line.countedQuantity ?? '—'}</span>
-                          )}
-                        </td>
+                        <td className="px-3 py-2">{countedCell(line)}</td>
                         {showExpected && (
-                          <td
-                            className={cn(
-                              'px-3 py-2 text-right font-medium',
-                              variance !== null && Math.abs(variance) > tolerance && 'text-red-700',
-                              variance !== null && variance !== 0 && Math.abs(variance) <= tolerance && 'text-amber-700'
-                            )}
-                          >
-                            {variance === null ? '—' : variance > 0 ? `+${variance}` : variance}
-                          </td>
+                          <td className={cn('px-3 py-2 text-right', varianceClass(variance))}>{varianceText(variance)}</td>
                         )}
-                        <td className="px-3 py-2">
-                          {editable ? (
-                            <Input
-                              value={reasonEdits[line.variantId] ?? line.reason ?? ''}
-                              maxLength={200}
-                              placeholder={t('Optional')}
-                              onChange={(e) =>
-                                setReasonEdits((prev) => ({ ...prev, [line.variantId]: e.target.value }))
-                              }
-                              aria-label={t('Reason for {sku}', { sku: line.sku })}
-                            />
-                          ) : (
-                            <span className="text-gray-600">{line.reason || '—'}</span>
-                          )}
-                        </td>
+                        <td className="px-3 py-2">{reasonCell(line)}</td>
                       </tr>
                     );
                   })
@@ -540,6 +655,7 @@ function CountSheetDialog({ id, onClose }: { id: string; onClose: () => void }) 
               </tbody>
             </table>
           </div>
+          )}
           {editable && (
             <p className="text-xs text-gray-500">
               {t('Leave a line empty if you did not count it: uncounted lines are not adjusted.')}

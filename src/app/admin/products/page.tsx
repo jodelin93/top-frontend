@@ -6,7 +6,15 @@ import { Download, ImageIcon, Layers, Pencil, Plus, Printer, Ruler, Search, Slid
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { ProductFormDialog } from '@/components/admin/product-form-dialog';
+import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
+import { ProductFormDialog }from '@/components/admin/product-form-dialog';
 import { ProductVariantsDialog } from '@/components/admin/product-variants-dialog';
 import { ProductAttributesDialog } from '@/components/admin/product-attributes-dialog';
 import { ProductLabelsDialog } from '@/components/admin/product-labels-dialog';
@@ -74,6 +82,7 @@ export default function ProductsPage() {
   const tags = normalizeTags(tagFilter).join(',');
   const currency = useCurrency();
   const variantsProduct = products.find((p) => p.id === variantsProductId) ?? null;
+  const smallScreen = useSmallScreen();
 
   const loadProducts = useCallback(async () => {
     setIsLoading(true);
@@ -230,8 +239,121 @@ export default function ProductsPage() {
           <div className="m-4 rounded-md bg-red-50 p-3 text-sm text-red-600">{error}</div>
         )}
 
+        {smallScreen ? (
+          // Phones: one card per product instead of a table that scrolls sideways
+          <DataCards
+            items={products}
+            getKey={(product) => product.id}
+            loading={isLoading && products.length === 0}
+            loadingText={t('Loading products...')}
+            emptyText={
+              search || status || tags || branchId
+                ? t('No products match your filters.')
+                : t('No products yet. Create your first one.')
+            }
+          >
+            {(product) => (
+              <>
+                <div className="flex items-start gap-3">
+                  {product.primaryImage ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- served from object storage
+                    <img
+                      src={product.primaryImage.url}
+                      alt=""
+                      className="h-10 w-10 shrink-0 rounded border object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded border bg-gray-50 text-gray-300">
+                      <ImageIcon className="h-4 w-4" />
+                    </div>
+                  )}
+                  <DataCardHeader
+                    className="min-w-0 flex-1"
+                    title={product.name.en ?? '—'}
+                    subtitle={<span className="font-mono">{product.sku}</span>}
+                    badge={
+                      <span
+                        className={cn(
+                          'rounded-full px-2 py-0.5 text-xs font-medium capitalize',
+                          statusStyles[product.status]
+                        )}
+                      >
+                        {t(statusLabels[product.status])}
+                      </span>
+                    }
+                  />
+                </div>
+                {!!product.tags?.length && (
+                  <div className="flex flex-wrap gap-1">
+                    {product.tags.map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => setTagFilter(tag)}
+                        className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-normal text-blue-700 hover:bg-blue-100"
+                        title={t('Show products tagged {tag}', { tag })}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <DataCardFields>
+                  <DataCardField label={t('Price')}>{priceLabel(product, currency)}</DataCardField>
+                  <DataCardField label={t('Stock')}>
+                    {product.variants.reduce((sum, v) => sum + v.stockQuantity, 0)}
+                  </DataCardField>
+                  <DataCardField label={t('Category')}>
+                    {product.category ? text(product.category.name) : '—'}
+                  </DataCardField>
+                  <DataCardField label={t('Type')}>{t(typeLabels[product.productType])}</DataCardField>
+                  {product.barcode && (
+                    <DataCardField label={t('Barcode')} full>
+                      <span className="font-mono text-xs">{product.barcode}</span>
+                    </DataCardField>
+                  )}
+                </DataCardFields>
+                <DataCardActions>
+                  {product.productType !== 'simple' && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => setVariantsProductId(product.id)}
+                      aria-label={t('Variants of {sku}', { sku: product.sku })}
+                      title={t('Variants')}
+                    >
+                      <Layers className="h-4 w-4" />
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => openEdit(product)}
+                    aria-label={t('Edit {sku}', { sku: product.sku })}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  {product.status !== 'discontinued' && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-red-600 hover:text-red-700"
+                      onClick={() => handleDiscontinue(product)}
+                      aria-label={t('Discontinue {sku}', { sku: product.sku })}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </DataCardActions>
+              </>
+            )}
+          </DataCards>
+        ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm max-md:min-w-[40rem]">
             <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
               <tr>
                 <th className="px-4 py-3 font-medium">{t('Name')}</th>
@@ -362,6 +484,7 @@ export default function ProductsPage() {
             </tbody>
           </table>
         </div>
+        )}
       </Card>
 
       <ProductFormDialog

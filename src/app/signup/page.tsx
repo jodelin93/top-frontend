@@ -31,7 +31,7 @@ type SignupFormData = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
   const router = useRouter();
-  const { setUser, setTokens, setRequiresMfa } = useAuthStore();
+  const { setUser, setRequiresMfa } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
   // Existing account with two-factor on: the server asks for a current code (MFA_REQUIRED)
   const [needsMfa, setNeedsMfa] = useState(false);
@@ -67,7 +67,7 @@ export default function SignupPage() {
         currencyCode: data.currencyCode.toUpperCase(),
         ...(needsMfa && { mfaCode }),
       });
-      setTokens(response.accessToken);
+      // Signed in: the API set the session cookie
       setRequiresMfa(false);
       if (response.user) setUser(response.user);
       // The new store already has a branch, register and payment methods
@@ -107,7 +107,7 @@ export default function SignupPage() {
               <Field label={t('Store name')} htmlFor="storeName" error={errors.storeName?.message && t(errors.storeName.message)}>
                 <Input id="storeName" autoFocus {...register('storeName')} />
               </Field>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label={t('First name')} htmlFor="firstName" error={errors.firstName?.message && t(errors.firstName.message)}>
                   <Input id="firstName" autoComplete="given-name" {...register('firstName')} />
                 </Field>

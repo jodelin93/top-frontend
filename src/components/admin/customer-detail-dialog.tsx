@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import { DataCardField, DataCardFields, DataCardHeader, DataCards, useSmallScreen } from '@/components/ui/data-cards';
 import { ErrorMessage } from '@/components/admin/page-header';
 import { getErrorMessage } from '@/lib/api/client';
 import { Customer, customerFieldsApi, customerName, customersApi } from '@/lib/api/customers';
@@ -59,6 +60,7 @@ export function CustomerDetailDialog({ customer, onClose }: CustomerDetailDialog
   // The tab chosen for this customer (back to Details for another one)
   const [chosen, setChosen] = useState<{ id: string | null; tab: Tab }>({ id: null, tab: 'details' });
   const tab: Tab = chosen.id === customer?.id ? chosen.tab : 'details';
+  const smallScreen = useSmallScreen();
   const tabs: [Tab, string, boolean][] = [
     ['details', t('Details'), true],
     ['account', t('Account'), hasPermission(user, 'customers.finance.view')],
@@ -133,7 +135,7 @@ export function CustomerDetailDialog({ customer, onClose }: CustomerDetailDialog
               </DialogDescription>
             </DialogHeader>
 
-            <div className="flex gap-1 border-b" role="tablist">
+            <div className="flex gap-1 overflow-x-auto border-b" role="tablist">
               {tabs
                 .filter(([, , show]) => show)
                 .map(([key, label]) => (
@@ -144,7 +146,7 @@ export function CustomerDetailDialog({ customer, onClose }: CustomerDetailDialog
                     aria-selected={tab === key}
                     onClick={() => setChosen({ id: customer.id, tab: key })}
                     className={cn(
-                      '-mb-px border-b-2 px-3 py-2 text-sm',
+                      '-mb-px shrink-0 whitespace-nowrap border-b-2 px-3 py-2 text-sm max-md:py-2.5',
                       tab === key ? 'border-blue-600 font-medium text-blue-700' : 'border-transparent text-gray-600 hover:text-gray-900'
                     )}
                   >
@@ -253,6 +255,35 @@ export function CustomerDetailDialog({ customer, onClose }: CustomerDetailDialog
             <div className="space-y-2">
               <h3 className="text-sm font-semibold">{t('Recent purchases')}</h3>
               {error && <ErrorMessage>{getErrorMessage(error, 'Could not load purchases')}</ErrorMessage>}
+              {smallScreen ? (
+                <DataCards
+                  items={sales?.data ?? []}
+                  getKey={(sale) => sale.id}
+                  loading={isLoading}
+                  loadingText={t('Loading purchases...')}
+                  emptyText={t('No purchases yet.')}
+                  className="rounded-md border bg-gray-50 p-2"
+                >
+                  {(sale) => (
+                    <>
+                      <DataCardHeader
+                        title={<span className="font-mono text-xs">{sale.saleNumber}</span>}
+                        badge={
+                          <Badge variant={statusVariant(sale.status)}>
+                            {t(sale.status.replace('_', ' '))}
+                          </Badge>
+                        }
+                      />
+                      <DataCardFields>
+                        <DataCardField label={t('Date')}>{formatDateTime(sale.saleDate)}</DataCardField>
+                        <DataCardField label={t('Total')}>
+                          {formatMoney(sale.total, sale.currencyCode || currency)}
+                        </DataCardField>
+                      </DataCardFields>
+                    </>
+                  )}
+                </DataCards>
+              ) : (
               <div className="rounded-md border">
                 <Table>
                   <THead>
@@ -287,6 +318,7 @@ export function CustomerDetailDialog({ customer, onClose }: CustomerDetailDialog
                   </TBody>
                 </Table>
               </div>
+              )}
               {sales && sales.meta.total > sales.data.length && (
                 <p className="text-xs text-gray-500">
                   {t('Showing the latest {shown} of {total} purchases.', {

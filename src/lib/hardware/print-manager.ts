@@ -1,5 +1,6 @@
 import { BridgeError, type BridgeResult, bridgePrint, isBridgeAvailable, getPairing } from './bridge-client';
 import { documentsApi, type DocumentType, type PrintChannel, type PrintJob, type PrintJobStatus } from './documents-api';
+import { randomId } from '@/lib/uuid';
 
 /**
  * One way to print any document (spec §15):
@@ -51,9 +52,6 @@ export const defaultPrintDeps: PrintDeps = {
 // An API call that got no answer at all (connection lost)
 const isNetworkError = (error: unknown) =>
   !!error && typeof error === 'object' && 'isAxiosError' in error && !(error as { response?: unknown }).response;
-
-const randomId = () =>
-  typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
 // A bridge call that threw: refused/unreachable/rejected → nothing printed; timeout → maybe
 function outcomeOf(error: unknown): BridgeResult {

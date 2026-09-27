@@ -6,6 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { EmptyRow, Table, TBody, Td, Th, THead } from '@/components/ui/table';
+import {
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import { hardwareApi } from '@/lib/hardware/documents-api';
 import { formatDateTime } from '@/lib/format';
@@ -33,6 +40,7 @@ const CAPABILITIES: Record<string, string> = {
 export default function HardwarePage() {
   const { user } = useAuthStore();
   const allowed = hasPermission(user, 'hardware.manage');
+  const smallScreen = useSmallScreen();
   const { data: capabilities = [] } = useQuery({ queryKey: ['hardware', 'capabilities'], queryFn: hardwareApi.capabilities, enabled: allowed });
   const { data: tills = [], error: tillsError } = useQuery({
     queryKey: ['hardware', 'status'],
@@ -90,6 +98,42 @@ export default function HardwarePage() {
       <Card className="bg-white">
         <h2 className="p-4 pb-0 font-semibold">{t('All tills')}</h2>
         <ErrorMessage>{tillsError ? t('Could not load the tills') : null}</ErrorMessage>
+        {smallScreen ? (
+          // Phones: one card per till instead of a table that scrolls sideways
+          <DataCards
+            items={tills}
+            getKey={(till) => till.deviceId}
+            emptyText={t('No till has reported its hardware yet.')}
+          >
+            {(till) => (
+              <>
+                <DataCardHeader
+                  title={till.deviceName}
+                  badge={
+                    <Badge variant={till.bridgeReachable ? 'success' : till.bridgePaired ? 'danger' : 'default'}>
+                      {till.bridgeReachable ? t('Connected') : till.bridgePaired ? t('Not reachable') : t('Not paired')}
+                    </Badge>
+                  }
+                />
+                <DataCardFields>
+                  <DataCardField label={t('Printers')} full>
+                    {till.printers.length === 0
+                      ? '—'
+                      : till.printers.map((p) => (
+                          <div key={p.id}>
+                            {p.name}: {p.online ? t('online') : t('offline')}
+                            {p.paper === 'out' ? ` · ${t('paper out')}` : p.paper === 'low' ? ` · ${t('paper low')}` : ''}
+                          </div>
+                        ))}
+                  </DataCardField>
+                  <DataCardField label={t('Last report')} full>
+                    {formatDateTime(till.reportedAt)}
+                  </DataCardField>
+                </DataCardFields>
+              </>
+            )}
+          </DataCards>
+        ) : (
         <Table>
           <THead>
             <tr>
@@ -127,6 +171,7 @@ export default function HardwarePage() {
             )}
           </TBody>
         </Table>
+        )}
       </Card>
     </div>
   );

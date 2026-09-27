@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ErrorMessage } from '@/components/admin/page-header';
 import { useApproval } from '@/components/approval-dialog';
+import { useSmallScreen } from '@/components/ui/data-cards';
 import { loyaltyApi, LoyaltyTransaction } from '@/lib/api/loyalty';
 import { getErrorMessage } from '@/lib/api/client';
 import { formatDateTime, formatMoney } from '@/lib/format';
@@ -36,6 +37,7 @@ export function CustomerLoyaltyPanel({ customerId }: { customerId: string }) {
   const { withApproval, approvalDialog } = useApproval();
   const [points, setPoints] = useState('');
   const [note, setNote] = useState('');
+  const smallScreen = useSmallScreen();
 
   const { data: balance } = useQuery({ queryKey: ['loyalty', customerId], queryFn: () => loyaltyApi.balance(customerId) });
   const { data: history = [] } = useQuery({
@@ -108,6 +110,27 @@ export function CustomerLoyaltyPanel({ customerId }: { customerId: string }) {
       <div className="max-h-56 overflow-y-auto rounded-md border text-sm">
         {history.length === 0 ? (
           <p className="p-3 text-center text-gray-400">{t('No points activity yet.')}</p>
+        ) : smallScreen ? (
+          // Phones: one stacked row per entry (what / points, then date / balance after)
+          <ul className="divide-y">
+            {history.map((row) => (
+              <li key={row.id} className="space-y-0.5 px-3 py-2">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 break-words">
+                    {t(TYPE_LABEL[row.type] ?? row.type)}
+                    {row.note && <span className="block text-xs text-gray-500">{translateServerNote(row.note)}</span>}
+                  </div>
+                  <span className={cn('shrink-0 font-medium', row.points >= 0 ? 'text-green-700' : 'text-red-600')}>
+                    {row.points > 0 ? `+${row.points}` : row.points}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-2 text-xs text-gray-500">
+                  <span>{formatDateTime(row.createdAt)}</span>
+                  <span>{row.balanceAfter}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
         ) : (
           <table className="w-full">
             <tbody className="divide-y">

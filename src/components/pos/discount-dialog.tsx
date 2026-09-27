@@ -131,7 +131,7 @@ export function DiscountDialog({
         <div className="space-y-2">
           <div className="text-sm font-medium">{t('Manual discount on the sale')}</div>
           <div className="flex gap-2">
-            <div className="flex overflow-hidden rounded-md border">
+            <div className="flex shrink-0 overflow-hidden rounded-md border">
               {(['percentage', 'fixed'] as const).map((type) => (
                 <button
                   key={type}
@@ -147,6 +147,8 @@ export function DiscountDialog({
               value={manualValue}
               onChange={(e) => setManualValue(e.target.value)}
               inputMode="decimal"
+              enterKeyHint="done"
+              className="min-w-0"
               placeholder={t('e.g. {example}', { example: manualType === 'percentage' ? '10' : '5.00' })}
             />
             <Button onClick={applyManual}>{t('Apply')}</Button>

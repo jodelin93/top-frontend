@@ -3,13 +3,8 @@
 import { useState } from 'react';
 import { AlertTriangle, CheckCircle2, Clock, Download, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, dialogStickyFooter } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import { useApproval } from '@/components/approval-dialog';
 import type { AcknowledgedSale, PendingSale } from '@/lib/pos/offline-db';
 import { buildExport, retryPendingSale, type UnsyncedExport } from '@/lib/pos/sync';
@@ -121,10 +116,10 @@ export function PendingSalesDialog({
         {sales.length === 0 ? (
           <p className="py-6 text-center text-sm text-gray-500">{t('All sales are uploaded.')}</p>
         ) : (
-          <div className="max-h-80 divide-y overflow-y-auto rounded-md border text-sm">
+          <div className="max-h-80 divide-y overflow-y-auto rounded-md border text-sm max-sm:max-h-none">
             {sales.map((sale) => (
               <div key={sale.id} className="px-3 py-2">
-                <div className="flex justify-between gap-2">
+                <div className="flex justify-between gap-2 max-sm:flex-wrap">
                   <span>
                     <span className="font-mono text-xs">{offlineNumberOf(sale)}</span>
                     <span className="ml-2 text-gray-500">{formatDateTime(sale.createdAt)}</span>
@@ -190,7 +185,7 @@ export function PendingSalesDialog({
 
         {exportError && <p className="text-sm text-red-600">{exportError}</p>}
 
-        <div className="flex flex-wrap gap-2">
+        <div className={cn('flex flex-wrap gap-2', dialogStickyFooter)}>
           <Button className="flex-1" onClick={onSync} disabled={!online || syncing || sales.length === 0}>
             <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
             {online ? (syncing ? t('Uploading...') : t('Upload now')) : t('Waiting for connection')}

@@ -18,6 +18,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  DataCardActions,
+  DataCardField,
+  DataCardFields,
+  DataCardHeader,
+  DataCards,
+  useSmallScreen,
+} from '@/components/ui/data-cards';
 import { ErrorMessage, Field, PageHeader } from '@/components/admin/page-header';
 import { SaleDetailDialog } from '@/components/admin/sales-detail-dialog';
 import { getErrorMessage } from '@/lib/api/client';
@@ -26,6 +34,7 @@ import { LEASE_ISSUE_LABELS } from '@/lib/api/sync';
 import { formatDateTime } from '@/lib/format';
 import { hasAnyPermission, useAuthStore } from '@/stores/auth-store';
 import { t } from '@/i18n';
+import { translateServerNote } from '@/lib/server-texts';
 
 const PAGE_SIZE = 25;
 
@@ -51,6 +60,7 @@ export default function ReviewQueuePage() {
   const [page, setPage] = useState(1);
   const [saleId, setSaleId] = useState<string | null>(null);
   const [resolving, setResolving] = useState<ConflictCase | null>(null);
+  const smallScreen = useSmallScreen();
   // ?deviceId=&type= from the sync dashboard (Admin → Devices)
   const [deviceId, setDeviceId] = useState<string | null>(null);
   useEffect(() => {
@@ -140,6 +150,63 @@ export default function ReviewQueuePage() {
           </div>
         )}
 
+        {smallScreen ? (
+          // Phones: one card per case instead of a table that scrolls sideways
+          <DataCards
+            items={cases}
+            getKey={(c) => c.id}
+            loading={isLoading}
+            loadingText={t('Loading...')}
+            emptyText={status === 'open' ? t('Nothing to review.') : t('No cases match your filters.')}
+            className={isFetching && !isLoading ? 'opacity-60' : undefined}
+          >
+            {(c) => (
+              <>
+                <DataCardHeader
+                  title={t(TYPE_LABELS[c.type] ?? c.type)}
+                  subtitle={formatDateTime(c.openedAt)}
+                  badge={
+                    <Badge variant={c.status === 'open' ? 'warning' : c.status === 'resolved' ? 'success' : 'default'}>
+                      {t(c.status === 'open' ? 'Open' : c.status === 'resolved' ? 'Resolved' : 'Dismissed')}
+                    </Badge>
+                  }
+                />
+                <DataCardFields>
+                  <DataCardField label={t('Sale')} full>
+                    <span className="font-mono text-xs">
+                      {c.saleId ? (
+                        <button type="button" className="text-blue-700 hover:underline" onClick={() => setSaleId(c.saleId)}>
+                          {c.sale?.saleNumber ?? c.details.saleNumber ?? t('Sale')}
+                        </button>
+                      ) : (
+                        '—'
+                      )}
+                      {(c.sale?.offlineNumber ?? c.details.offlineNumber) && (
+                        <span className="block text-gray-500">{c.sale?.offlineNumber ?? c.details.offlineNumber}</span>
+                      )}
+                    </span>
+                  </DataCardField>
+                  <DataCardField label={t('Details')} full>
+                    <CaseDetails conflict={c} />
+                  </DataCardField>
+                  {c.resolutionNote && (
+                    <DataCardField label={t('Note')} full>
+                      {translateServerNote(c.resolutionNote)}
+                    </DataCardField>
+                  )}
+                </DataCardFields>
+                {c.status === 'open' && (
+                  <DataCardActions>
+                    <Button size="sm" variant="outline" onClick={() => setResolving(c)}>
+                      <CheckCircle2 className="h-4 w-4" />
+                      {t('Close case')}
+                    </Button>
+                  </DataCardActions>
+                )}
+              </>
+            )}
+          </DataCards>
+        ) : (
         <Table className={isFetching && !isLoading ? 'opacity-60' : undefined}>
           <THead>
             <tr>
@@ -182,7 +249,7 @@ export default function ReviewQueuePage() {
                     <Badge variant={c.status === 'open' ? 'warning' : c.status === 'resolved' ? 'success' : 'default'}>
                       {t(c.status === 'open' ? 'Open' : c.status === 'resolved' ? 'Resolved' : 'Dismissed')}
                     </Badge>
-                    {c.resolutionNote && <div className="mt-1 text-xs text-gray-500">{c.resolutionNote}</div>}
+                    {c.resolutionNote && <div className="mt-1 text-xs text-gray-500">{translateServerNote(c.resolutionNote)}</div>}
                   </Td>
                   <Td className="text-right">
                     {c.status === 'open' && (
@@ -197,9 +264,10 @@ export default function ReviewQueuePage() {
             )}
           </TBody>
         </Table>
+        )}
 
         {meta && meta.total > PAGE_SIZE && (
-          <div className="flex items-center justify-between border-t px-4 py-3 text-sm text-gray-500">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t px-4 py-3 text-sm text-gray-500">
             <span>{t('Page {page} of {total}', { page: meta.page, total: meta.totalPages })}</span>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => setPage((p) => p - 1)} disabled={!meta.hasPreviousPage}>

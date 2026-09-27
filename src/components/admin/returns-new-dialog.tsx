@@ -42,6 +42,9 @@ import { usePOSStore } from '@/stores/pos-store';
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
 import { t } from '@/i18n';
 import { formatQuantity, itemCount, lineUnit, roundToUnit } from '@/lib/pos/quantity';
+import type { CatalogUnit } from '@/lib/pos/quantity';
+import { randomId } from '@/lib/uuid';
+import { useSmallScreen } from '@/components/ui/data-cards';
 
 // Refund option: the customer's store credit (instead of a payment method)
 const STORE_CREDIT_REFUND = '__store_credit__';
@@ -58,6 +61,31 @@ interface LineChoice {
  * Also an exchange (items back + a replacement sale, the difference paid or refunded)
  * and a goodwill refund (money back without goods).
  */
+type LookupLine = SaleLookup['lines'][number];
+
+// Name, variant / SKU and refund per unit of a sold line
+function ReturnLineLabel({
+  line,
+  unit,
+  money,
+}: {
+  line: LookupLine;
+  unit: CatalogUnit | null;
+  money: (value: number) => string;
+}) {
+  return (
+    <div>
+      <div className="font-medium">{line.productName}</div>
+      <div className="text-xs text-gray-500">
+        {[line.variantName, line.sku].filter(Boolean).join(' · ')} ·{' '}
+        {unit?.code
+          ? t('{price}/{unit}', { price: money(line.refundPerUnit), unit: unit.code })
+          : t('{amount} each', { amount: money(line.refundPerUnit) })}
+      </div>
+    </div>
+  );
+}
+
 export function NewReturnDialog({
   open,
   onOpenChange,
@@ -90,7 +118,7 @@ export function NewReturnDialog({
   const [differenceMethodId, setDifferenceMethodId] = useState('');
   const [exchangeResult, setExchangeResult] = useState<ExchangeResult | null>(null);
   // One key per return attempt, so a retry after a network error can't refund twice
-  const idempotencyKey = useRef<string>(crypto.randomUUID());
+  const idempotencyKey = useRef<string>(randomId());
   // Manager approvals given for this return; one return can need several (refund
   // permission, return window, refunding to another payment method)
   const approvalTokens = useRef<string[]>([]);
@@ -122,7 +150,7 @@ export function NewReturnDialog({
     setExchangeLines([]);
     setDifferenceMethodId('');
     setExchangeResult(null);
-    idempotencyKey.current = crypto.randomUUID();
+    idempotencyKey.current = randomId();
     approvalTokens.current = [];
   };
 
@@ -177,8 +205,44 @@ export function NewReturnDialog({
   const difference = Math.round((newItemsEstimate - estimate) * 100) / 100;
   const differenceMethod = differenceMethodId || moneyMethods.find((m) => m.methodType === 'cash')?.id || moneyMethods[0]?.id || '';
 
+  const smallScreen = useSmallScreen();
+
   const setChoice = (saleItemId: string, patch: Partial<LineChoice>) =>
     setChoices((current) => ({ ...current, [saleItemId]: { ...current[saleItemId], ...patch } }));
+
+  // How many of a sold line come back (by the kg / m / l for weighed lines)
+  const quantityInput = (line: LookupLine, choice: LineChoice | undefined, unit: CatalogUnit | null, className: string) => (
+    <Input
+      type="number"
+      inputMode={unit?.precision ? 'decimal' : 'numeric'}
+      min={0}
+      max={line.quantityReturnable}
+      step={unit?.precision ? 1 / 10 ** unit.precision : 1}
+      value={choice?.quantity ?? 0}
+      disabled={line.quantityReturnable === 0 || !lookup?.returnable}
+      onChange={(e) =>
+        setChoice(line.saleItemId, {
+          quantity: Math.max(0, Math.min(Number(line.quantityReturnable), roundToUnit(Number(e.target.value) || 0, unit))),
+        })
+      }
+      className={className}
+      aria-label={t('Quantity of {name} to return', { name: line.productName })}
+    />
+  );
+
+  const conditionSelect = (line: LookupLine, choice: LineChoice | undefined, className: string) => (
+    <Select
+      value={choice?.disposition ?? 'restock'}
+      disabled={!choice?.quantity}
+      onChange={(e) => setChoice(line.saleItemId, { disposition: e.target.value as ReturnDisposition })}
+      className={className}
+      aria-label={t('Condition of {name}', { name: line.productName })}
+    >
+      <option value="restock">{t('Back to stock')}</option>
+      <option value="damaged">{t('Damaged — keep in quarantine')}</option>
+      <option value="dispose">{t('Damaged — dispose')}</option>
+    </Select>
+  );
 
   // Every approval collected so far goes with the request (comma-separated); withApproval
   // asks for one approval, so ask again while the server wants another one
@@ -441,6 +505,43 @@ export function NewReturnDialog({
                       />
                     </Field>
                   ) : (
+                  smallScreen ? (
+                  // Phones: one card per sold item, the quantity box in view (a
+                  // table would push it off-screen)
+                  <div className="space-y-2">
+                    {lookup.lines.length === 0 && (
+                      <p className="rounded-md border p-3 text-sm text-gray-500">{t('No items.')}</p>
+                    )}
+                    {lookup.lines.map((line) => {
+                      const choice = choices[line.saleItemId];
+                      const unit = lineUnit(line);
+                      return (
+                        <div
+                          key={line.saleItemId}
+                          className={`space-y-2 rounded-md border p-3 ${line.quantityReturnable === 0 ? 'opacity-50' : ''}`}
+                        >
+                          <ReturnLineLabel line={line} unit={unit} money={money} />
+                          <div className="flex justify-between text-xs text-gray-600">
+                            <span>
+                              {t('Sold')}: {formatQuantity(Number(line.quantitySold), unit)}
+                            </span>
+                            <span>
+                              {t('Returned')}: {formatQuantity(Number(line.quantityReturned), unit)}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm">{t('Return now')}</span>
+                            {quantityInput(line, choice, unit, 'h-10 w-24 text-right')}
+                            <span className="ml-auto text-sm font-medium">
+                              {choice?.quantity ? money(line.refundPerUnit * choice.quantity) : '—'}
+                            </span>
+                          </div>
+                          {conditionSelect(line, choice, 'h-10 w-full')}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  ) : (
                   <div className="rounded-md border">
                     <Table>
                       <THead>
@@ -459,58 +560,15 @@ export function NewReturnDialog({
                           const choice = choices[line.saleItemId];
                           // Weighed lines return by the kg / m / l, to the unit's precision
                           const unit = lineUnit(line);
-                          const precision = unit?.precision ?? 0;
                           return (
                             <tr key={line.saleItemId} className={line.quantityReturnable === 0 ? 'opacity-50' : ''}>
                               <Td>
-                                <div className="font-medium">{line.productName}</div>
-                                <div className="text-xs text-gray-500">
-                                  {[line.variantName, line.sku].filter(Boolean).join(' · ')} ·{' '}
-                                  {unit?.code
-                                    ? t('{price}/{unit}', { price: money(line.refundPerUnit), unit: unit.code })
-                                    : t('{amount} each', { amount: money(line.refundPerUnit) })}
-                                </div>
+                                <ReturnLineLabel line={line} unit={unit} money={money} />
                               </Td>
                               <Td className="text-right">{formatQuantity(Number(line.quantitySold), unit)}</Td>
                               <Td className="text-right">{formatQuantity(Number(line.quantityReturned), unit)}</Td>
-                              <Td className="text-right">
-                                <Input
-                                  type="number"
-                                  min={0}
-                                  max={line.quantityReturnable}
-                                  step={precision > 0 ? 1 / 10 ** precision : 1}
-                                  value={choice?.quantity ?? 0}
-                                  disabled={line.quantityReturnable === 0 || !lookup.returnable}
-                                  onChange={(e) =>
-                                    setChoice(line.saleItemId, {
-                                      quantity: Math.max(
-                                        0,
-                                        Math.min(
-                                          Number(line.quantityReturnable),
-                                          roundToUnit(Number(e.target.value) || 0, unit)
-                                        )
-                                      ),
-                                    })
-                                  }
-                                  className="ml-auto h-8 w-20 text-right"
-                                  aria-label={t('Quantity of {name} to return', { name: line.productName })}
-                                />
-                              </Td>
-                              <Td>
-                                <Select
-                                  value={choice?.disposition ?? 'restock'}
-                                  disabled={!choice?.quantity}
-                                  onChange={(e) =>
-                                    setChoice(line.saleItemId, { disposition: e.target.value as ReturnDisposition })
-                                  }
-                                  className="h-8"
-                                  aria-label={t('Condition of {name}', { name: line.productName })}
-                                >
-                                  <option value="restock">{t('Back to stock')}</option>
-                                  <option value="damaged">{t('Damaged — keep in quarantine')}</option>
-                                  <option value="dispose">{t('Damaged — dispose')}</option>
-                                </Select>
-                              </Td>
+                              <Td className="text-right">{quantityInput(line, choice, unit, 'ml-auto h-8 w-20 text-right')}</Td>
+                              <Td>{conditionSelect(line, choice, 'h-8')}</Td>
                               <Td className="text-right">
                                 {choice?.quantity ? money(line.refundPerUnit * choice.quantity) : '—'}
                               </Td>
@@ -520,6 +578,7 @@ export function NewReturnDialog({
                       </TBody>
                     </Table>
                   </div>
+                  )
                   )}
 
                   {mode === 'exchange' && (

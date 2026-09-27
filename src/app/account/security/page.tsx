@@ -32,7 +32,7 @@ export default function SecurityPage() {
 
 function SecuritySettings() {
   const queryClient = useQueryClient();
-  const { user, setUser, setTokens } = useAuthStore();
+  const { user, setUser } = useAuthStore();
   const { data: profile } = useQuery({ queryKey: ['me'], queryFn: authApi.getCurrentUser });
   const mfaEnabled = profile?.mfaEnabled ?? user?.mfaEnabled ?? false;
   // Store policy: this role must turn on two-factor before using anything else
@@ -73,11 +73,8 @@ function SecuritySettings() {
   const confirmSetup = () =>
     run(async () => {
       const result = await authApi.confirmMfa(code.trim());
-      // A fresh, unrestricted token for this session
-      if (result.session?.accessToken) {
-        setTokens(result.session.accessToken);
-        if (result.session.user) setUser({ ...result.session.user, mfaEnabled: true });
-      }
+      // The API re-issued an unrestricted session cookie
+      if (result.session?.user) setUser({ ...result.session.user, mfaEnabled: true });
       await markMfa(true);
       await queryClient.invalidateQueries();
       setStep('idle');
@@ -96,7 +93,7 @@ function SecuritySettings() {
   const backHref = canUseAdmin(user) ? '/admin' : '/pos';
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-3 sm:p-6">
       <div className="mx-auto max-w-xl space-y-4">
         {!mfaRequired && (
           <Link href={backHref} className="inline-flex items-center gap-1 text-sm text-gray-600 hover:underline">
@@ -237,12 +234,12 @@ function SecuritySettings() {
 function StoresCard() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { setTokens, setUser } = useAuthStore();
+  const { setUser } = useAuthStore();
   const { data: stores = [] } = useQuery({ queryKey: ['auth', 'stores'], queryFn: authApi.stores });
   const switchStore = useMutation({
     mutationFn: authApi.switchStore,
     onSuccess: async (response) => {
-      setTokens(response.accessToken);
+      // The API re-issued the session cookie for the new store
       if (response.user) setUser(response.user);
       queryClient.clear();
       router.push(

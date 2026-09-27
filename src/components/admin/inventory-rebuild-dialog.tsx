@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { DatabaseZap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
+import { DataCard, DataCardField, DataCardFields, DataCardHeader, useSmallScreen } from '@/components/ui/data-cards';
 import {
   Dialog,
   DialogContent,
@@ -35,6 +36,7 @@ export function InventoryRebuildDialog({ onClose }: { onClose: () => void }) {
   const [locationId, setLocationId] = useState('');
   const [report, setReport] = useState<RebuildReport | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const smallScreen = useSmallScreen();
 
   const preview = useMutation({
     mutationFn: () => inventoryApi.rebuildPreview(locationId || undefined),
@@ -129,7 +131,29 @@ export function InventoryRebuildDialog({ onClose }: { onClose: () => void }) {
                       })}
               </div>
 
-              {report.levelDifferences.length > 0 && (
+              {report.levelDifferences.length > 0 && smallScreen ? (
+                // Phones: one card per differing location quantity
+                <div className="max-h-64 space-y-2 overflow-y-auto">
+                  {report.levelDifferences.map((row) => (
+                    <DataCard key={`${row.variantId}-${row.locationId}`} as="div">
+                      <DataCardHeader
+                        title={text(row.productName, '—')}
+                        subtitle={<span className="font-mono">{row.sku}</span>}
+                      />
+                      <DataCardFields className="grid-cols-3">
+                        <DataCardField label={t('Location')} className="col-span-3">
+                          {labelFor(row.locationId, row.locationCode ?? '—')}
+                        </DataCardField>
+                        <DataCardField label={t('Stored')}>{row.projected}</DataCardField>
+                        <DataCardField label={t('Ledger')}>{row.ledger}</DataCardField>
+                        <DataCardField label={t('Change|difference')}>
+                          <span className="font-medium">{signed(row.difference)}</span>
+                        </DataCardField>
+                      </DataCardFields>
+                    </DataCard>
+                  ))}
+                </div>
+              ) : report.levelDifferences.length > 0 && (
                 <div className="max-h-64 overflow-y-auto rounded-md border">
                   <table className="w-full text-sm">
                     <thead className="sticky top-0 border-b bg-gray-50 text-left text-xs uppercase text-gray-500">

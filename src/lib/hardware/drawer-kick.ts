@@ -1,4 +1,5 @@
 import { BridgeError, bridgeKick, getPairing } from './bridge-client';
+import { randomId } from '@/lib/uuid';
 
 export type KickOutcome =
   | { opened: true; status: 'printed' }
@@ -14,7 +15,7 @@ export type KickOutcome =
  */
 export async function kickDrawer(options: { commandId?: string; pin?: 2 | 5 } = {}): Promise<KickOutcome> {
   if (!getPairing()) return { opened: false, status: 'no_bridge', error: null };
-  const commandId = options.commandId ?? crypto.randomUUID();
+  const commandId = options.commandId ?? randomId();
   try {
     const result = await bridgeKick({ commandId, pin: options.pin });
     if (result.status === 'printed') return { opened: true, status: 'printed' };

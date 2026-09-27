@@ -5,12 +5,20 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Inbox } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  dialogStickyFooter,
+} from '@/components/ui/dialog';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { getErrorMessage, newIdempotencyKey } from '@/lib/api/client';
 import { shiftsApi } from '@/lib/api/shifts';
 import { kickDrawer } from '@/lib/pos/drawer';
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
+import { cn } from '@/lib/utils';
 import { t } from '@/i18n';
 
 type Outcome = 'opened' | 'no_hardware' | 'failed';
@@ -19,7 +27,14 @@ type Outcome = 'opened' | 'no_hardware' | 'failed';
  * Till header: open the cash drawer without a sale ("no sale"). The reason is
  * required and recorded (audited) on the shift before the drawer is kicked.
  */
-export function DrawerOpenButton({ registerId }: { registerId: string | null | undefined }) {
+export function DrawerOpenButton({
+  registerId,
+  className,
+}: {
+  registerId: string | null | undefined;
+  // Restyles the trigger (e.g. a full-width row in the till's phone menu)
+  className?: string;
+}) {
   const user = useAuthStore((s) => s.user);
   const canOperate = hasPermission(user, 'shifts.operate');
   const queryClient = useQueryClient();
@@ -72,7 +87,7 @@ export function DrawerOpenButton({ registerId }: { registerId: string | null | u
       <Button
         size="sm"
         variant="outline"
-        className="h-7 text-xs"
+        className={cn('h-7 text-xs', className)}
         onClick={() => setOpen(true)}
         title={t('Open the cash drawer without a sale')}
       >
@@ -105,7 +120,7 @@ export function DrawerOpenButton({ registerId }: { registerId: string | null | u
                     : t('Recorded, but the drawer did not open: open it with its key.')}
               </p>
               {outcome === 'failed' && <ErrorMessage>{error}</ErrorMessage>}
-              <div className="flex justify-end">
+              <div className={cn('flex justify-end', dialogStickyFooter)}>
                 <Button onClick={() => reset(false)}>{t('Done')}</Button>
               </div>
             </div>
@@ -122,7 +137,7 @@ export function DrawerOpenButton({ registerId }: { registerId: string | null | u
                   placeholder={t('e.g. change for a customer')}
                 />
               </Field>
-              <div className="flex justify-end gap-2">
+              <div className={cn('flex justify-end gap-2', dialogStickyFooter)}>
                 <Button variant="outline" onClick={() => reset(false)} disabled={busy}>
                   {t('Cancel')}
                 </Button>
