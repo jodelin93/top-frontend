@@ -21,7 +21,11 @@ FROM deps AS build
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_APP_NAME="Modern POS"
 ARG NEXT_PUBLIC_APP_VERSION="1.0.0"
+# Backend the /api/v1 rewrite forwards to (next.config.ts); rewrites are fixed at
+# build time, e.g. http://backend.railway.internal:8080 on Railway
+ARG BACKEND_URL=""
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \
+    BACKEND_URL=${BACKEND_URL} \
     NEXT_PUBLIC_APP_NAME=${NEXT_PUBLIC_APP_NAME} \
     NEXT_PUBLIC_APP_VERSION=${NEXT_PUBLIC_APP_VERSION} \
     NEXT_TELEMETRY_DISABLED=1
