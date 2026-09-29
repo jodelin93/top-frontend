@@ -29,15 +29,9 @@ import { chromium } from '@playwright/test';
 import ts from 'typescript';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { buildLanguageIndex, HELP_LANGS } from './build-help-index.mjs';
+import { BASE_URL, ROOT, languageContext, signIn } from './help-session.mjs';
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const BASE_URL = (process.env.HELP_SHOTS_BASE_URL ?? 'http://localhost:3001').replace(/\/+$/, '');
-const EMAIL = process.env.HELP_SHOTS_EMAIL ?? 'admin@test.com';
-const PASSWORD = process.env.HELP_SHOTS_PASSWORD;
-const STATE_DIR = join(ROOT, 'node_modules/.cache/help-shots');
-const STATE_FILE = join(STATE_DIR, 'owner-storage.json');
 const MAX_BYTES = 60 * 1024;
 const VIEWPORTS = {
   desktop: { viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1 },
@@ -200,33 +194,6 @@ async function toWebp(converter, png) {
   throw new Error('unreachable');
 }
 
-async function signIn(browser) {
-  mkdirSync(STATE_DIR, { recursive: true });
-  if (existsSync(STATE_FILE)) {
-    const context = await browser.newContext({ storageState: STATE_FILE });
-    const page = await context.newPage();
-    await page.goto(`${BASE_URL}/admin/dashboard`, { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(2500);
-    const ok = !page.url().includes('/auth/login');
-    await context.close();
-    if (ok) return;
-  }
-  console.log(`signing in as ${EMAIL}`);
-  const context = await browser.newContext();
-  const page = await context.newPage();
-  await page.goto(`${BASE_URL}/auth/login`, { waitUntil: 'domcontentloaded' });
-  await page.locator('#email').fill(EMAIL);
-  if (!PASSWORD) throw new Error('Set HELP_SHOTS_PASSWORD to the sign-in password of HELP_SHOTS_EMAIL.');
-  await page.locator('#password').fill(PASSWORD);
-  await page.locator('form button[type=submit]').click();
-  await page.waitForURL((url) => !url.pathname.startsWith('/auth/login'), { timeout: 30_000 }).catch(async () => {
-    const message = await page.locator('.text-red-600').first().textContent().catch(() => '');
-    throw new Error(`sign-in failed: ${message}. Stopping (repeated failures lock the account).`);
-  });
-  await context.storageState({ path: STATE_FILE });
-  await context.close();
-}
-
 // ---------------------------------------------------------------- main
 
 async function main() {
@@ -257,28 +224,7 @@ async function main() {
           continue;
         }
         const device = VIEWPORTS[spec.viewport ?? 'desktop'];
-        const context = await browser.newContext({
-          ...device,
-          storageState: spec.signedOut ? undefined : STATE_FILE,
-          locale: { en: 'en-US', fr: 'fr-FR', ht: 'fr-HT', es: 'es-419' }[lang],
-          reducedMotion: 'reduce',
-        });
-        await context.addCookies([{ name: 'lang', value: lang, url: BASE_URL }]);
-        await context.addInitScript((code) => {
-          try {
-            localStorage.setItem('language', JSON.stringify({ state: { personal: code }, version: 0 }));
-          } catch {
-            /* storage unavailable */
-          }
-          // Hide the Next.js development indicator ("Compiling...")
-          const hide = () => {
-            const style = document.createElement('style');
-            style.textContent = 'nextjs-portal { display: none !important; }';
-            document.head.appendChild(style);
-          };
-          if (document.head) hide();
-          else document.addEventListener('DOMContentLoaded', hide);
-        }, lang);
+        const context = await languageContext(browser, lang, { ...device, signedOut: spec.signedOut });
         const page = await context.newPage();
         try {
           for (const step of spec.steps ?? []) {

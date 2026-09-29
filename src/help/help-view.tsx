@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, BookOpen, ChevronRight, Search, X } from 'lucide-react';
+import { ArrowLeft, BookOpen, ChevronRight, Download, FileText, List, Search, X } from 'lucide-react';
 import { LANGUAGES, t, useLang, type Lang } from '@/i18n';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/stores/auth-store';
-import { loadHelpIndex } from './load';
+import { loadHelpIndex, manualPdfUrl } from './load';
 import { MarkdownView } from './markdown-view';
-import { topicsForRoute } from './routes';
+import { topicsForPage } from './routes';
 import { highlight as highlightTitle, searchTopics, type HighlightPart } from './search';
 import type { HelpIndex, HelpTopic } from './types';
 
@@ -47,8 +48,12 @@ interface HelpViewProps {
   onBack?: () => void;
   /** A link left the help for an app page */
   onLeave?: () => void;
-  /** Location the help was opened from: its topics are suggested on the home */
+  /** Location the help was opened from: the list shows its topics when scope is 'page' */
   location?: { pathname: string; search: string } | null;
+  /** Topic list: the page's topics (when it has some) or every topic */
+  scope?: 'page' | 'all';
+  /** Switches the list between the page's topics and every topic */
+  onScope?: (scope: 'page' | 'all') => void;
   /** Focus the search box when shown */
   autoFocusSearch?: boolean;
   className?: string;
@@ -63,6 +68,8 @@ export function HelpView({
   onBack,
   onLeave,
   location,
+  scope = 'all',
+  onScope,
   autoFocusSearch,
   className,
 }: HelpViewProps) {
@@ -73,6 +80,8 @@ export function HelpView({
   const byId = useMemo(() => new Map(topics.map((topic) => [topic.id, topic])), [topics]);
   const topic = topicId ? byId.get(topicId) ?? null : null;
   const results = useMemo(() => (query.trim() ? searchTopics(topics, query) : null), [topics, query]);
+  const pageTopics = useMemo(() => (location ? topicsForPage(topics, location.pathname) : []), [topics, location]);
+  const pageScope = scope === 'page' && pageTopics.length > 0;
 
   // Each topic starts at the top
   useEffect(() => {
@@ -104,6 +113,26 @@ export function HelpView({
             </button>
           )}
         </div>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" asChild className="h-9">
+            <a href={manualPdfUrl(lang)} download={`joda-pos-manual-${lang}.pdf`} data-testid="help-pdf">
+              <Download className="h-4 w-4" />
+              {t('Download the PDF')}
+            </a>
+          </Button>
+          {onScope && pageTopics.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-9"
+              onClick={() => onScope(pageScope ? 'all' : 'page')}
+              data-testid="help-scope"
+            >
+              {pageScope ? <List className="h-4 w-4" /> : <FileText className="h-4 w-4" />}
+              {pageScope ? t('All topics') : t('Topics for this page')}
+            </Button>
+          )}
+        </div>
       </div>
 
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4">
@@ -124,8 +153,8 @@ export function HelpView({
           />
         ) : (
           <HelpHome
-            topics={topics}
-            location={location}
+            topics={pageScope ? pageTopics : topics}
+            pageOnly={pageScope}
             missing={topicId !== null}
             onOpenTopic={onOpenTopic}
           />
@@ -211,17 +240,17 @@ function TopicLink({ topic, onOpenTopic }: { topic: HelpTopic; onOpenTopic: (id:
 
 function HelpHome({
   topics,
-  location,
+  pageOnly,
   missing,
   onOpenTopic,
 }: {
   topics: HelpTopic[];
-  location?: { pathname: string; search: string } | null;
+  /** The topics are those of the page help was opened on */
+  pageOnly: boolean;
   missing: boolean;
   onOpenTopic: (id: string) => void;
 }) {
   const signedIn = useAuthStore((s) => s.isAuthenticated);
-  const suggested = location ? topicsForRoute(topics, location.pathname, location.search).slice(0, 5) : [];
   const categories = useMemo(() => {
     const map = new Map<string, HelpTopic[]>();
     for (const topic of topics) {
@@ -238,14 +267,7 @@ function HelpHome({
       {!signedIn && (
         <p className="rounded-md bg-blue-50 p-3 text-sm text-blue-900">{t('Sign in to see all the help topics.')}</p>
       )}
-      {suggested.length > 0 && (
-        <section>
-          <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-blue-700">{t('For this page')}</h3>
-          {suggested.map((topic) => (
-            <TopicLink key={topic.id} topic={topic} onOpenTopic={onOpenTopic} />
-          ))}
-        </section>
-      )}
+      {pageOnly && <h2 className="text-base font-semibold text-gray-900">{t('Help for this page')}</h2>}
       {categories.map(([category, list]) => (
         <section key={category}>
           <h3 className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">

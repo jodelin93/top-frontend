@@ -13,7 +13,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "help:index": "node scripts/build-help-index.mjs",
-    "help:shots": "node scripts/help-screenshots.mjs"
+    "help:shots": "node scripts/help-screenshots.mjs",
+    "help:pdf": "node scripts/help-pdf.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

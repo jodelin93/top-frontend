@@ -57,3 +57,15 @@ export function topicsForRoute(topics: HelpTopic[], pathname: string, search: UR
     .sort((a, b) => b.score - a.score || a.topic.order - b.topic.order)
     .map((entry) => entry.topic);
 }
+
+const cleanPath = (path: string) => path.replace(/\/+$/, '') || '/';
+
+/**
+ * Topics of the page's section: every topic with a route on exactly this path, whatever
+ * the tab (?tab=...), so the Stock page lists all the stock topics but not the topics of
+ * /admin (the admin overview). Help home order.
+ */
+export function topicsForPage(topics: HelpTopic[], pathname: string): HelpTopic[] {
+  const current = cleanPath(pathname);
+  return topics.filter((topic) => topic.routes.some((route) => cleanPath(route.split('?')[0]) === current));
+}

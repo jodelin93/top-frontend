@@ -16,7 +16,6 @@ export const help: Record<string, string> = {
   '{count} topics found': '{count} sijè jwenn',
   'This help topic does not exist.': 'Sijè èd sa a pa egziste.',
   'Sign in to see all the help topics.': 'Konekte pou w wè tout sijè èd yo.',
-  'For this page': 'Pou paj sa a',
   'This topic is not translated yet: it is shown in {language}.':
     'Sijè sa a poko tradui : li parèt an {language}.',
   'Related topics': 'Gade tou',
@@ -29,4 +28,10 @@ export const help: Record<string, string> = {
   // Account security, store list: the store in use
   'Current|store': 'Aktyèl',
   'Close the picture': 'Fèmen imaj la',
+  'Download the PDF': 'Telechaje PDF la',
+  'All topics': 'Tout sijè yo',
+  'Topics for this page': 'Sijè paj sa a',
+  'Help for this page': 'Èd pou paj sa a',
+  'User manual': 'Manyèl itilizasyon',
+  Contents: 'Tab dè matyè',
 };

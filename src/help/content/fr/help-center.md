@@ -5,10 +5,10 @@ category: Premiers pas
 order: 108
 public: true
 routes: [/help]
-keywords: [aide, manuel, F1, recherche, mode d'emploi, documentation, centre d'aide, rubrique]
+keywords: [PDF, télécharger, imprimer, toutes les rubriques, aide, manuel, F1, recherche, mode d'emploi, documentation, centre d'aide, rubrique]
 related: [pos-shortcuts, navigation-admin]
 ---
-Le manuel est intégré à l'application. Il s'ouvre sur la rubrique qui correspond à ce que vous faites.
+Le manuel est intégré à l'application. Il s'ouvre sur les rubriques de la page où vous êtes.
 
 ## Ouvrir l'aide
 
@@ -17,9 +17,16 @@ Le manuel est intégré à l'application. Il s'ouvre sur la rubrique qui corresp
 - Dans l'administration : cliquez sur **?** en haut du menu, ou sur **Aide** en bas du menu. Sur téléphone : **?** dans la barre du haut.
 - Sur la page de connexion : cliquez sur **Besoin d'aide ?**.
 
-L'aide s'ouvre dans un panneau à droite (en plein écran sur téléphone). Si une fenêtre est ouverte, par exemple **Paiement**, l'aide montre la rubrique de cette fenêtre.
+L'aide s'ouvre dans un panneau à droite (en plein écran sur téléphone). Elle affiche **Aide pour cette page** : seulement les rubriques de la page où vous êtes (par exemple, sur **Produits**, les rubriques des produits). Si une fenêtre est ouverte, par exemple **Paiement**, l'aide ouvre directement la rubrique de cette fenêtre.
 
-![Le panneau d'aide ouvert à la caisse](shot:help-drawer)
+![Le panneau d'aide ouvert sur la page Produits](shot:help-drawer)
+
+## Toutes les rubriques et le PDF
+
+Deux boutons se trouvent sous la zone de recherche :
+
+- **Toutes les rubriques** affiche le manuel complet, classé par catégorie. **Rubriques de cette page** revient à la liste de la page.
+- **Télécharger le PDF** télécharge le manuel complet, dans la langue de l'application, pour le lire ou l'imprimer sans l'application.
 
 ## Chercher
 

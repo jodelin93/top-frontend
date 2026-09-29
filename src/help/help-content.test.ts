@@ -4,9 +4,11 @@
  *  - a screenshot used by a topic is missing for a language;
  *  - an app page has no help topic;
  *  - src/help/generated is stale (run `npm run help:index`);
- *  - a topic links to, or the code opens, a topic that does not exist.
+ *  - a topic links to, or the code opens, a topic that does not exist;
+ *  - a downloadable PDF is missing or older than its topics (run `npm run help:pdf`).
  * See docs/help-authoring.md.
  */
+import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -154,5 +156,20 @@ describe('help content', () => {
     const file = indexPath(lang, ROOT);
     const current = existsSync(file) ? readFileSync(file, 'utf8') : '';
     expect(current === serializeIndex(indexes[lang])).toBe(true);
+  });
+});
+
+describe('help PDF (public/help/pdf, built by `npm run help:pdf`)', () => {
+  const pdfManifest = JSON.parse(readFileSync(path.join(ROOT, 'public/help/pdf/manifest.json'), 'utf8')) as Record<
+    string,
+    { file: string; topics: string }
+  >;
+
+  it.each(HELP_LANGS)('PDF for %s exists and matches the current topics', (lang) => {
+    const entry = pdfManifest[lang];
+    expect(entry, `no PDF for ${lang}`).toBeDefined();
+    expect(existsSync(path.join(ROOT, 'public/help/pdf', entry.file))).toBe(true);
+    const version = createHash('sha256').update(serializeIndex(indexes[lang])).digest('hex').slice(0, 16);
+    expect(entry.topics, `the ${lang} PDF is older than its topics: run \`npm run help:pdf -- --lang ${lang}\``).toBe(version);
   });
 });

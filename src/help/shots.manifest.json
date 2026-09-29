@@ -503,19 +503,22 @@
     "help-drawer": {
       "steps": [
         {
-          "goto": "/pos"
+          "goto": "/admin/products"
         },
         {
           "waitFor": {
-            "css": "button.min-h-28"
+            "testid": "help-button"
           }
+        },
+        {
+          "wait": 1500
         },
         {
           "press": "F1"
         },
         {
           "waitFor": {
-            "testid": "help-drawer"
+            "testid": "help-scope"
           }
         },
         {

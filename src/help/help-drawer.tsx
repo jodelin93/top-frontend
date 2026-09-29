@@ -8,8 +8,7 @@ import { CircleHelp, ExternalLink, X } from 'lucide-react';
 import { t } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { HelpView, useHelpIndex, useVisibleTopics } from './help-view';
-import { topicForRoute } from './routes';
+import { HelpView } from './help-view';
 import { useHelpStore } from './store';
 
 // Screens where help is not offered (the customer-facing display)
@@ -41,16 +40,7 @@ export function HelpRoot() {
 }
 
 function HelpDrawer() {
-  const { open, topicId, query, location, routePending, close, showTopic, back, setQuery } = useHelpStore();
-  const { index } = useHelpIndex();
-  const topics = useVisibleTopics(index);
-
-  // Opened without a topic: the topic of the page it was opened on
-  useEffect(() => {
-    if (!open || !routePending || !index || !location) return;
-    const topic = topicForRoute(topics, location.pathname, location.search);
-    useHelpStore.setState({ routePending: false, ...(topic ? { topicId: topic.id } : {}) });
-  }, [open, routePending, index, location, topics]);
+  const { open, topicId, scope, query, location, close, showTopic, back, setQuery, setScope } = useHelpStore();
 
   const fullPage = topicId ? `/help/${topicId}` : '/help';
 
@@ -94,13 +84,15 @@ function HelpDrawer() {
           {open && (
             <HelpView
               className="flex-1"
-              topicId={routePending ? null : topicId}
+              topicId={topicId}
               query={query}
               onQuery={setQuery}
               onOpenTopic={showTopic}
               onBack={back}
               onLeave={close}
               location={location}
+              scope={scope}
+              onScope={setScope}
             />
           )}
         </DialogPrimitive.Content>

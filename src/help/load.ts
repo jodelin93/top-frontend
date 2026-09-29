@@ -61,3 +61,6 @@ export function loadHelpIndex(lang: Lang): Promise<HelpIndex> {
 
 /** URL of a screenshot in a language */
 export const shotUrl = (lang: string, shot: string) => `/help/shots/${lang}/${shot}.webp`;
+
+/** The whole manual of a language as a PDF (built by scripts/help-pdf.mjs) */
+export const manualPdfUrl = (lang: string) => `/help/pdf/joda-pos-manual-${lang}.pdf`;

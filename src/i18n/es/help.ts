@@ -16,7 +16,6 @@ export const help: Record<string, string> = {
   '{count} topics found': '{count} temas encontrados',
   'This help topic does not exist.': 'Este tema de ayuda no existe.',
   'Sign in to see all the help topics.': 'Inicie sesión para ver todos los temas de ayuda.',
-  'For this page': 'Para esta página',
   'This topic is not translated yet: it is shown in {language}.':
     'Este tema aún no está traducido: se muestra en {language}.',
   'Related topics': 'Temas relacionados',
@@ -29,4 +28,10 @@ export const help: Record<string, string> = {
   // Account security, store list: the store in use
   'Current|store': 'Actual',
   'Close the picture': 'Cerrar la imagen',
+  'Download the PDF': 'Descargar el PDF',
+  'All topics': 'Todos los temas',
+  'Topics for this page': 'Temas de esta página',
+  'Help for this page': 'Ayuda para esta página',
+  'User manual': 'Manual de usuario',
+  Contents: 'Índice',
 };

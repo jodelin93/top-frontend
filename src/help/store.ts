@@ -10,15 +10,15 @@ import { create } from 'zustand';
  */
 interface HelpState {
   open: boolean;
-  /** Topic shown; null = the help home (search and categories) */
+  /** Topic shown; null = the topic list (search and categories) */
   topicId: string | null;
+  /** Topic list: the topics of the page help was opened on, or every topic */
+  scope: 'page' | 'all';
   /** Topics visited before the current one (Back) */
   history: (string | null)[];
   query: string;
   /** Location when the drawer was opened, for the page's own topic */
   location: { pathname: string; search: string } | null;
-  /** Opened without a topic: show the page's own topic once the index is loaded */
-  routePending: boolean;
   /** Topics of what is open on screen (dialogs, tabs), innermost last */
   contexts: { key: number; topicId: string }[];
   openHelp: (topicId?: string | null) => void;
@@ -26,24 +26,26 @@ interface HelpState {
   showTopic: (topicId: string | null) => void;
   back: () => void;
   setQuery: (query: string) => void;
+  /** Back to the topic list, of the page or of every topic */
+  setScope: (scope: 'page' | 'all') => void;
 }
 
 export const useHelpStore = create<HelpState>()((set, get) => ({
   open: false,
   topicId: null,
+  scope: 'page',
   history: [],
   query: '',
   location: null,
-  routePending: false,
   contexts: [],
   openHelp: (topicId) => {
     const contexts = get().contexts;
     const contextTopic = contexts.length ? contexts[contexts.length - 1].topicId : null;
-    const chosen = topicId ?? contextTopic;
+    // A given topic or the open dialog's own topic, else the list of the page's topics
     set({
       open: true,
-      topicId: chosen,
-      routePending: !chosen,
+      topicId: topicId ?? contextTopic,
+      scope: 'page',
       history: [],
       query: '',
       location:
@@ -52,18 +54,22 @@ export const useHelpStore = create<HelpState>()((set, get) => ({
           : { pathname: window.location.pathname, search: window.location.search },
     });
   },
-  close: () => set({ open: false, routePending: false }),
+  close: () => set({ open: false }),
   showTopic: (topicId) => {
     const { topicId: current, history } = get();
     if (topicId === current) return set({ query: '' });
-    set({ topicId, history: [...history, current], query: '', routePending: false });
+    set({ topicId, history: [...history, current], query: '' });
   },
   back: () => {
     const history = get().history;
-    if (!history.length) return set({ topicId: null, query: '', routePending: false });
-    set({ topicId: history[history.length - 1], history: history.slice(0, -1), query: '', routePending: false });
+    if (!history.length) return set({ topicId: null, query: '' });
+    set({ topicId: history[history.length - 1], history: history.slice(0, -1), query: '' });
   },
   setQuery: (query) => set({ query }),
+  setScope: (scope) => {
+    const { topicId, history } = get();
+    set({ scope, topicId: null, query: '', history: topicId === null ? history : [...history, topicId] });
+  },
 }));
 
 let nextKey = 1;

@@ -19,11 +19,13 @@ interface ViewProps {
   onOpenTopic: (topicId: string) => void;
   /** Called when a link leaves the help (to an app page), e.g. to close the drawer */
   onLeave?: () => void;
+  /** Printed manual: links to topics jump to #topic-<id>, pictures load at once, no zoom */
+  print?: boolean;
 }
 
-export function MarkdownView({ blocks, lang, onOpenTopic, onLeave }: ViewProps) {
+export function MarkdownView({ blocks, lang, onOpenTopic, onLeave, print }: ViewProps) {
   const [zoom, setZoom] = useState<{ shot: string; alt: string } | null>(null);
-  const ctx: RenderContext = { lang, onOpenTopic, onLeave, onZoom: setZoom };
+  const ctx: RenderContext = { lang, onOpenTopic, onLeave, onZoom: setZoom, print };
   return (
     <div className="help-content space-y-3 text-[15px] leading-relaxed text-gray-800">
       {blocks.map((block, i) => (
@@ -39,6 +41,7 @@ interface RenderContext {
   onOpenTopic: (topicId: string) => void;
   onLeave?: () => void;
   onZoom: (shot: { shot: string; alt: string }) => void;
+  print?: boolean;
 }
 
 function Block({ block, ctx }: { block: HelpBlock; ctx: RenderContext }) {
@@ -129,6 +132,14 @@ function Block({ block, ctx }: { block: HelpBlock; ctx: RenderContext }) {
         </div>
       );
     case 'img':
+      if (ctx.print) {
+        return (
+          <figure className="help-print-figure space-y-1">
+            <Shot shot={block.shot} alt={block.alt} lang={ctx.lang} eager className="w-full rounded-md border" />
+            {block.alt && <figcaption className="text-xs text-gray-500">{block.alt}</figcaption>}
+          </figure>
+        );
+      }
       return (
         <figure className="space-y-1">
           <button
@@ -167,7 +178,7 @@ function Inlines({ nodes, ctx }: { nodes: HelpInline[]; ctx: RenderContext }) {
 function renderInline(node: HelpInline, ctx: RenderContext): ReactNode {
   if (typeof node === 'string') return node;
   if ('code' in node) return <code className="rounded bg-gray-100 px-1 py-0.5 text-[0.9em]">{node.code}</code>;
-  if ('img' in node) return <Shot shot={node.img} alt={node.alt} lang={ctx.lang} className="inline h-5 align-text-bottom" />;
+  if ('img' in node) return <Shot shot={node.img} alt={node.alt} lang={ctx.lang} eager={ctx.print} className="inline h-5 align-text-bottom" />;
   if ('a' in node) return <HelpLink href={node.a} ctx={ctx}><Inlines nodes={node.c} ctx={ctx} /></HelpLink>;
   if (node.t === 'b') return <strong className="font-semibold text-gray-900"><Inlines nodes={node.c} ctx={ctx} /></strong>;
   return <em><Inlines nodes={node.c} ctx={ctx} /></em>;
@@ -178,6 +189,13 @@ const LINK = 'font-medium text-blue-700 underline decoration-blue-300 underline-
 function HelpLink({ href, ctx, children }: { href: string; ctx: RenderContext; children: ReactNode }) {
   if (href.startsWith('topic:')) {
     const id = href.slice('topic:'.length);
+    if (ctx.print) {
+      return (
+        <a href={`#topic-${id}`} className={LINK}>
+          {children}
+        </a>
+      );
+    }
     return (
       <button type="button" className={LINK} onClick={() => ctx.onOpenTopic(id)}>
         {children}
@@ -206,7 +224,20 @@ function HelpLink({ href, ctx, children }: { href: string; ctx: RenderContext; c
  * A screenshot, lazy-loaded. When it does not exist in the topic language yet, the
  * English then French picture is used.
  */
-export function Shot({ shot, alt, lang, className }: { shot: string; alt: string; lang: string; className?: string }) {
+export function Shot({
+  shot,
+  alt,
+  lang,
+  className,
+  eager,
+}: {
+  shot: string;
+  alt: string;
+  lang: string;
+  className?: string;
+  /** Load at once (printed manual) instead of when scrolled into view */
+  eager?: boolean;
+}) {
   const candidates = [lang, ...FALLBACK_LANGS.filter((l) => l !== lang)];
   const [attempt, setAttempt] = useState(0);
   if (!/^[a-z0-9][a-z0-9-]*$/.test(shot)) return null;
@@ -219,7 +250,7 @@ export function Shot({ shot, alt, lang, className }: { shot: string; alt: string
     <img
       src={shotUrl(candidates[attempt], shot)}
       alt={alt}
-      loading="lazy"
+      loading={eager ? 'eager' : 'lazy'}
       decoding="async"
       className={className}
       onError={() => setAttempt((n) => n + 1)}

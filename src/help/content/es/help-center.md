@@ -5,10 +5,10 @@ category: Primeros pasos
 order: 108
 public: true
 routes: [/help]
-keywords: [ayuda, manual, F1, búsqueda, buscar, instrucciones, modo de uso, documentación, centro de ayuda, tema, guía]
+keywords: [PDF, descargar, imprimir, todos los temas, ayuda, manual, F1, búsqueda, buscar, instrucciones, modo de uso, documentación, centro de ayuda, tema, guía]
 related: [pos-shortcuts, navigation-admin]
 ---
-El manual está integrado en la aplicación. Se abre en el tema que corresponde a lo que usted está haciendo.
+El manual está integrado en la aplicación. Se abre en los temas de la página donde usted está.
 
 ## Abrir la ayuda
 
@@ -17,9 +17,16 @@ El manual está integrado en la aplicación. Se abre en el tema que corresponde 
 - En la administración: haga clic en **?** en la parte superior del menú, o en **Ayuda** en la parte inferior del menú. En el teléfono: **?** en la barra superior.
 - En la página de inicio de sesión: haga clic en **¿Necesita ayuda?**.
 
-La ayuda se abre en un panel a la derecha (en pantalla completa en el teléfono). Si hay una ventana abierta, por ejemplo **Pago**, la ayuda muestra el tema de esa ventana.
+La ayuda se abre en un panel a la derecha (en pantalla completa en el teléfono). Muestra **Ayuda para esta página**: solo los temas de la página donde usted está (por ejemplo, en **Productos**, los temas de los productos). Si hay una ventana abierta, por ejemplo **Pago**, la ayuda abre directamente el tema de esa ventana.
 
-![El panel de ayuda abierto en la caja](shot:help-drawer)
+![El panel de ayuda abierto en la página Productos](shot:help-drawer)
+
+## Todos los temas y el PDF
+
+Debajo del cuadro de búsqueda hay dos botones:
+
+- **Todos los temas** muestra el manual completo, por categoría. **Temas de esta página** vuelve a la lista de la página.
+- **Descargar el PDF** descarga el manual completo, en el idioma de la aplicación, para leerlo o imprimirlo fuera de la aplicación.
 
 ## Buscar
 

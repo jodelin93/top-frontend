@@ -5,10 +5,10 @@ category: Pou kòmanse
 order: 108
 public: true
 routes: [/help]
-keywords: [èd, ed, manyèl, manyel, F1, chèche, cheche, rechèch, dokimantasyon, sant èd, sant ed, sijè, aide, manuel, recherche, mode d'emploi, documentation, centre d'aide, rubrique]
+keywords: [PDF, telechaje, enprime, tout sijè, èd, ed, manyèl, manyel, F1, chèche, cheche, rechèch, dokimantasyon, sant èd, sant ed, sijè, aide, manuel, recherche, mode d'emploi, documentation, centre d'aide, rubrique]
 related: [pos-shortcuts, navigation-admin]
 ---
-Manyèl la entegre nan aplikasyon an. Li ouvri sou sijè ki koresponn ak sa w ap fè a.
+Manyèl la entegre nan aplikasyon an. Li ouvri sou sijè paj kote w ye a.
 
 ## Ouvri èd la
 
@@ -17,9 +17,16 @@ Manyèl la entegre nan aplikasyon an. Li ouvri sou sijè ki koresponn ak sa w ap
 - Nan administrasyon an: klike sou **?** anlè meni an, oswa sou **Èd** anba meni an. Sou telefòn: **?** nan ba anlè a.
 - Sou paj koneksyon an: klike sou **Ou bezwen èd ?**.
 
-Èd la ouvri nan yon panno sou bò dwat (tout ekran an sou telefòn). Si yon fenèt ouvri, pa egzanp **Peman**, èd la montre sijè fenèt sa a.
+Èd la ouvri nan yon panno sou bò dwat (tout ekran an sou telefòn). Li montre **Èd pou paj sa a**: sèlman sijè paj kote w ye a (pa egzanp, sou **Pwodui**, sijè pwodui yo). Si yon fenèt ouvri, pa egzanp **Peman**, èd la ouvri sijè fenèt sa a dirèkteman.
 
-![Panno èd la ouvri nan kès la](shot:help-drawer)
+![Panno èd la ouvri sou paj Pwodui yo](shot:help-drawer)
+
+## Tout sijè yo ak PDF la
+
+Gen de bouton anba bwat rechèch la:
+
+- **Tout sijè yo** montre tout manyèl la, pa kategori. **Sijè paj sa a** retounen nan lis paj la.
+- **Telechaje PDF la** telechaje tout manyèl la, nan lang aplikasyon an, pou li l oswa enprime l san aplikasyon an.
 
 ## Chèche
 

@@ -5,10 +5,10 @@ category: Getting started
 order: 108
 public: true
 routes: [/help]
-keywords: [help, manual, F1, search, how to, user guide, documentation, help center, topic, support]
+keywords: [PDF, download, print, all topics, help, manual, F1, search, how to, user guide, documentation, help center, topic, support]
 related: [pos-shortcuts, navigation-admin]
 ---
-The manual is built into the app. It opens on the topic that matches what you are doing.
+The manual is built into the app. It opens on the topics of the page you are on.
 
 ## Open help
 
@@ -17,9 +17,16 @@ The manual is built into the app. It opens on the topic that matches what you ar
 - In the admin area: click **?** at the top of the menu, or **Help** at the bottom of the menu. On a phone: **?** in the top bar.
 - On the login page: click **Need help?**.
 
-Help opens in a panel on the right (full screen on a phone). If a window is open, for example **Payment**, help shows the topic for that window.
+Help opens in a panel on the right (full screen on a phone). It shows **Help for this page**: only the topics of the page you are on (for example, on **Products**, the product topics). If a window is open, for example **Payment**, help opens that window's topic directly.
 
-![The help panel open at the till](shot:help-drawer)
+![The help panel open on the Products page](shot:help-drawer)
+
+## All topics and the PDF
+
+Two buttons sit under the search box:
+
+- **All topics** shows the whole manual, by category. **Topics for this page** goes back to the page's list.
+- **Download the PDF** downloads the whole manual, in the app language, to read or print outside the app.
 
 ## Search
 
