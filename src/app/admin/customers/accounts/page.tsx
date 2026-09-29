@@ -29,6 +29,7 @@ import { useCurrency } from '@/hooks/use-store-settings';
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
 import { t } from '@/i18n';
+import { useHelpContext } from '@/help/store';
 
 type Tab = 'aging' | 'stored';
 
@@ -38,6 +39,7 @@ type Tab = 'aging' | 'stored';
  */
 export default function CustomerAccountsPage() {
   const [tab, setTab] = useState<Tab>('aging');
+  useHelpContext(tab === 'stored' ? 'customers-gift-cards' : 'customers-accounts');
   return (
     <div className="mx-auto max-w-6xl space-y-4">
       <PageHeader

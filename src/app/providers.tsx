@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { I18nRoot } from '@/i18n/i18n-root';
 import type { Lang } from '@/i18n';
+import { HelpRoot } from '@/help/help-drawer';
 
 let browserQueryClient: QueryClient | undefined;
 
@@ -23,7 +24,10 @@ function getQueryClient() {
 export function Providers({ children, initialLang }: { children: ReactNode; initialLang: Lang }) {
   return (
     <QueryClientProvider client={getQueryClient()}>
-      <I18nRoot initialLang={initialLang}>{children}</I18nRoot>
+      <I18nRoot initialLang={initialLang}>
+        {children}
+        <HelpRoot />
+      </I18nRoot>
     </QueryClientProvider>
   );
 }

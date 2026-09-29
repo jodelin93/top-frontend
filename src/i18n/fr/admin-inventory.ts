@@ -222,8 +222,10 @@ export const adminInventory: Record<string, string> = {
   'Edit {number}': 'Modifier {number}',
   'Saved as a draft. Stock only moves when you dispatch it.':
     'Enregistré comme brouillon. Le stock ne bouge qu’au moment de l’expédition.',
-  From: 'De',
-  To: 'Vers',
+  From: 'Du',
+  To: 'Au',
+  Origin: 'Origine',
+  Destination: 'Destination',
   'Save draft': 'Enregistrer le brouillon',
   'Quantities must be whole numbers.': 'Les quantités doivent être des nombres entiers.',
   'Transfer {number}': 'Transfert {number}',

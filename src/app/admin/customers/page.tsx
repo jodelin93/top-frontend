@@ -28,8 +28,17 @@ import { CustomerDuplicatesSection } from '@/components/admin/customer-duplicate
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
 import { t } from '@/i18n';
+import { useHelpContext } from '@/help/store';
 
 type Tab = 'customers' | 'duplicates' | 'groups' | 'fields';
+
+// Help topic of each tab (src/help/content)
+const CUSTOMERS_TAB_HELP: Record<Tab, string> = {
+  customers: 'customers-list',
+  duplicates: 'customers-merge',
+  groups: 'customers-groups',
+  fields: 'customers-profile',
+};
 import { formatDate } from '@/lib/format';
 
 type CustomerStatus = Customer['status'];
@@ -44,6 +53,7 @@ const CUSTOMER_STATUS_LABELS: Record<CustomerStatus, string> = {
 export default function CustomersPage() {
   const { user } = useAuthStore();
   const [tab, setTab] = useState<Tab>('customers');
+  useHelpContext(CUSTOMERS_TAB_HELP[tab]);
   const [groupId, setGroupId] = useState('');
   const tabs: { key: Tab; label: string; show: boolean }[] = [
     { key: 'customers', label: t('Customers'), show: true },

@@ -12,6 +12,7 @@ import { adminNav, adminNavLabel } from '@/lib/admin-nav';
 import { cn } from '@/lib/utils';
 import { roleLabel } from '@/lib/server-texts';
 import { t } from '@/i18n';
+import { HelpButton } from '@/help/help-drawer';
 
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -73,7 +74,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="border-b px-4 py-4">
             <div className="flex items-center justify-between">
               <div className="text-lg font-semibold">{t('Admin')}</div>
-              <div className="hidden md:block">
+              <div className="hidden items-center md:flex">
+                <HelpButton className="h-8 w-8 text-gray-600" />
                 <NotificationBell align="left" />
               </div>
               <button
@@ -120,6 +122,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </nav>
           <div className="space-y-1 border-t p-2">
             <LanguageSwitcher />
+            <HelpButton
+              label
+              onOpen={closeDrawer}
+              className="h-auto w-full justify-start gap-2 px-3 py-2.5 text-sm font-medium text-gray-700 md:py-2"
+            />
             <Link
               href="/account/security"
               onClick={closeDrawer}
@@ -161,6 +168,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="min-w-0 flex-1 truncate text-base font-semibold">
               {pageTitle ? t(pageTitle) : t('Admin')}
             </div>
+            <HelpButton className="h-10 w-10 text-gray-700" />
             <NotificationBell />
           </header>
           <main className="min-w-0 flex-1 p-3 sm:p-4 md:overflow-auto md:p-6">{canManage ? children : null}</main>

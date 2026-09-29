@@ -11,6 +11,7 @@ import { overrides } from './overrides';
 import { posAccess } from './pos-access';
 import { documentsHardware } from './documents-hardware';
 import { serverTexts } from './server-texts';
+import { help } from './help';
 
 export const ht: Record<string, string> = {
   // First: existing wordings in the other files win over these
@@ -26,6 +27,7 @@ export const ht: Record<string, string> = {
   ...adminOther,
   ...errors,
   ...posAccess,
+  ...help,
   // Last: agreed wordings and context variants
   ...overrides,
 };

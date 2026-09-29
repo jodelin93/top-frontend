@@ -39,11 +39,23 @@ import { formatQuantity } from '@/lib/pos/quantity';
 import { formatDate, formatDateTime, formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { t } from '@/i18n';
+import { useHelpContext } from '@/help/store';
 
 type Tab = 'stock' | 'movements' | 'counts' | 'transfers' | 'aging' | 'valuation';
 
+// Help topic of each tab (src/help/content)
+const INVENTORY_TAB_HELP: Record<Tab, string> = {
+  stock: 'inventory-stock',
+  movements: 'inventory-adjust',
+  counts: 'inventory-counts',
+  transfers: 'inventory-transfers',
+  aging: 'inventory-valuation',
+  valuation: 'inventory-valuation',
+};
+
 export default function InventoryPage() {
   const [tab, setTab] = useState<Tab>('stock');
+  useHelpContext(INVENTORY_TAB_HELP[tab]);
   const user = useAuthStore((s) => s.user);
   // Valuation needs to see costs, and to adjust stock (revaluations) or manage settings (costing method)
   const canValue =

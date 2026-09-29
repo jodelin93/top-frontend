@@ -1,0 +1,1550 @@
+{
+  "$comment": "Help screenshots: how to capture each shot:<name> used in src/help/content. See scripts/help-screenshots.mjs for the step syntax. Texts are the ENGLISH keys passed to t(); they are translated for each language.",
+  "shots": {
+    "account-security": {
+      "steps": [
+        {
+          "goto": "/account/security"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-audit": {
+      "steps": [
+        {
+          "goto": "/admin/audit"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-categories": {
+      "steps": [
+        {
+          "goto": "/admin/categories"
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "admin-customers": {
+      "steps": [
+        {
+          "goto": "/admin/customers"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-dashboard": {
+      "steps": [
+        {
+          "goto": "/admin/dashboard"
+        },
+        {
+          "wait": 2500
+        }
+      ]
+    },
+    "admin-devices": {
+      "steps": [
+        {
+          "goto": "/admin/devices"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-discounts": {
+      "steps": [
+        {
+          "goto": "/admin/discounts"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-employees": {
+      "steps": [
+        {
+          "goto": "/admin/employees"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-estimates": {
+      "steps": [
+        {
+          "goto": "/admin/estimates"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-expenses": {
+      "steps": [
+        {
+          "goto": "/admin/expenses"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-hardware": {
+      "steps": [
+        {
+          "goto": "/admin/hardware"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-import": {
+      "steps": [
+        {
+          "goto": "/admin/import"
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "admin-payments": {
+      "steps": [
+        {
+          "goto": "/admin/payments"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-phone-menu": {
+      "viewport": "phone",
+      "steps": [
+        {
+          "goto": "/admin/products"
+        },
+        {
+          "wait": 1200
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Open menu"
+          }
+        },
+        {
+          "wait": 500
+        }
+      ]
+    },
+    "admin-price-lists": {
+      "steps": [
+        {
+          "goto": "/admin/price-lists"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-products": {
+      "steps": [
+        {
+          "goto": "/admin/products"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-reports": {
+      "steps": [
+        {
+          "goto": "/admin/reports"
+        },
+        {
+          "wait": 2500
+        }
+      ]
+    },
+    "admin-returns": {
+      "steps": [
+        {
+          "goto": "/admin/returns"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-review": {
+      "steps": [
+        {
+          "goto": "/admin/review"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-roles": {
+      "steps": [
+        {
+          "goto": "/admin/roles"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-sales": {
+      "steps": [
+        {
+          "goto": "/admin/sales"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-shifts": {
+      "steps": [
+        {
+          "goto": "/admin/shifts"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-sidebar": {
+      "steps": [
+        {
+          "goto": "/admin/dashboard"
+        },
+        {
+          "wait": 1500
+        }
+      ],
+      "capture": {
+        "css": "#admin-sidebar"
+      }
+    },
+    "admin-system-events": {
+      "steps": [
+        {
+          "goto": "/admin/system-events"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "admin-users": {
+      "steps": [
+        {
+          "goto": "/admin/users"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "approval-dialog": {
+      "steps": [
+        {
+          "goto": "/admin/expenses"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Approve",
+            "exact": true
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "capture": "dialog"
+    },
+    "auth-login": {
+      "signedOut": true,
+      "steps": [
+        {
+          "goto": "/auth/login"
+        },
+        {
+          "wait": 800
+        }
+      ]
+    },
+    "auth-signup": {
+      "signedOut": true,
+      "steps": [
+        {
+          "goto": "/signup"
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "customer-accounts": {
+      "steps": [
+        {
+          "goto": "/admin/customers/accounts"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "customer-detail": {
+      "steps": [
+        {
+          "goto": "/admin/customers"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "click": {
+            "ariaPrefix": "View {code}"
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ],
+      "capture": "dialog"
+    },
+    "customer-display": {
+      "steps": [
+        {
+          "goto": "/customer-display"
+        },
+        {
+          "wait": 800
+        }
+      ]
+    },
+    "customer-duplicates": {
+      "steps": [
+        {
+          "goto": "/admin/customers"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Possible duplicates",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "customer-form": {
+      "steps": [
+        {
+          "goto": "/admin/customers"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "New customer"
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "capture": "dialog"
+    },
+    "customer-gift-cards": {
+      "steps": [
+        {
+          "goto": "/admin/customers/accounts"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Gift cards & store credit",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "customer-groups": {
+      "steps": [
+        {
+          "goto": "/admin/customers"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Groups",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "employees-attendance": {
+      "steps": [
+        {
+          "goto": "/admin/employees"
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Attendance",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "expense-approval": {
+      "steps": [
+        {
+          "goto": "/admin/expenses"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Approve",
+            "exact": true
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "capture": "dialog"
+    },
+    "expense-form": {
+      "steps": [
+        {
+          "goto": "/admin/expenses"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "New expense"
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "capture": "dialog"
+    },
+    "help-drawer": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "press": "F1"
+        },
+        {
+          "waitFor": {
+            "testid": "help-drawer"
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "inventory-adjust": {
+      "steps": [
+        {
+          "goto": "/admin/inventory"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Count / adjust"
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "capture": "dialog"
+    },
+    "inventory-counts": {
+      "steps": [
+        {
+          "goto": "/admin/inventory"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Counts",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "inventory-receive": {
+      "steps": [
+        {
+          "goto": "/admin/inventory"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Receive stock"
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "capture": "dialog"
+    },
+    "inventory-stock": {
+      "steps": [
+        {
+          "goto": "/admin/inventory"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "inventory-transfers": {
+      "steps": [
+        {
+          "goto": "/admin/inventory"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Transfers",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "inventory-valuation": {
+      "steps": [
+        {
+          "goto": "/admin/inventory"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Valuation",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "notifications-page": {
+      "steps": [
+        {
+          "goto": "/account/notifications"
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "pos-cart": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 0
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 1
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 2
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 0
+          }
+        },
+        {
+          "wait": 600
+        }
+      ]
+    },
+    "pos-customer-dialog": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "press": "F4"
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "capture": "dialog"
+    },
+    "pos-discount-dialog": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 0
+          }
+        },
+        {
+          "press": "F8"
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "capture": "dialog"
+    },
+    "pos-gift-card-dialog": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Gift card",
+            "exact": true
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "capture": "dialog"
+    },
+    "pos-held-carts": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "press": "F9"
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 1000
+        }
+      ],
+      "capture": "dialog"
+    },
+    "pos-offline": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 0
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 1
+          }
+        },
+        {
+          "offline": true
+        },
+        {
+          "wait": 2500
+        }
+      ]
+    },
+    "pos-offline-sales": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "ariaPrefix": "Online"
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "capture": "dialog"
+    },
+    "pos-overview": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 0
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 1
+          }
+        },
+        {
+          "wait": 600
+        }
+      ]
+    },
+    "pos-payment": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 0
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 1
+          }
+        },
+        {
+          "press": "F12"
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "capture": "dialog"
+    },
+    "pos-payment-cash": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 0
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 1
+          }
+        },
+        {
+          "press": "F12"
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Cash",
+            "within": "dialog",
+            "raw": true
+          }
+        },
+        {
+          "fill": {
+            "ariaPrefix": "Amount in {currency}",
+            "within": "dialog"
+          },
+          "value": "50"
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Add",
+            "exact": true,
+            "within": "dialog"
+          }
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "capture": "dialog"
+    },
+    "pos-phone-menu": {
+      "viewport": "phone",
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "More actions"
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 500
+        }
+      ]
+    },
+    "pos-phone-products": {
+      "viewport": "phone",
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 0
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 1
+          }
+        },
+        {
+          "wait": 3000
+        }
+      ]
+    },
+    "pos-price-dialog": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "css": "button.min-h-28:not([disabled])",
+            "nth": 0
+          }
+        },
+        {
+          "click": {
+            "ariaPrefix": "Change price of {product}, now {price}"
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "capture": "dialog"
+    },
+    "pos-shortcuts": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Keyboard shortcuts"
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 400
+        }
+      ],
+      "capture": "dialog"
+    },
+    "product-form": {
+      "steps": [
+        {
+          "goto": "/admin/products"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "New product"
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "capture": "dialog"
+    },
+    "purchasing-invoices": {
+      "steps": [
+        {
+          "goto": "/admin/purchasing"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Invoices",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "purchasing-orders": {
+      "steps": [
+        {
+          "goto": "/admin/purchasing"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "purchasing-payables": {
+      "steps": [
+        {
+          "goto": "/admin/purchasing"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Payables",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "purchasing-reorder": {
+      "steps": [
+        {
+          "goto": "/admin/purchasing"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Reorder",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "purchasing-suppliers": {
+      "steps": [
+        {
+          "goto": "/admin/purchasing"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Suppliers",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "reports-reconciliation": {
+      "steps": [
+        {
+          "goto": "/admin/reports"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Reconciliation",
+            "exact": true
+          }
+        },
+        {
+          "wait": 2500
+        }
+      ]
+    },
+    "returns-new": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Returns",
+            "exact": true
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 500
+        }
+      ],
+      "capture": "dialog"
+    },
+    "sale-detail": {
+      "steps": [
+        {
+          "goto": "/admin/sales"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "click": {
+            "css": "tbody tr",
+            "nth": 0
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 1000
+        }
+      ],
+      "capture": "dialog"
+    },
+    "sale-void": {
+      "steps": [
+        {
+          "goto": "/admin/sales"
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "click": {
+            "css": "tbody tr",
+            "nth": 0
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Void sale",
+            "within": "dialog"
+          }
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "capture": "dialog"
+    },
+    "settings-branches": {
+      "steps": [
+        {
+          "goto": "/admin/settings"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Branches & registers",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "settings-business": {
+      "steps": [
+        {
+          "goto": "/admin/settings"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Business information",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "settings-exchange-rate": {
+      "steps": [
+        {
+          "goto": "/admin/dashboard"
+        },
+        {
+          "wait": 2000
+        }
+      ],
+      "capture": {
+        "text": "Exchange rates",
+        "exact": true,
+        "closestClass": "p-4"
+      }
+    },
+    "settings-general": {
+      "steps": [
+        {
+          "goto": "/admin/settings"
+        },
+        {
+          "wait": 1500
+        }
+      ]
+    },
+    "settings-history": {
+      "steps": [
+        {
+          "goto": "/admin/settings"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "History",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "settings-loyalty": {
+      "steps": [
+        {
+          "goto": "/admin/settings"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Loyalty",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "settings-payment-methods": {
+      "steps": [
+        {
+          "goto": "/admin/settings"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Payment methods",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "settings-receipts": {
+      "steps": [
+        {
+          "goto": "/admin/settings"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Receipts & printing",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "settings-security": {
+      "steps": [
+        {
+          "goto": "/admin/settings"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Offline & security",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "settings-taxes": {
+      "steps": [
+        {
+          "goto": "/admin/settings"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Tax rates",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "settings-warehouses": {
+      "steps": [
+        {
+          "goto": "/admin/settings"
+        },
+        {
+          "click": {
+            "role": "tab",
+            "name": "Warehouses & locations",
+            "exact": true
+          }
+        },
+        {
+          "wait": 1200
+        }
+      ]
+    },
+    "shift-open": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Open shift",
+            "exact": true
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 600
+        }
+      ],
+      "capture": "dialog"
+    },
+    "shift-panel": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "title": "Shift and cash drawer"
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "capture": "dialog"
+    },
+    "user-form": {
+      "steps": [
+        {
+          "goto": "/admin/users"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Add user"
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "wait": 800
+        }
+      ],
+      "capture": "dialog"
+    }
+  }
+}

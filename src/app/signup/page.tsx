@@ -17,6 +17,7 @@ import { tenantsApi } from '@/lib/api/tenants';
 import { useAuthStore } from '@/stores/auth-store';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { t } from '@/i18n';
+import { HelpLink } from '@/help/help-drawer';
 
 const signupSchema = z.object({
   storeName: z.string().trim().min(2, 'Enter your store name').max(255),
@@ -159,6 +160,9 @@ export default function SignupPage() {
             </form>
           )}
         </CardContent>
+        <div className="pb-4 text-center">
+          <HelpLink topicId="auth-signup" />
+        </div>
       </Card>
     </div>
   );

@@ -21,6 +21,7 @@ import { getErrorMessage } from '@/lib/api/client';
 import { branchesApi, paymentMethodsApi, registersApi, settingsApi } from '@/lib/api/settings';
 import { cn } from '@/lib/utils';
 import { t } from '@/i18n';
+import { useHelpContext } from '@/help/store';
 
 const tabs = [
   { id: 'general', label: 'General' },
@@ -37,8 +38,23 @@ const tabs = [
 
 type TabId = (typeof tabs)[number]['id'];
 
+// Help topic of each tab (src/help/content)
+const SETTINGS_TAB_HELP: Record<TabId, string> = {
+  general: 'settings-general',
+  business: 'settings-business',
+  receipts: 'settings-receipts',
+  loyalty: 'settings-loyalty',
+  'tax-rates': 'settings-taxes',
+  'payment-methods': 'settings-payment-methods',
+  branches: 'settings-branches',
+  warehouses: 'settings-warehouses',
+  security: 'settings-security',
+  history: 'settings-history',
+};
+
 export default function SettingsPage() {
   const [tab, setTab] = useState<TabId>('general');
+  useHelpContext(SETTINGS_TAB_HELP[tab]);
 
   return (
     <div className="mx-auto max-w-6xl space-y-4">

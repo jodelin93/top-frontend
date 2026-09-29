@@ -16,3 +16,5 @@ coverage
 Dockerfile
 .dockerignore
 tsconfig.tsbuildinfo
+# Help center topics are Markdown and are compiled during the build
+!src/help/content/**/*.md

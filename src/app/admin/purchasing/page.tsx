@@ -12,8 +12,20 @@ import { ReorderSuggestionsTab } from '@/components/admin/purchasing-reorder';
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
 import { t } from '@/i18n';
+import { useHelpContext } from '@/help/store';
 
 type Tab = 'orders' | 'suppliers' | 'reorder' | 'returns' | 'invoices' | 'payments' | 'payables';
+
+// Help topic of each tab (src/help/content)
+const PURCHASING_TAB_HELP: Record<Tab, string> = {
+  orders: 'purchasing-orders',
+  suppliers: 'purchasing-suppliers',
+  reorder: 'purchasing-reorder',
+  returns: 'purchasing-returns',
+  invoices: 'purchasing-invoices',
+  payments: 'purchasing-payments',
+  payables: 'purchasing-payments',
+};
 
 // Tabs and who sees them
 const TABS: { id: Tab; label: string; permissions: string[] }[] = [
@@ -32,6 +44,7 @@ export default function PurchasingPage() {
   const [chosen, setChosen] = useState<Tab | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const tab = chosen && visible.some((v) => v.id === chosen) ? chosen : (visible[0]?.id ?? 'orders');
+  useHelpContext(PURCHASING_TAB_HELP[tab]);
 
   return (
     <div className="mx-auto max-w-6xl space-y-4">

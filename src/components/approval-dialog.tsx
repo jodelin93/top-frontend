@@ -12,6 +12,7 @@ import { APPROVAL_HEADER, approvablePermission, approvalAction, approvalsApi } f
 import { rolesApi } from '@/lib/api/roles';
 import { getErrorMessage } from '@/lib/api/client';
 import { t } from '@/i18n';
+import { useHelpContext } from '@/help/store';
 import { permissionLabel } from '@/lib/server-texts';
 
 type Headers = Record<string, string>;
@@ -101,6 +102,7 @@ function ApprovalDialog({
     enabled: !!permission,
     staleTime: Infinity,
   });
+  useHelpContext(permission ? 'approvals' : null);
   const label = permission ? permissionLabel(permission, catalog.find((p) => p.key === permission)?.label) : '';
 
   const reset = () => {

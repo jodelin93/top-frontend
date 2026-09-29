@@ -18,6 +18,7 @@ import { describeUserAgent, sessionsApi } from '@/lib/api/sessions';
 import { formatDateTime } from '@/lib/format';
 import { canUseAdmin, useAuthStore } from '@/stores/auth-store';
 import { t } from '@/i18n';
+import { HelpButton } from '@/help/help-drawer';
 import { roleLabel } from '@/lib/server-texts';
 
 type Step = 'idle' | 'scan' | 'disable';
@@ -95,12 +96,17 @@ function SecuritySettings() {
   return (
     <div className="min-h-screen bg-gray-100 p-3 sm:p-6">
       <div className="mx-auto max-w-xl space-y-4">
-        {!mfaRequired && (
-          <Link href={backHref} className="inline-flex items-center gap-1 text-sm text-gray-600 hover:underline">
-            <ArrowLeft className="h-4 w-4" />
-            {t('Back')}
-          </Link>
-        )}
+        <div className="flex items-center justify-between">
+          {!mfaRequired ? (
+            <Link href={backHref} className="inline-flex items-center gap-1 text-sm text-gray-600 hover:underline">
+              <ArrowLeft className="h-4 w-4" />
+              {t('Back')}
+            </Link>
+          ) : (
+            <span />
+          )}
+          <HelpButton label className="text-gray-600" />
+        </div>
 
         {mfaRequired && (
           <div role="alert" className="flex gap-3 rounded-md border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
@@ -272,7 +278,7 @@ function StoresCard() {
               <div className="text-xs text-gray-500">{roleLabel(store.roleName)}</div>
             </div>
             {store.current ? (
-              <span className="text-xs font-medium text-green-700">{t('Current')}</span>
+              <span className="text-xs font-medium text-green-700">{t('Current|store')}</span>
             ) : (
               <Button
                 size="sm"

@@ -320,7 +320,7 @@ function TransferFormDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           <ErrorMessage>{error}</ErrorMessage>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field label={t('From')} htmlFor="transfer-from">
+            <Field label={t('Origin')} htmlFor="transfer-from">
               <Select id="transfer-from" value={fromLocationId} onChange={(e) => setFrom(e.target.value)}>
                 <option value="">{t('Choose a location...')}</option>
                 {locations.map((l) => (
@@ -330,7 +330,7 @@ function TransferFormDialog({
                 ))}
               </Select>
             </Field>
-            <Field label={t('To')} htmlFor="transfer-to">
+            <Field label={t('Destination')} htmlFor="transfer-to">
               <Select id="transfer-to" value={toLocationId} onChange={(e) => setTo(e.target.value)}>
                 <option value="">{t('Choose a location...')}</option>
                 {locations.map((l) => (

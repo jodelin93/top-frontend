@@ -17,6 +17,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { homePath } from '@/lib/landing';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { t } from '@/i18n';
+import { HelpLink } from '@/help/help-drawer';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -140,6 +141,9 @@ export default function LoginPage() {
             </p>
           )}
         </CardContent>
+        <div className="pb-4 text-center">
+          <HelpLink topicId="auth-login" />
+        </div>
       </Card>
     </div>
   );

@@ -58,6 +58,8 @@ import { ShortcutsDialog } from '@/components/pos/shortcuts-dialog';
 import { SalespersonSelect, useStaff } from '@/components/pos/salesperson-select';
 import { useApprovals } from '@/components/pos/use-approvals';
 import { usePosShortcuts } from '@/components/pos/use-pos-shortcuts';
+import { HelpButton } from '@/help/help-drawer';
+import { useHelpContext } from '@/help/store';
 import { useSmallScreen } from '@/components/pos/use-small-screen';
 import { ShiftPanel } from '@/components/shifts/shift-panel';
 import { DrawerOpenButton } from '@/components/shifts/drawer-open-button';
@@ -116,6 +118,19 @@ function POSGate() {
   const user = useAuthStore((state) => state.user);
   return canSell(user) ? <POSScreen /> : <NoPosAccess />;
 }
+
+// Help topic of each till dialog (src/help/content/<lang>/<id>.md)
+const POS_DIALOG_TOPICS: Record<NonNullable<DialogName>, string> = {
+  customer: 'pos-customer',
+  discount: 'pos-discounts',
+  payment: 'pos-payment',
+  pending: 'offline-sync',
+  held: 'pos-held-carts',
+  shortcuts: 'pos-shortcuts',
+  giftcard: 'pos-gift-cards',
+  returns: 'returns-pos',
+  menu: 'pos-phone',
+};
 
 type DialogName =
   | 'customer'
@@ -1158,6 +1173,23 @@ function POSScreen() {
     noDialog
   );
 
+  // Help (F1 / Help button) opens on the topic of what is on screen
+  useHelpContext(
+    completed
+      ? 'pos-receipt'
+      : awaitingPayment
+        ? 'pos-payment-card'
+        : repricing
+          ? 'pos-held-carts'
+          : priceKey
+            ? 'pos-price-change'
+            : quantityTarget
+              ? 'pos-weighed-items'
+              : dialog
+                ? POS_DIALOG_TOPICS[dialog]
+                : null
+  );
+
   const handleLogout = () => {
     logout();
     router.push('/auth/login');
@@ -1279,6 +1311,7 @@ function POSScreen() {
           >
             <Keyboard className="h-4 w-4" />
           </Button>
+          <HelpButton className="max-md:hidden" />
           {hasPermission(user, 'sales.refund') && (
             <Button
               variant="outline"
@@ -2010,6 +2043,7 @@ function POSScreen() {
                 {t('Keyboard shortcuts')}
               </Button>
             )}
+            <HelpButton label variant="outline" className={MENU_ITEM} onOpen={() => setDialog(null)} />
             <Button variant="outline" className={MENU_ITEM} asChild>
               <Link href="/account/security">
                 <ShieldCheck className="h-4 w-4" />

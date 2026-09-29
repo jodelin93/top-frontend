@@ -13,6 +13,7 @@ import { authApi, signInErrorMessage } from '@/lib/api/auth';
 import { useAuthStore } from '@/stores/auth-store';
 import { homePath } from '@/lib/landing';
 import { t } from '@/i18n';
+import { HelpLink } from '@/help/help-drawer';
 
 const mfaSchema = z.object({
   token: z.string().length(6, 'Token must be 6 digits'),
@@ -109,6 +110,9 @@ export default function MfaVerifyPage() {
             </Button>
           </form>
         </CardContent>
+        <div className="pb-4 text-center">
+          <HelpLink topicId="auth-mfa" />
+        </div>
       </Card>
     </div>
   );

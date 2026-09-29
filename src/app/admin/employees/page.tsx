@@ -26,6 +26,7 @@ import { Employee, EmployeeStatus, employeesApi } from '@/lib/api/employees';
 import { branchesApi } from '@/lib/api/settings';
 import { cn } from '@/lib/utils';
 import { plural, t } from '@/i18n';
+import { useHelpContext } from '@/help/store';
 import { todayLocalIso } from '@/lib/format';
 
 type Tab = 'employees' | 'attendance';
@@ -33,6 +34,7 @@ type Tab = 'employees' | 'attendance';
 export default function EmployeesPage() {
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<Tab>('employees');
+  useHelpContext(tab === 'attendance' ? 'employees-attendance' : 'employees');
   const [status, setStatus] = useState<EmployeeStatus | ''>('active');
   const [branchId, setBranchId] = useState('');
   const [search, setSearch] = useState('');

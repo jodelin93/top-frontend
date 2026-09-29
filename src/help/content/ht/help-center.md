@@ -1,0 +1,39 @@
+---
+id: help-center
+title: Sèvi ak èd la
+category: Pou kòmanse
+order: 108
+public: true
+routes: [/help]
+keywords: [èd, ed, manyèl, manyel, F1, chèche, cheche, rechèch, dokimantasyon, sant èd, sant ed, sijè, aide, manuel, recherche, mode d'emploi, documentation, centre d'aide, rubrique]
+related: [pos-shortcuts, navigation-admin]
+---
+Manyèl la entegre nan aplikasyon an. Li ouvri sou sijè ki koresponn ak sa w ap fè a.
+
+## Ouvri èd la
+
+- Peze touch **F1**, nenpòt kote nan aplikasyon an.
+- Nan kès la: klike sou ikòn **?** anlè ekran an. Sou telefòn: **⋯** epi **Èd**.
+- Nan administrasyon an: klike sou **?** anlè meni an, oswa sou **Èd** anba meni an. Sou telefòn: **?** nan ba anlè a.
+- Sou paj koneksyon an: klike sou **Ou bezwen èd ?**.
+
+Èd la ouvri nan yon panno sou bò dwat (tout ekran an sou telefòn). Si yon fenèt ouvri, pa egzanp **Peman**, èd la montre sijè fenèt sa a.
+
+![Panno èd la ouvri nan kès la](shot:help-drawer)
+
+## Chèche
+
+1. Tape youn oswa plizyè mo nan **Chèche nan èd la...**, pa egzanp « monnen » oswa « transfè ».
+2. Sijè yo jwenn yo parèt avèk yon ekstrè; mo yo jwenn yo make an koulè.
+3. Klike sou yon sijè pou li l.
+
+Rechèch la pa okipe aksan ak lèt majiskil (« etikèt » jwenn « étiquette ») epi li tolere yon ti fot frap.
+
+## Li yon sijè
+
+- Klike sou yon imaj pou agrandi l; klike ankò (oswa Esc) pou fèmen l.
+- **Gade tou**, anba a, pwopoze sijè ki sanble.
+- **Retounen** mennen ou nan sijè anvan an oswa nan akèy èd la.
+- **Tout paj la** ouvri sant èd la nan paj la, nan adrès /help.
+
+Èd la swiv lang aplikasyon an. Si yon sijè poko tradui, li parèt an anglè (oswa an fransè) avèk yon mesaj.

@@ -23,6 +23,7 @@ import { formatDateTime } from '@/lib/format';
 import { translateNotificationText } from '@/lib/server-texts';
 import { canUseAdmin, useAuthStore } from '@/stores/auth-store';
 import { plural, t } from '@/i18n';
+import { HelpButton } from '@/help/help-drawer';
 
 export default function NotificationsPage() {
   return (
@@ -39,10 +40,13 @@ function NotificationsCentre() {
   return (
     <div className="min-h-screen bg-gray-100 p-3 sm:p-6">
       <div className="mx-auto max-w-3xl space-y-4">
-        <Link href={backHref} className="inline-flex items-center gap-1 text-sm text-gray-600 hover:underline">
-          <ArrowLeft className="h-4 w-4" />
-          {t('Back')}
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link href={backHref} className="inline-flex items-center gap-1 text-sm text-gray-600 hover:underline">
+            <ArrowLeft className="h-4 w-4" />
+            {t('Back')}
+          </Link>
+          <HelpButton label className="text-gray-600" />
+        </div>
         <NotificationList />
         <PreferencesCard />
       </div>

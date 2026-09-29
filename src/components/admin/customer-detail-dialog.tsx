@@ -30,6 +30,7 @@ import {
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
 import { currentLocale, t } from '@/i18n';
+import { useHelpContext } from '@/help/store';
 import { translateServerNote } from '@/lib/server-texts';
 
 // English labels, translated at render
@@ -48,6 +49,7 @@ export function CustomerDetailDialog({ customer, onClose }: CustomerDetailDialog
   const currency = useCurrency();
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
+  useHelpContext(customer ? 'customers-profile' : null);
   const canAnonymise = hasPermission(user, 'customers.manage') && !customer?.metadata?.anonymisedAt;
   const anonymise = useMutation({
     mutationFn: (id: string) => customersApi.anonymize(id),
