@@ -42,3 +42,5 @@ La colonne **REMBOURSEMENT** calcule le montant par ligne, remises et taxes d'or
 ## Remettre l'avoir
 
 La fenêtre **Retour effectué** affiche le document **AVOIR**, avec son propre numéro (par exemple MAIN-R-000001) et la facture d'origine. Cliquez sur **Imprimer l'avoir**, faites signer le client si besoin, rendez l'argent, puis cliquez sur **Terminé**.
+
+> **Astuce :** si le client avait payé en gourdes, le remboursement en espèces se fait en gourdes, au taux de la vente d'origine (pas au taux du jour). La fenêtre affiche en vert le montant en HTG à rendre, et il sort des gourdes du tiroir.

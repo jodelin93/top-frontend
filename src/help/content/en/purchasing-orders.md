@@ -29,3 +29,5 @@ related: [purchasing-receive, purchasing-suppliers, approvals]
 To approve: the manager opens the order from their own account and clicks **Approve**; or, if the manager is present, the creator clicks **Approve** and the manager enters their credentials in the **Manager approval needed** window.
 
 > **Tip:** **Send back** returns the order to draft with a reason. After approval, click **Mark as issued** when the order is sent to the supplier. **Print** produces the order as a PDF or on paper.
+
+> **Tip:** an order is in the supplier's currency (for example HTG). On receiving, costs in gourdes enter stock converted to dollars at the sell rate.

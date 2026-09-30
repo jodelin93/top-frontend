@@ -394,6 +394,19 @@ export function NewReturnDialog({
                     : t('A card refund is still being processed by the payment provider.')}
                 </p>
               )}
+              {completed.refunds?.some((r) => r.tenderedCurrency) && (
+                <div className="rounded-lg border-2 border-green-600 bg-green-50 p-3" role="status">
+                  <div className="text-sm font-semibold uppercase text-green-900">{t('Give back to the customer')}</div>
+                  {completed.refunds
+                    .filter((r) => r.tenderedCurrency)
+                    .map((r) => (
+                      <div key={r.id} className="text-2xl font-bold tabular-nums text-green-900">
+                        {formatMoney(Number(r.tenderedAmount), r.tenderedCurrency!)}
+                      </div>
+                    ))}
+                  <div className="text-xs text-green-800">{t('Paid in this currency: refunded in it, at the rate of the sale.')}</div>
+                </div>
+              )}
               <div className="max-h-[55vh] overflow-y-auto rounded-md border p-4">
                 <ReturnReceipt saleReturn={completed} settings={settings} copy={creditNotePrinter.copy} />
               </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { currencyAmountInput, useMoneyCurrencies } from '@/components/admin/currency-amount-field';
 import { useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { BookOpen, Search, UserPlus, X } from 'lucide-react';
@@ -206,6 +207,9 @@ function AccountPayment({
   const canSeeBalance = hasPermission(user, 'customers.finance.view');
   const [openForm, setOpenForm] = useState(false);
   const [amount, setAmount] = useState('');
+  // Paid in the store currency or another accepted one (e.g. HTG)
+  const { currencies: payCurrencies, rates: payRates } = useMoneyCurrencies(currency);
+  const [payCurrency, setPayCurrency] = useState(currency);
   const [methodId, setMethodId] = useState('');
   const [reference, setReference] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -238,7 +242,7 @@ function AccountPayment({
         customerAccountsApi.receivePayment(
           customer.id,
           {
-            amount: Math.round(value * 100) / 100,
+            ...currencyAmountInput({ currencyCode: payCurrency, amount }, currency, payRates),
             paymentMethodId: method.id,
             reference: reference.trim() || undefined,
             registerId: registerId ?? undefined,
@@ -289,14 +293,28 @@ function AccountPayment({
             submit();
           }}
         >
+          {payCurrencies.length > 1 && (
+            <Select
+              value={payCurrency}
+              onChange={(e) => setPayCurrency(e.target.value)}
+              aria-label={t('Currency')}
+              className="w-24"
+            >
+              {payCurrencies.map((code) => (
+                <option key={code} value={code}>
+                  {code}
+                </option>
+              ))}
+            </Select>
+          )}
           <Input
             autoFocus
             inputMode="decimal"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            placeholder={t('Amount')}
-            aria-label={t('Amount')}
-            className="w-28"
+            placeholder={t('Amount ({currency})', { currency: payCurrency })}
+            aria-label={t('Amount ({currency})', { currency: payCurrency })}
+            className="w-32"
           />
           <Select
             value={method?.id ?? ''}

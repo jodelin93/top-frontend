@@ -78,7 +78,10 @@ export interface StoreSettings {
   loyaltyMinRedeemPoints: number;
   loyaltyMaxRedeemPercent: number;
   // Other accepted currencies: units per 1 unit of currencyCode (e.g. { HTG: 132.5 })
+  // Sell rates (that currency coming in: a customer paying in HTG)
   exchangeRates: Record<string, number>;
+  // Buy rates (dollars turned into that currency: change in HTG); missing = sell rate
+  exchangeBuyRates?: Record<string, number>;
   // Default language of the app for everyone in the store (each user can override it)
   language: 'en' | 'fr' | 'ht' | 'es';
   // Weighted / price-embedded barcodes (GS1 variable measure): prefixes 20–29 read

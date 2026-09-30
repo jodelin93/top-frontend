@@ -530,6 +530,10 @@ export interface SupplierPayment {
   paymentDate: string;
   amount: number;
   currencyCode: string;
+  // Paid in another currency: that currency, the amount in it and the rate used
+  tenderedCurrency?: string | null;
+  tenderedAmount?: number | string | null;
+  exchangeRate?: number | string | null;
   method: SupplierPaymentMethod;
   reference: string | null;
   notes: string | null;
@@ -580,7 +584,11 @@ export const supplierPaymentsApi = {
   },
   create: async (input: {
     supplierId: string;
+    // In the supplier's currency
     amount: number;
+    // Paid in another currency (e.g. HTG): the server converts it (sell / buy rate)
+    currencyCode?: string;
+    tenderedAmount?: number;
     method: SupplierPaymentMethod;
     paymentDate?: string;
     reference?: string;

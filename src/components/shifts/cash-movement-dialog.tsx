@@ -10,6 +10,7 @@ import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { useApproval } from '@/components/approval-dialog';
 import { getErrorMessage } from '@/lib/api/client';
 import { ManualMovementType, MOVEMENT_LABELS, shiftsApi } from '@/lib/api/shifts';
+import { useStoreSettings } from '@/hooks/use-store-settings';
 import { t } from '@/i18n';
 
 const HINTS: Record<ManualMovementType, string> = {
@@ -23,24 +24,40 @@ const HINTS: Record<ManualMovementType, string> = {
  */
 export function CashMovementDialog({
   shiftId,
+  currency,
   type,
   onClose,
 }: {
   shiftId: string;
+  /** The shift's currency; the store's other accepted currencies (e.g. HTG) can be chosen */
+  currency: string;
   type: ManualMovementType | null;
   onClose: () => void;
 }) {
   return (
     <Dialog open={!!type} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-sm">
-        {type && <MovementForm key={type} shiftId={shiftId} type={type} onClose={onClose} />}
+        {type && <MovementForm key={type} shiftId={shiftId} currency={currency} type={type} onClose={onClose} />}
       </DialogContent>
     </Dialog>
   );
 }
 
-function MovementForm({ shiftId, type, onClose }: { shiftId: string; type: ManualMovementType; onClose: () => void }) {
+function MovementForm({
+  shiftId,
+  currency,
+  type,
+  onClose,
+}: {
+  shiftId: string;
+  currency: string;
+  type: ManualMovementType;
+  onClose: () => void;
+}) {
   const queryClient = useQueryClient();
+  const { data: settings } = useStoreSettings();
+  const currencies = [currency, ...Object.keys(settings?.exchangeRates ?? {}).filter((c) => c !== currency)];
+  const [movementCurrency, setMovementCurrency] = useState(currency);
   const { withApproval, approvalDialog } = useApproval();
   const [amount, setAmount] = useState('');
   const [reason, setReason] = useState('');
@@ -64,6 +81,8 @@ function MovementForm({ shiftId, type, onClose }: { shiftId: string; type: Manua
           {
             type,
             amount: Math.round(value * 100) / 100,
+            // The shift's currency is the default: only another one is sent
+            currencyCode: movementCurrency !== currency ? movementCurrency : undefined,
             reason: reason.trim(),
             reference: reference.trim() || undefined,
             idempotencyKey: key,
@@ -94,7 +113,29 @@ function MovementForm({ shiftId, type, onClose }: { shiftId: string; type: Manua
         }}
       >
         <ErrorMessage>{error}</ErrorMessage>
-        <Field label={t('Amount')} htmlFor="movement-amount">
+        {currencies.length > 1 && (
+          <div>
+            <div className="mb-1 text-sm font-medium">{t('Currency')}</div>
+            <div className="flex gap-1 rounded-md bg-gray-100 p-1 text-sm" role="radiogroup" aria-label={t('Currency')}>
+              {currencies.map((code) => (
+                <button
+                  key={code}
+                  type="button"
+                  role="radio"
+                  aria-checked={movementCurrency === code}
+                  onClick={() => setMovementCurrency(code)}
+                  className={cn(
+                    'min-h-9 flex-1 rounded px-3 py-1',
+                    movementCurrency === code ? 'bg-white font-medium shadow-sm' : 'text-gray-600'
+                  )}
+                >
+                  {code}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        <Field label={t('Amount ({currency})', { currency: movementCurrency })} htmlFor="movement-amount">
           <Input
             id="movement-amount"
             inputMode="decimal"

@@ -27,3 +27,5 @@ The **Payables** tab shows what you owe each supplier, sorted by how late it is:
 1. Change the **Aging as of** date if needed.
 2. Click a supplier to open their **Statement**: invoices, credits and payments with the running balance.
 3. Click **Print** to print the statement.
+
+> **Tip:** you can pay a supplier in another currency than theirs. Choose the currency next to the **Amount**: gourdes paid against a dollar balance are converted at the sell rate; dollars paid against a gourde balance are converted at the buy rate. The line under the amount shows what it settles.

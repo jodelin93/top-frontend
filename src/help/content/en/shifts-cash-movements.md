@@ -4,7 +4,7 @@ title: Paid in, paid out, safe drops and opening the drawer
 category: Shifts
 order: 302
 routes: [/pos]
-keywords: [paid in, paid out, safe drop, safe, drawer, cash drawer, open drawer, no sale, cash movement, petty cash, float]
+keywords: [HTG, gourdes, currency, paid in, paid out, safe drop, safe, drawer, cash drawer, open drawer, no sale, cash movement, petty cash, float]
 related: [shifts-open, shifts-close, approvals]
 ---
 Every cash movement that is not a sale must be recorded; otherwise the drawer will be off at closing.
@@ -24,13 +24,18 @@ Click the shift button (for example **SH-000004 · Open**). The **Shift and cash
 | **Safe drops** | Cash moved from the drawer to the safe. |
 | **Expense payouts** | Expenses paid with money from the drawer. |
 | **Expected in drawer** | What should be in the drawer right now. |
+| **Expected HTG** | The gourdes that should be in the drawer (float, sales, paid in, paid out and safe drops in HTG). They are counted separately at close. |
 
 ## Record a movement
 
 1. In the shift window, click **Paid in**, **Paid out** or **Safe drop**.
-2. Enter the **Amount** and the **Reason** (at least 2 characters).
+2. Choose the **Currency**: **USD** or **HTG**, depending on the notes going in or out of the drawer. Enter the **Amount** in that currency and the **Reason** (at least 2 characters).
 3. If you have a bag or receipt number, enter it in **Reference (optional)**.
 4. Click **Record**.
+
+![The Paid in window, in gourdes](shot:shift-movement)
+
+> **Tip:** a movement in HTG only changes the expected gourdes; the expected dollars stay the same.
 
 > **Warning:** a cashier is not allowed to make these movements alone: the **Manager approval needed** window opens after **Record**. The manager enters their credentials and clicks **Approve** (see [Get a manager's approval](topic:approvals)).
 

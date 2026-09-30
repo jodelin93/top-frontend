@@ -26,3 +26,5 @@ The **Expenses** page tracks the store's costs: supplies, transport, repairs, re
 An expense above the store's approval threshold moves to **submitted** status and waits for [approval](topic:expenses-approve). Below the threshold, it is approved automatically.
 
 > **Tip:** the **Categories** tab creates your expense categories (electricity, repairs…) with **Add category**, for reports.
+
+> **Tip:** an expense paid in gourdes is entered in gourdes: choose **HTG** next to the **Amount**. The app converts it to dollars at the sell rate for the reports and keeps the amount in gourdes. Paid in cash at a register, it comes out of the gourdes in the drawer.

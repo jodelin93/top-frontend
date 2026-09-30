@@ -4,7 +4,7 @@ title: Entradas, salidas, depósitos a caja fuerte y apertura del cajón
 category: Turnos de caja
 order: 302
 routes: [/pos]
-keywords: [entrada de efectivo, salida de efectivo, depósito a caja fuerte, caja fuerte, cajón, abrir el cajón, sin venta, movimiento, caja chica, sencillo, cambio]
+keywords: [HTG, gourdes, moneda, entrada de efectivo, salida de efectivo, depósito a caja fuerte, caja fuerte, cajón, abrir el cajón, sin venta, movimiento, caja chica, sencillo, cambio]
 related: [shifts-open, shifts-close, approvals]
 ---
 Todo movimiento de efectivo que no sea una venta debe registrarse; de lo contrario, el cajón no cuadrará al cierre.
@@ -24,13 +24,18 @@ Haga clic en el botón del turno (por ejemplo **SH-000004 · Abierto**). La vent
 | **Depósitos a caja fuerte** | Efectivo transferido del cajón a la caja fuerte. |
 | **Pagos de gastos** | Gastos pagados con el dinero del cajón. |
 | **Esperado en el cajón** | Lo que debería haber en el cajón en este momento. |
+| **Esperado HTG** | Los gourdes que deberían estar en el cajón (fondo, ventas, entradas, salidas y depósitos en HTG). Se cuentan aparte al cierre. |
 
 ## Registrar un movimiento
 
 1. En la ventana del turno, haga clic en **Entrada de efectivo**, **Salida de efectivo** o **Depósito a caja fuerte**.
-2. Escriba el **Monto** y el **Motivo** (al menos 2 caracteres).
+2. Elija la **Moneda**: **USD** o **HTG**, según los billetes que entran o salen del cajón. Escriba el **Monto** en esa moneda y el **Motivo** (al menos 2 caracteres).
 3. Si tiene un número de bolsa o de recibo, escríbalo en **Referencia (opcional)**.
 4. Haga clic en **Registrar**.
+
+![La ventana Entrada de efectivo, en gourdes](shot:shift-movement)
+
+> **Consejo:** un movimiento en HTG solo cambia los gourdes esperados; los dólares esperados no cambian.
 
 > **Atención:** el cajero no tiene permiso para hacer estos movimientos solo: la ventana **Se requiere la aprobación de un gerente** se abre después de **Registrar**. El gerente escribe sus credenciales y hace clic en **Aprobar** (vea [Pedir la aprobación de un responsable](topic:approvals)).
 

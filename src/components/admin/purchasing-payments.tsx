@@ -1,5 +1,7 @@
 'use client';
 
+import { useStoreSettings } from '@/hooks/use-store-settings';
+import { buyRatesOf, exchangeRate } from '@/lib/pos/currency-math';
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
@@ -50,6 +52,12 @@ const toCents = (value: number) => Math.round(value * 100);
 /**
  * Supplier payments and credits, and their allocation to invoices
  */
+// Paid in another currency: that amount, then what it settled in the supplier's currency
+const supplierPaymentAmount = (p: SupplierPayment) =>
+  p.tenderedCurrency
+    ? `${formatMoney(Number(p.tenderedAmount), p.tenderedCurrency)} (${formatMoney(p.amount, p.currencyCode)})`
+    : formatMoney(p.amount, p.currencyCode);
+
 export function SupplierPaymentsTab() {
   const user = useAuthStore((s) => s.user);
   const canRecord = hasPermission(user, 'purchasing.payables');
@@ -166,7 +174,7 @@ export function SupplierPaymentsTab() {
                     {p.reference && <div className="text-xs text-gray-500">{p.reference}</div>}
                   </DataCardField>
                   <DataCardField label={t('Amount')}>
-                    <span className="font-medium">{formatMoney(p.amount, p.currencyCode)}</span>
+                    <span className="font-medium">{supplierPaymentAmount(p)}</span>
                   </DataCardField>
                   <DataCardField label={t('Unallocated')}>{formatMoney(p.amountUnallocated, p.currencyCode)}</DataCardField>
                 </DataCardFields>
@@ -225,7 +233,7 @@ export function SupplierPaymentsTab() {
                       {t(paymentMethodLabels[p.method])}
                       {p.reference && <div className="text-xs text-gray-500">{p.reference}</div>}
                     </Td>
-                    <Td className="text-right">{formatMoney(p.amount, p.currencyCode)}</Td>
+                    <Td className="text-right">{supplierPaymentAmount(p)}</Td>
                     <Td className="text-right">{formatMoney(p.amountUnallocated, p.currencyCode)}</Td>
                     <Td>
                       {canRecord && p.status === 'posted' && (
@@ -616,7 +624,32 @@ function PaymentFormDialog({
   const [allocations, setAllocations] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const currency = suppliers.find((s) => s.id === supplierId)?.currencyCode ?? storeCurrency;
-  const value = Number(amount) || 0;
+  // Paid in the supplier's currency or another one the store accepts (e.g. HTG against a
+  // USD balance): converted as the server does, HTG → USD at the sell rate, USD → HTG at
+  // the buy rate; invoices are settled with the converted amount
+  const { data: settings } = useStoreSettings();
+  const payCurrencies = [
+    ...new Set([currency, storeCurrency, ...Object.keys(settings?.exchangeRates ?? {})]),
+  ];
+  const [chosenCurrency, setPaidCurrency] = useState<string | null>(null);
+  const paidCurrency = chosenCurrency && payCurrencies.includes(chosenCurrency) ? chosenCurrency : currency;
+  const typed = Number(amount) || 0;
+  const crossRate = (() => {
+    if (paidCurrency === currency) return 1;
+    const toStore =
+      paidCurrency === storeCurrency ? 1 : exchangeRate(settings?.exchangeRates, storeCurrency, paidCurrency, storeCurrency);
+    const fromStore =
+      currency === storeCurrency
+        ? 1
+        : exchangeRate(
+            buyRatesOf(settings?.exchangeRates, settings?.exchangeBuyRates),
+            storeCurrency,
+            storeCurrency,
+            currency
+          );
+    return toStore && fromStore ? toStore * fromStore : null;
+  })();
+  const value = crossRate ? Math.round(typed * crossRate * 100) / 100 : 0;
 
   const save = useMutation({
     mutationFn: supplierPaymentsApi.create,
@@ -635,6 +668,10 @@ function PaymentFormDialog({
     save.mutate({
       supplierId,
       amount: Math.round(value * 100) / 100,
+      ...(paidCurrency !== currency && {
+        currencyCode: paidCurrency,
+        tenderedAmount: Math.round(typed * 100) / 100,
+      }),
       method,
       paymentDate,
       ...(reference.trim() && { reference: reference.trim() }),
@@ -672,8 +709,40 @@ function PaymentFormDialog({
                 ))}
               </Select>
             </Field>
-            <Field label={t('Amount ({currency})', { currency })} htmlFor="pay-amount">
-              <Input id="pay-amount" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
+            <Field
+              label={t('Amount ({currency})', { currency: paidCurrency })}
+              htmlFor="pay-amount"
+              hint={
+                paidCurrency !== currency && typed > 0
+                  ? crossRate
+                    ? t('Settles {amount}', { amount: formatMoney(value, currency) })
+                    : t('No exchange rate for {currency}', { currency: paidCurrency })
+                  : undefined
+              }
+            >
+              <div className="flex gap-1">
+                {payCurrencies.length > 1 && (
+                  <Select
+                    aria-label={t('Currency')}
+                    value={paidCurrency}
+                    onChange={(e) => setPaidCurrency(e.target.value)}
+                    className="w-24 shrink-0"
+                  >
+                    {payCurrencies.map((code) => (
+                      <option key={code} value={code}>
+                        {code}
+                      </option>
+                    ))}
+                  </Select>
+                )}
+                <Input
+                  id="pay-amount"
+                  inputMode="decimal"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="min-w-0 flex-1"
+                />
+              </div>
             </Field>
             <Field
               label={t('Date')}

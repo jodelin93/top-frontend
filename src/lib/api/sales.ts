@@ -83,7 +83,10 @@ export interface Payment {
 export interface ChangeTender {
   currencyCode: string;
   amount: number;
+  // Buy rate (dollars turned into that currency)
   exchangeRate: number;
+  // Sell rate the payments in that currency were valued at (absent on older sales)
+  sellRate?: number;
 }
 
 /**

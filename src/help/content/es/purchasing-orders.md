@@ -29,3 +29,5 @@ related: [purchasing-receive, purchasing-suppliers, approvals]
 Para aprobar: el gerente abre la orden desde su cuenta y hace clic en **Aprobar**; o, si está presente, el creador hace clic en **Aprobar** y el gerente escribe sus credenciales en la ventana **Se requiere la aprobación de un gerente**.
 
 > **Consejo:** **Devolver** regresa la orden a borrador con un motivo. Después de la aprobación, haga clic en **Marcar como emitida** cuando la orden se envíe al proveedor. **Imprimir** genera la orden en PDF o en papel.
+
+> **Consejo:** un pedido está en la moneda del proveedor (por ejemplo HTG). Al recibirlo, los costos en gourdes entran al inventario convertidos a dólares a la tasa de venta.

@@ -108,6 +108,9 @@ export const customerAccountsApi = {
     customerId: string,
     input: {
       amount: number;
+      // Paid in another accepted currency (e.g. HTG): the server values it at the sell rate
+      currencyCode?: string;
+      tenderedAmount?: number;
       paymentMethodId: string;
       reference?: string;
       registerId?: string;

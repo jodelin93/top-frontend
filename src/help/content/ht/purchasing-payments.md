@@ -27,3 +27,5 @@ Onglè **Dèt founisè** a montre sa ou dwe chak founisè, klase selon reta: **P
 1. Chanje dat **Laj dèt nan dat** la si sa nesesè.
 2. Klike sou yon founisè pou ouvri **Relve** li: fakti, kredi ak peman ak balans k ap monte a.
 3. Klike sou **Enprime** pou enprime relve a.
+
+> **Konsèy:** ou ka peye yon founisè nan yon lòt deviz pase pa l. Chwazi deviz la bò kote **Montan** an: goud ou peye sou yon dèt an dola konvèti ak to vant lan; dola ou peye sou yon dèt an goud konvèti ak to acha a. Liy anba montan an montre sa li regle.

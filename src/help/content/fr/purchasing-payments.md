@@ -27,3 +27,5 @@ L'onglet **Dettes fournisseurs** montre ce que vous devez à chaque fournisseur,
 1. Changez la date **Échéancier au** si besoin.
 2. Cliquez sur un fournisseur pour ouvrir son **Relevé** : factures, avoirs et paiements avec le solde progressif.
 3. Cliquez sur **Imprimer** pour imprimer le relevé.
+
+> **Astuce :** vous pouvez payer un fournisseur dans une autre devise que la sienne. Choisissez la devise à côté du **Montant** : des gourdes versées sur une dette en dollars sont converties au taux de vente ; des dollars versés sur une dette en gourdes sont convertis au taux d'achat. L'aide sous le montant indique ce qui est réglé.

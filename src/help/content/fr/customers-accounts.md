@@ -42,3 +42,5 @@ Un client à crédit peut acheter « en compte » et payer plus tard, dans sa li
 1. Dans **Compte**, rubrique **Relevé**, choisissez les dates **Du** et **Au** (la date de début ne peut pas dépasser la date de fin).
 2. Cliquez sur **Afficher le relevé** : **Solde d'ouverture**, opérations, **Solde de clôture**.
 3. Cliquez sur **Imprimer** (ou enregistrez en PDF) et remettez-le au client.
+
+> **Astuce :** un client peut régler son compte en gourdes. Dans **Encaisser un paiement**, choisissez **HTG** à côté du montant et tapez le montant en gourdes : l'application affiche sa valeur en dollars au taux de vente, et c'est ce montant qui est déduit du solde. En espèces, les gourdes vont dans les gourdes du tiroir.

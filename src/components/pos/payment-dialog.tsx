@@ -18,7 +18,7 @@ import type { PaymentMethodWithProvider } from '@/lib/api/payments';
 import { text } from '@/lib/api/crud';
 import { formatMoney } from '@/lib/format';
 import { round2 } from '@/lib/pos/sale-calculator';
-import { acceptedCurrencies, amountDueIn, changeIn, exchangeRate, toSaleCurrency } from '@/lib/pos/currency-math';
+import { acceptedCurrencies, amountDueIn, buyRatesOf, exchangeRate, foreignChange, toSaleCurrency } from '@/lib/pos/currency-math';
 import { LoyaltyRules, loyaltyMath } from '@/lib/api/loyalty';
 import {
   EXCHANGE_CREDIT_CODE,
@@ -78,6 +78,7 @@ export function PaymentDialog({
   currency,
   storeCurrency,
   exchangeRates,
+  exchangeBuyRates,
   paymentMethods,
   online,
   submitting,
@@ -94,7 +95,10 @@ export function PaymentDialog({
   currency: string;
   // Currency the exchange rates are quoted against
   storeCurrency: string;
+  // Sell rates: what the customer pays in another currency is asked and valued with them
   exchangeRates: Record<string, number>;
+  // Buy rates: dollars turned into another currency (change); missing = the sell rate
+  exchangeBuyRates?: Record<string, number>;
   paymentMethods: PaymentMethod[];
   online: boolean;
   submitting: boolean;
@@ -125,6 +129,8 @@ export function PaymentDialog({
     return [currency, ...list.filter((c) => c !== currency && exchangeRate(exchangeRates, storeCurrency, currency, c))];
   }, [exchangeRates, storeCurrency, currency]);
   const rateOf = (code: string) => exchangeRate(exchangeRates, storeCurrency, currency, code) ?? 1;
+  const buyRates = useMemo(() => buyRatesOf(exchangeRates, exchangeBuyRates), [exchangeRates, exchangeBuyRates]);
+  const buyRateOf = (code: string) => exchangeRate(buyRates, storeCurrency, currency, code) ?? rateOf(code);
 
   const money = (value: number, code = currency) => formatMoney(value, code);
   const methods = useMemo(() => new Map(paymentMethods.map((m) => [m.id, m])), [paymentMethods]);
@@ -360,9 +366,18 @@ export function PaymentDialog({
   };
 
   const canComplete = remaining === 0 && change <= round2(cashPaid) + 0.005 && !submitting;
-  const changeRate = rateOf(changeCurrency);
-  const changeShown =
-    changeCurrency === currency ? money(change) : money(changeIn(exactPaid - amountDue, changeRate), changeCurrency);
+  // Change in another currency: what was paid in it goes back at the rate it came in,
+  // dollars at the buy rate (same rule as the server)
+  const changeInCurrency = (code: string) =>
+    foreignChange(
+      exactPaid - amountDue,
+      payments
+        .filter((p) => p.currencyCode === code && methods.get(p.paymentMethodId)?.methodType === 'cash')
+        .reduce((sum, p) => sum + exactValue(p), 0),
+      rateOf(code),
+      buyRateOf(code)
+    );
+  const changeShown = changeCurrency === currency ? money(change) : money(changeInCurrency(changeCurrency), changeCurrency);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -401,7 +416,17 @@ export function PaymentDialog({
           <p className="text-center text-xs text-gray-500">
             {currencies
               .slice(1)
-              .map((c) => `1 ${currency} = ${rateOf(c).toLocaleString(undefined, { maximumFractionDigits: 4 })} ${c}`)
+              .map((c) => {
+                const rate = (r: number) => r.toLocaleString(undefined, { maximumFractionDigits: 4 });
+                return Math.abs(buyRateOf(c) - rateOf(c)) < 1e-9
+                  ? `1 ${currency} = ${rate(rateOf(c))} ${c}`
+                  : t('1 {currency} = {sell} {other} (sell) · {buy} {other} (buy)', {
+                      currency,
+                      other: c,
+                      sell: rate(rateOf(c)),
+                      buy: rate(buyRateOf(c)),
+                    });
+              })
               .join(' · ')}
           </p>
         )}
@@ -624,7 +649,7 @@ export function PaymentDialog({
             </div>
             <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${currencies.length}, minmax(0, 1fr))` }}>
               {currencies.map((c) => {
-                const value = c === currency ? money(change) : money(changeIn(exactPaid - amountDue, rateOf(c)), c);
+                const value = c === currency ? money(change) : money(changeInCurrency(c), c);
                 const chosen = changeCurrency === c;
                 return (
                   <button

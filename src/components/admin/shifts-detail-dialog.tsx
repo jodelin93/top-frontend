@@ -20,7 +20,7 @@ import { ShiftLedgerPanel } from '@/components/admin/shifts-ledger';
 import { ShiftCorrectionsPanel } from '@/components/admin/shifts-corrections';
 import { getErrorMessage } from '@/lib/api/client';
 import { usePrintDocument } from '@/lib/hardware/use-print-document';
-import { isCashIn, LateSales, MOVEMENT_LABELS, movesNoCash, ShiftDetail, shiftsApi } from '@/lib/api/shifts';
+import { isCashIn, LateSales, MOVEMENT_LABELS, movementAmount, ShiftDetail, shiftsApi } from '@/lib/api/shifts';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { t } from '@/i18n';
@@ -235,6 +235,24 @@ function ShiftSummaryView({ shift, currency }: { shift: ShiftDetail; currency: s
                   )}
                   <Line label={t('Cash sales ({currency})', { currency: f.currencyCode })} value={formatMoney(f.cashSales, f.currencyCode)} />
                   <Line label={t('Change given ({currency})', { currency: f.currencyCode })} value={`−${formatMoney(f.changeGiven, f.currencyCode)}`} />
+                  {!!f.paidIn && (
+                    <Line label={t('Paid in ({currency})', { currency: f.currencyCode })} value={formatMoney(f.paidIn, f.currencyCode)} />
+                  )}
+                  {!!f.paidOut && (
+                    <Line label={t('Paid out ({currency})', { currency: f.currencyCode })} value={`−${formatMoney(f.paidOut, f.currencyCode)}`} />
+                  )}
+                  {!!f.safeDrops && (
+                    <Line label={t('Safe drops ({currency})', { currency: f.currencyCode })} value={`−${formatMoney(f.safeDrops, f.currencyCode)}`} />
+                  )}
+                  {!!f.cashRefunds && (
+                    <Line label={t('Cash refunds ({currency})', { currency: f.currencyCode })} value={`−${formatMoney(f.cashRefunds, f.currencyCode)}`} />
+                  )}
+                  {!!f.expensePayouts && (
+                    <Line
+                      label={t('Expense payouts ({currency})', { currency: f.currencyCode })}
+                      value={`−${formatMoney(f.expensePayouts, f.currencyCode)}`}
+                    />
+                  )}
                   <Line label={t('Expected {currency}', { currency: f.currencyCode })} value={formatMoney(f.expected, f.currencyCode)} bold />
                   {count && (
                     <>
@@ -287,7 +305,7 @@ function ShiftSummaryView({ shift, currency }: { shift: ShiftDetail; currency: s
                   <span
                     className={cn('shrink-0 tabular-nums', isCashIn(m.type) ? 'text-green-700' : 'text-gray-900')}
                   >
-                    {movesNoCash(m.type) ? '—' : `${isCashIn(m.type) ? '+' : '−'}${money(m.amount)}`}
+                    {movementAmount(m, currency)}
                   </span>
                 </div>
                 {m.reason && (
@@ -322,7 +340,7 @@ function ShiftSummaryView({ shift, currency }: { shift: ShiftDetail; currency: s
                   <Td className="max-w-xs truncate">{m.reason ?? '—'}</Td>
                   <Td>{m.userName ?? '—'}</Td>
                   <Td className={cn('text-right tabular-nums', isCashIn(m.type) ? 'text-green-700' : 'text-gray-900')}>
-                    {movesNoCash(m.type) ? '—' : `${isCashIn(m.type) ? '+' : '−'}${money(m.amount)}`}
+                    {movementAmount(m, currency)}
                   </Td>
                 </tr>
               ))

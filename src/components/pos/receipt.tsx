@@ -591,12 +591,20 @@ function Row({ label, value, bold }: { label: string; value: string; bold?: bool
 function PaymentRows({ sale, money }: { sale: Sale; money: (value: number) => string }) {
   const payments = sale.payments ?? [];
   const changeTender = sale.metadata?.changeTender;
-  // Each foreign currency used on this sale, with the rate applied
+  // Each foreign currency used on this sale, with the rate its payments were valued at
+  // (the sell rate); change only in that currency: its sell rate (older sales: the one rate)
   const rates = new Map<string, number>();
   for (const p of payments) {
     if (p.tenderedCurrency && p.exchangeRate) rates.set(p.tenderedCurrency, Number(p.exchangeRate));
   }
-  if (changeTender) rates.set(changeTender.currencyCode, Number(changeTender.exchangeRate));
+  if (changeTender && !rates.has(changeTender.currencyCode)) {
+    rates.set(changeTender.currencyCode, Number(changeTender.sellRate ?? changeTender.exchangeRate));
+  }
+  // Dollars were turned into the change currency at a different (buy) rate: say so
+  const changeBuyRate =
+    changeTender && changeTender.sellRate && Math.abs(Number(changeTender.exchangeRate) - Number(changeTender.sellRate)) > 1e-9
+      ? Number(changeTender.exchangeRate)
+      : null;
 
   return (
     <>
@@ -619,10 +627,18 @@ function PaymentRows({ sale, money }: { sale: Sale; money: (value: number) => st
       })}
       {sale.changeAmount > 0 &&
         (changeTender ? (
-          <Row
-            label={t('Change|money')}
-            value={`${formatMoney(Number(changeTender.amount), changeTender.currencyCode)} (${money(Number(sale.changeAmount))})`}
-          />
+          <>
+            <Row
+              label={t('Change|money')}
+              value={`${formatMoney(Number(changeTender.amount), changeTender.currencyCode)} (${money(Number(sale.changeAmount))})`}
+            />
+            {changeBuyRate && (
+              <Row
+                label={`  ${t('Buy rate')} @ ${changeBuyRate.toLocaleString(undefined, { maximumFractionDigits: 4 })} ${changeTender.currencyCode}/${sale.currencyCode}`}
+                value=""
+              />
+            )}
+          </>
         ) : (
           <Row label={t('Change|money')} value={money(Number(sale.changeAmount))} />
         ))}

@@ -1,4 +1,5 @@
 import apiClient, { withIdempotencyKey } from './client';
+import { formatMoney } from '@/lib/format';
 
 // Mirrors top-backend/src/shifts (docs/features/shifts-expenses.md)
 
@@ -40,6 +41,14 @@ export interface ForeignCash {
   openingFloat?: number;
   cashSales: number;
   changeGiven: number;
+  // Paid-in, paid-out and safe drops made in this currency
+  paidIn?: number;
+  paidOut?: number;
+  safeDrops?: number;
+  // Cash refunds handed back in this currency
+  cashRefunds?: number;
+  // Expenses paid from the drawer in this currency
+  expensePayouts?: number;
   expected: number;
 }
 
@@ -73,6 +82,8 @@ export interface CashMovement {
   shiftId: string;
   type: CashMovementType;
   amount: number;
+  // Another currency the store accepts (e.g. HTG); null = the shift's currency
+  currencyCode?: string | null;
   reason: string | null;
   reference: string | null;
   expenseId: string | null;
@@ -248,6 +259,7 @@ export interface ZReport {
     id: string;
     type: CashMovementType;
     amount: number;
+    currencyCode?: string | null;
     reason: string | null;
     reference: string | null;
     createdAt: string;
@@ -317,6 +329,11 @@ export const MOVEMENT_LABELS: Record<CashMovementType, string> = {
 export const isCashIn = (type: CashMovementType) =>
   type === 'opening_float' || type === 'paid_in' || type === 'sale';
 export const movesNoCash = (type: CashMovementType) => type === 'no_sale';
+/** "+100.00 USD" / "−2,500.00 HTG": a movement's amount in its own currency */
+export const movementAmount = (
+  m: { type: CashMovementType; amount: number; currencyCode?: string | null },
+  shiftCurrency: string
+) => (movesNoCash(m.type) ? '—' : `${isCashIn(m.type) ? '+' : '−'}${formatMoney(m.amount, m.currencyCode ?? shiftCurrency)}`);
 // Ledger rows kept out of the expected cash (cash sales come from the payments)
 export const isLedgerOnly = (type: CashMovementType) => type === 'sale' || type === 'no_sale';
 
@@ -359,7 +376,7 @@ export const shiftsApi = {
   },
   addMovement: async (
     shiftId: string,
-    input: { type: ManualMovementType; amount: number; reason: string; reference?: string; idempotencyKey?: string },
+    input: { type: ManualMovementType; amount: number; currencyCode?: string; reason: string; reference?: string; idempotencyKey?: string },
     headers?: Headers
   ): Promise<CashMovement> => {
     // The body key is also sent as the Idempotency-Key header

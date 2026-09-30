@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ArrowDownToLine, ArrowUpFromLine, Lock, Vault, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ManualMovementType, MOVEMENT_LABELS, isCashIn, movesNoCash, ShiftDetail, shiftsApi } from '@/lib/api/shifts';
+import { ManualMovementType, MOVEMENT_LABELS, movementAmount, ShiftDetail, shiftsApi } from '@/lib/api/shifts';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
@@ -115,6 +115,40 @@ export function ShiftPanel({
                   <Line label={t('Cash refunds')} value={`−${money(shift.cash.cashRefunds)}`} />
                 )}
                 <Line label={t('Expected in drawer')} value={money(shift.cash.expected)} bold />
+                {/* Other currencies in the drawer (e.g. HTG): counted separately at close */}
+                {shift.cash.foreign?.map((f) => {
+                  const fm = (v: number) => formatMoney(v, f.currencyCode);
+                  return (
+                    <div key={f.currencyCode} className="mt-2 space-y-1 border-t pt-2">
+                      {!!f.openingFloat && (
+                        <Line label={t('Opening float ({currency})', { currency: f.currencyCode })} value={fm(f.openingFloat)} />
+                      )}
+                      {!!(f.cashSales || f.changeGiven) && (
+                        <Line
+                          label={t('Cash sales ({currency})', { currency: f.currencyCode })}
+                          value={fm(f.cashSales - f.changeGiven)}
+                        />
+                      )}
+                      {!!f.paidIn && <Line label={t('Paid in ({currency})', { currency: f.currencyCode })} value={fm(f.paidIn)} />}
+                      {!!f.paidOut && (
+                        <Line label={t('Paid out ({currency})', { currency: f.currencyCode })} value={`−${fm(f.paidOut)}`} />
+                      )}
+                      {!!f.safeDrops && (
+                        <Line label={t('Safe drops ({currency})', { currency: f.currencyCode })} value={`−${fm(f.safeDrops)}`} />
+                      )}
+                      {!!f.cashRefunds && (
+                        <Line label={t('Cash refunds ({currency})', { currency: f.currencyCode })} value={`−${fm(f.cashRefunds)}`} />
+                      )}
+                      {!!f.expensePayouts && (
+                        <Line
+                          label={t('Expense payouts ({currency})', { currency: f.currencyCode })}
+                          value={`−${fm(f.expensePayouts)}`}
+                        />
+                      )}
+                      <Line label={t('Expected {currency}', { currency: f.currencyCode })} value={fm(f.expected)} bold />
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <p className="rounded-md bg-gray-50 p-3 text-sm text-gray-600">
@@ -133,7 +167,7 @@ export function ShiftPanel({
                         {m.reason ? ` · ${m.reason}` : ''}
                       </span>
                       <span className="tabular-nums">
-                        {movesNoCash(m.type) ? '—' : `${isCashIn(m.type) ? '+' : '−'}${money(m.amount)}`}
+                        {movementAmount(m, shift.currencyCode ?? currency)}
                       </span>
                     </div>
                   ))}
@@ -170,7 +204,14 @@ export function ShiftPanel({
         </Dialog>
       )}
 
-      {shift && <CashMovementDialog shiftId={shift.id} type={movement} onClose={() => setMovement(null)} />}
+      {shift && (
+        <CashMovementDialog
+          shiftId={shift.id}
+          currency={shift.currencyCode ?? currency}
+          type={movement}
+          onClose={() => setMovement(null)}
+        />
+      )}
       {closeTarget && (
         <CloseShiftDialog
           shift={closeTarget}

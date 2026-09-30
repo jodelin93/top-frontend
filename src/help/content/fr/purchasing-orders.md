@@ -29,3 +29,5 @@ related: [purchasing-receive, purchasing-suppliers, approvals]
 Pour approuver : le gérant ouvre la commande depuis son compte et clique sur **Approuver** ; ou, s'il est présent, le créateur clique sur **Approuver** et le gérant saisit ses identifiants dans la fenêtre **Approbation du gérant requise**.
 
 > **Astuce :** **Renvoyer** remet la commande en brouillon avec une raison. Après l'approbation, cliquez sur **Marquer comme émis** quand la commande est envoyée au fournisseur. **Imprimer** produit la commande en PDF ou sur papier.
+
+> **Astuce :** une commande est dans la devise du fournisseur (par exemple HTG). À la réception, les coûts en gourdes entrent dans le stock convertis en dollars au taux de vente.

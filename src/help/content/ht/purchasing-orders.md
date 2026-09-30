@@ -29,3 +29,5 @@ related: [purchasing-receive, purchasing-suppliers, approvals]
 Pou apwouve: manadjè a louvri kòmand lan nan kont pa l epi li klike sou **Apwouve**; oswa, si l la, moun ki kreye kòmand lan klike sou **Apwouve** epi manadjè a tape idantifyan l nan fenèt **Bezwen apwobasyon yon manadjè** a.
 
 > **Konsèy:** **Voye tounen** remete kòmand lan an bouyon ak yon rezon. Apre apwobasyon an, klike sou **Make kòm voye bay founisè** lè kòmand lan voye bay founisè a. **Enprime** bay kòmand lan an PDF oswa sou papye.
+
+> **Konsèy:** yon kòmand fèt nan deviz founisè a (pa egzanp HTG). Lè w resevwa l, pri an goud yo antre nan stòk la konvèti an dola ak to vant lan.

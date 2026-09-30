@@ -21,8 +21,10 @@ const formatRate = (rate: number) => rate.toLocaleString(undefined, { maximumFra
 
 /**
  * Exchange rates of the other currencies customers can pay with, e.g. 1 USD = 132.50 HTG.
- * Everyone sees the current rates; users with settings.manage can change them. Each
- * change is versioned and audited (Settings → History).
+ * Two rates per currency: the SELL rate values that currency coming in (a customer
+ * paying in HTG), the BUY rate turns dollars into it (change in HTG). Everyone sees the
+ * current rates; users with settings.manage can change them. Each change is versioned
+ * and audited (Settings → History).
  */
 export function ExchangeRateCard() {
   const queryClient = useQueryClient();
@@ -30,24 +32,31 @@ export function ExchangeRateCard() {
   const canEdit = hasPermission(user, 'settings.manage');
   const { data: settings } = useStoreSettings();
   const [editing, setEditing] = useState(false);
-  const [rows, setRows] = useState<{ code: string; rate: string }[]>([]);
+  const [rows, setRows] = useState<{ code: string; rate: string; buy: string }[]>([]);
   const [showHistory, setShowHistory] = useState(false);
 
   const base = settings?.currencyCode ?? 'USD';
   const rates = settings?.exchangeRates ?? {};
+  const buyRates = settings?.exchangeBuyRates ?? {};
   const entries = Object.entries(rates);
+  const buyOf = (code: string, sell: number) => (Number(buyRates[code]) > 0 ? Number(buyRates[code]) : sell);
 
   const { data: history = [] } = useQuery({
     queryKey: ['settings', 'versions', 'rates'],
     queryFn: () => settingsApi.versions(100),
     enabled: canEdit,
-    select: (versions) => versions.filter((v) => v.changedKeys.includes('exchangeRates') && v.status !== 'cancelled'),
+    select: (versions) =>
+      versions.filter(
+        (v) =>
+          (v.changedKeys.includes('exchangeRates') || v.changedKeys.includes('exchangeBuyRates')) &&
+          v.status !== 'cancelled'
+      ),
   });
   const lastChange = history[0];
 
   const save = useMutation({
-    mutationFn: (exchangeRates: Record<string, number>) =>
-      settingsApi.update({ exchangeRates, note: t('Exchange rate update') }),
+    mutationFn: (input: { exchangeRates: Record<string, number>; exchangeBuyRates: Record<string, number> }) =>
+      settingsApi.update({ ...input, note: t('Exchange rate update') }),
     onSuccess: (updated) => {
       queryClient.setQueryData(['settings'], updated);
       queryClient.invalidateQueries({ queryKey: ['settings'] });
@@ -57,19 +66,26 @@ export function ExchangeRateCard() {
   });
 
   const startEditing = () => {
-    setRows(entries.length ? entries.map(([code, rate]) => ({ code, rate: String(rate) })) : [{ code: base === 'HTG' ? 'USD' : 'HTG', rate: '' }]);
+    setRows(
+      entries.length
+        ? entries.map(([code, rate]) => ({ code, rate: String(rate), buy: String(buyOf(code, rate)) }))
+        : [{ code: base === 'HTG' ? 'USD' : 'HTG', rate: '', buy: '' }]
+    );
     save.reset();
     setEditing(true);
   };
 
   const submit = () => {
-    const next: Record<string, number> = {};
+    const exchangeRates: Record<string, number> = {};
+    const exchangeBuyRates: Record<string, number> = {};
     for (const row of rows) {
       const code = row.code.trim().toUpperCase();
-      if (!code && !row.rate) continue;
-      next[code] = Number(row.rate);
+      if (!code && !row.rate && !row.buy) continue;
+      exchangeRates[code] = Number(row.rate);
+      // An empty buy rate means the same as the sell rate
+      exchangeBuyRates[code] = row.buy.trim() ? Number(row.buy) : Number(row.rate);
     }
-    save.mutate(next);
+    save.mutate({ exchangeRates, exchangeBuyRates });
   };
 
   return (
@@ -118,16 +134,22 @@ export function ExchangeRateCard() {
               {t('Only {currency} is accepted. Add a currency to take payments in it at the till.', { currency: base })}
             </p>
           ) : (
-            entries.map(([code, rate]) => (
-              <div key={code} className="rounded-lg border bg-gray-50 px-4 py-2">
+            entries.flatMap(([code, rate]) => [
+              <div key={`${code}-sell`} className="min-w-44 rounded-lg border bg-gray-50 px-4 py-2" data-testid="rate-sell">
+                <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">{t('Sell rate')}</div>
                 <div className="text-2xl font-semibold tabular-nums">
                   1 {base} = {formatRate(rate)} {code}
                 </div>
-                <div className="text-xs text-gray-500">
-                  1 {code} = {formatRate(1 / rate)} {base}
+                <div className="text-xs text-gray-500">{t('{code} received → {base}', { code, base })}</div>
+              </div>,
+              <div key={`${code}-buy`} className="min-w-44 rounded-lg border bg-gray-50 px-4 py-2" data-testid="rate-buy">
+                <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">{t('Buy rate')}</div>
+                <div className="text-2xl font-semibold tabular-nums">
+                  1 {base} = {formatRate(buyOf(code, rate))} {code}
                 </div>
-              </div>
-            ))
+                <div className="text-xs text-gray-500">{t('{base} → {code} given out', { code, base })}</div>
+              </div>,
+            ])
           )}
         </div>
       )}
@@ -142,17 +164,33 @@ export function ExchangeRateCard() {
         >
           <ErrorMessage>{save.error ? getErrorMessage(save.error, 'Could not save the rates') : null}</ErrorMessage>
           {rows.map((row, index) => (
-            <div key={index} className="flex items-center gap-2 text-sm">
-              <span className="whitespace-nowrap">1 {base} =</span>
-              <Input
-                value={row.rate}
-                onChange={(e) => setRows(rows.map((r, i) => (i === index ? { ...r, rate: e.target.value } : r)))}
-                inputMode="decimal"
-                placeholder="132.50"
-                className="w-32 text-right"
-                aria-label={t('Rate for {code}', { code: row.code || t('currency') })}
-                autoFocus={index === 0}
-              />
+            <div key={index} className="flex flex-wrap items-end gap-2 text-sm">
+              <label className="space-y-1">
+                <span className="block text-xs font-medium text-gray-600">{t('Sell rate')}</span>
+                <span className="flex items-center gap-1">
+                  <span className="whitespace-nowrap">1 {base} =</span>
+                  <Input
+                    value={row.rate}
+                    onChange={(e) => setRows(rows.map((r, i) => (i === index ? { ...r, rate: e.target.value } : r)))}
+                    inputMode="decimal"
+                    placeholder="132.50"
+                    className="w-28 text-right"
+                    aria-label={t('Sell rate for {code}', { code: row.code || t('currency') })}
+                    autoFocus={index === 0}
+                  />
+                </span>
+              </label>
+              <label className="space-y-1">
+                <span className="block text-xs font-medium text-gray-600">{t('Buy rate')}</span>
+                <Input
+                  value={row.buy}
+                  onChange={(e) => setRows(rows.map((r, i) => (i === index ? { ...r, buy: e.target.value } : r)))}
+                  inputMode="decimal"
+                  placeholder={row.rate || '130.00'}
+                  className="w-28 text-right"
+                  aria-label={t('Buy rate for {code}', { code: row.code || t('currency') })}
+                />
+              </label>
               <Input
                 value={row.code}
                 onChange={(e) => setRows(rows.map((r, i) => (i === index ? { ...r, code: e.target.value.toUpperCase().slice(0, 3) } : r)))}
@@ -172,7 +210,7 @@ export function ExchangeRateCard() {
             ))}
           </datalist>
           <div className="flex flex-wrap items-center gap-2">
-            <Button type="button" variant="ghost" size="sm" onClick={() => setRows([...rows, { code: '', rate: '' }])}>
+            <Button type="button" variant="ghost" size="sm" onClick={() => setRows([...rows, { code: '', rate: '', buy: '' }])}>
               <Plus className="h-4 w-4" />
               {t('Another currency')}
             </Button>
@@ -184,6 +222,9 @@ export function ExchangeRateCard() {
               {save.isPending ? t('Saving...') : t('Save rates')}
             </Button>
           </div>
+          <p className="text-xs text-gray-500">
+            {t('Sell rate: money received in that currency is valued with it (a customer paying in HTG). Buy rate: dollars turned into that currency (change given in HTG). Leave the buy rate empty to use the sell rate.')}
+          </p>
           <p className="text-xs text-gray-500">
             {t('New sales use the new rate right away. Sales already made keep the rate they were paid at.')}
           </p>
@@ -205,7 +246,14 @@ export function ExchangeRateCard() {
                 <tr key={v.id}>
                   <td className="whitespace-nowrap px-3 py-1.5">{formatDateTime(v.appliedAt ?? v.effectiveFrom)}</td>
                   <td className="px-3 py-1.5 tabular-nums">
-                    {Object.entries(v.changes.exchangeRates ?? {}).map(([c, r]) => `1 ${base} = ${formatRate(r)} ${c}`).join(' · ') || t('Only {currency}', { currency: base })}
+                    {[
+                      ...Object.entries(v.changes.exchangeRates ?? {}).map(
+                        ([c, r]) => `${t('Sell rate')}: 1 ${base} = ${formatRate(r)} ${c}`
+                      ),
+                      ...Object.entries(v.changes.exchangeBuyRates ?? {}).map(
+                        ([c, r]) => `${t('Buy rate')}: 1 ${base} = ${formatRate(r)} ${c}`
+                      ),
+                    ].join(' · ') || t('Only {currency}', { currency: base })}
                   </td>
                   <td className="px-3 py-1.5">{v.actorName ?? '—'}</td>
                 </tr>

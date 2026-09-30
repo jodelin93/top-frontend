@@ -42,3 +42,5 @@ The **REFUND** column calculates the amount per line, including the original dis
 ## Hand over the credit note
 
 The **Return complete** window shows the **CREDIT NOTE** document, with its own number (for example MAIN-R-000001) and the original invoice. Click **Print credit note**, have the customer sign if needed, give back the money, then click **Done**.
+
+> **Tip:** if the customer paid in gourdes, the cash refund is given in gourdes, at the rate of the original sale (not today's rate). The window shows the HTG amount to hand back in green, and it comes out of the gourdes in the drawer.

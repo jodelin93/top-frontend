@@ -18,6 +18,8 @@ related: [pos-payment, settings-exchange-rate, pos-receipt, shifts-close]
 
 Lè w peye an goud, aplikasyon an montre konvèsyon an, pa egzanp « = 45,28 $US ». Apre vant lan, fenèt **Vant lan fini** raple an gwo monnen pou remèt la (**Lajan resevwa**, **Total vant lan**, **Pou remèt**), oswa « Montan egzak : pa gen monnen pou remèt ».
 
+De to aplike. Kantite yo mande an goud ak valè goud yo resevwa yo itilize **to vant** lan. Monnen ou remèt an goud pou dola itilize **to acha** a. Si kliyan an te peye an goud, monnen an goud kalkile dirèkteman (2 000 HTG bay pou 1 350 HTG dwe: ou remèt 650 HTG). Toude to yo parèt anba total yo, pa egzanp « 1 USD = 135 HTG (vant) · 130 HTG (acha) ».
+
 > **Atansyon:** verifye si kliyan an vrèman peye nan deviz ou chwazi a. To aplikasyon an itilize a se to jounen an, ki fikse nan administrasyon an (gade [To echanj](topic:settings-exchange-rate)). Monnen ou remèt pa janm ka depase lajan kach ou resevwa.
 
 > **Konsèy:** lajan kach ou resevwa (mwens monnen ou remèt) ajoute nan sesyon kès ou, epi y ap tann li lè w ap konte nan fen sesyon an.

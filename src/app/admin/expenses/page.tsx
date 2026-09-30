@@ -37,6 +37,12 @@ const STATUS_VARIANT: Record<ExpenseStatus, 'default' | 'info' | 'success' | 'wa
   paid: 'success',
 };
 
+// Paid in another currency (e.g. HTG): that amount, then its value in the store currency
+const expenseAmount = (e: Expense) =>
+  e.tenderedCurrency
+    ? `${formatMoney(Number(e.tenderedAmount), e.tenderedCurrency)} (${formatMoney(e.amount, e.currencyCode)})`
+    : formatMoney(e.amount, e.currencyCode);
+
 export default function ExpensesPage() {
   const user = useAuthStore((s) => s.user);
   const canApprove = hasPermission(user, 'expenses.approve');
@@ -249,7 +255,7 @@ export default function ExpensesPage() {
                     />
                     <DataCardFields>
                       <DataCardField label={t('Amount')}>
-                        <span className="font-medium tabular-nums">{formatMoney(e.amount, e.currencyCode)}</span>
+                        <span className="font-medium tabular-nums">{expenseAmount(e)}</span>
                       </DataCardField>
                       <DataCardField label={t('Date')}>{formatDate(`${e.expenseDate}T12:00:00`)}</DataCardField>
                       <DataCardField label={t('Category')}>{e.categoryName ?? '—'}</DataCardField>
@@ -331,7 +337,7 @@ export default function ExpensesPage() {
                           <span className="block text-xs text-gray-500">{t('by {name}', { name: e.approvedByName })}</span>
                         )}
                       </Td>
-                      <Td className="text-right tabular-nums">{formatMoney(e.amount, e.currencyCode)}</Td>
+                      <Td className="text-right tabular-nums">{expenseAmount(e)}</Td>
                       <Td>
                         <div className="flex justify-end gap-1">
                           {rowActions(e, mine, editable)}

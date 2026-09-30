@@ -26,3 +26,5 @@ Paj **Depans** swiv frè magazen an: founiti, transpò, reparasyon, lwaye…
 Yon depans ki pi wo pase limit apwobasyon magazen an pase nan estati **soumèt** epi li tann yon [apwobasyon](topic:expenses-approve). Si li pi ba pase limit la, li apwouve otomatikman.
 
 > **Konsèy:** onglè **Kategori** a kreye kategori depans ou yo (elektrisite, reparasyon…) avèk **Ajoute kategori**, pou rapò yo.
+
+> **Konsèy:** yon depans ou peye an goud antre an goud: chwazi **HTG** bò kote **Montan** an. Aplikasyon an konvèti l an dola ak to vant lan pou rapò yo epi li kenbe montan an an goud. Si w peye l an kach nan yon kès, li soti nan goud ki nan tiwa a.

@@ -1,6 +1,6 @@
 'use client';
 
-import { isCashIn, MOVEMENT_LABELS, movesNoCash, ZReport } from '@/lib/api/shifts';
+import { MOVEMENT_LABELS, movementAmount, ZReport } from '@/lib/api/shifts';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { t } from '@/i18n';
@@ -76,6 +76,24 @@ export function ZReportView({
             )}
             <Row label={t('+ Cash sales ({currency})', { currency: f.currencyCode })} value={formatMoney(f.cashSales, f.currencyCode)} />
             <Row label={t('− Change given ({currency})', { currency: f.currencyCode })} value={formatMoney(f.changeGiven, f.currencyCode)} />
+            {!!f.paidIn && (
+              <Row label={t('+ Paid in ({currency})', { currency: f.currencyCode })} value={formatMoney(f.paidIn, f.currencyCode)} />
+            )}
+            {!!f.paidOut && (
+              <Row label={t('− Paid out ({currency})', { currency: f.currencyCode })} value={formatMoney(f.paidOut, f.currencyCode)} />
+            )}
+            {!!f.safeDrops && (
+              <Row label={t('− Safe drops ({currency})', { currency: f.currencyCode })} value={formatMoney(f.safeDrops, f.currencyCode)} />
+            )}
+            {!!f.cashRefunds && (
+              <Row label={t('− Cash refunds ({currency})', { currency: f.currencyCode })} value={formatMoney(f.cashRefunds, f.currencyCode)} />
+            )}
+            {!!f.expensePayouts && (
+              <Row
+                label={t('− Expense payouts ({currency})', { currency: f.currencyCode })}
+                value={formatMoney(f.expensePayouts, f.currencyCode)}
+              />
+            )}
             <Row label={t('Expected {currency}', { currency: f.currencyCode })} value={formatMoney(f.expected, f.currencyCode)} bold />
           </div>
         ))}
@@ -87,7 +105,7 @@ export function ZReportView({
             <div key={m.id}>
               <Row
                 label={`${t(MOVEMENT_LABELS[m.type])} · ${new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
-                value={movesNoCash(m.type) ? '—' : `${isCashIn(m.type) ? '+' : '−'}${money(m.amount)}`}
+                value={movementAmount(m, c)}
               />
               {(m.reason || m.user) && (
                 <div className="pl-2 text-[10px] text-gray-500">{[m.reason, m.user].filter(Boolean).join(' · ')}</div>

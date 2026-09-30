@@ -42,3 +42,5 @@ A customer with credit can buy "on account" and pay later, within their credit l
 1. In **Account**, **Statement** section, choose the **From** and **To** dates (the start date cannot be after the end date).
 2. Click **Show statement**: **Opening balance**, transactions, **Closing balance**.
 3. Click **Print** (or save as PDF) and give it to the customer.
+
+> **Tip:** a customer can pay their account in gourdes. In **Receive payment**, choose **HTG** next to the amount and type the amount in gourdes: the app shows its dollar value at the sell rate, and that is what comes off the balance. In cash, the gourdes go into the gourdes in the drawer.

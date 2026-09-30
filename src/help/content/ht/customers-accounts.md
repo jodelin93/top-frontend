@@ -42,3 +42,5 @@ Yon kliyan ki gen kredi ka achte « sou kont » epi peye pita, nan limit kredi l
 1. Nan **Kont**, pati **Relve**, chwazi dat **Depi** ak **Jiska** (dat kòmansman an pa ka depase dat fen an).
 2. Klike sou **Montre relve a**: **Balans ouvèti**, operasyon yo, **Balans fèmti**.
 3. Klike sou **Enprime** (oswa anrejistre l an PDF) epi remèt kliyan an li.
+
+> **Konsèy:** yon kliyan ka peye kont li an goud. Nan **Resevwa yon peman**, chwazi **HTG** bò kote montan an epi tape montan an an goud: aplikasyon an montre valè li an dola ak to vant lan, se kantite sa a ki soti nan balans lan. An kach, goud yo antre nan goud ki nan tiwa a.

@@ -42,3 +42,5 @@ Kolòn **RANBOUSMAN** an kalkile montan chak liy, ak rabè ak taks orijinal yo l
 ## Bay nòt kredi a
 
 Fenèt **Retou a fini** an montre dokiman **NÒT KREDI** a, ak pwòp nimewo li (pa egzanp MAIN-R-000001) ak fakti orijinal la. Klike sou **Enprime nòt kredi a**, fè kliyan an siyen si w bezwen, remèt lajan an, apre sa klike sou **Fini**.
+
+> **Konsèy:** si kliyan an te peye an goud, ranbousman kach la fèt an goud, ak to vant orijinal la (pa to jodi a). Fenèt la montre an vèt kantite HTG pou remèt la, epi li soti nan goud ki nan tiwa a.

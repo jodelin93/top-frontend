@@ -18,6 +18,8 @@ related: [pos-payment, settings-exchange-rate, pos-receipt, shifts-close]
 
 Paying in gourdes shows the conversion, for example "= $45.28". After the sale, the **Sale complete** window shows the change to give in large type (**Received**, **Sale total**, **Give back**), or "Exact amount: no change to give".
 
+Two rates apply. The amount asked in gourdes and the value of the gourdes received use the **sell rate**. Change given in gourdes for dollars uses the **buy rate**. If the customer paid in gourdes, change in gourdes is worked out directly (2,000 HTG given for 1,350 HTG due: give back 650 HTG). Both rates show under the totals, for example "1 USD = 135 HTG (sell) · 130 HTG (buy)".
+
 > **Warning:** make sure the customer is really paying in the chosen currency. The rate used is today's rate, set in admin (see [Exchange rate](topic:settings-exchange-rate)). The change given can never be more than the cash received.
 
 > **Tip:** the cash taken (minus the change given) is added to your shift and will be expected at the end-of-shift count.

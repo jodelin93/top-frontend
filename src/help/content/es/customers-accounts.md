@@ -42,3 +42,5 @@ Un cliente con crédito puede comprar «a cuenta» y pagar más tarde, dentro de
 1. En **Cuenta**, sección **Estado de cuenta**, elija las fechas **Desde** y **Hasta** (la fecha de inicio no puede ser posterior a la fecha de fin).
 2. Haga clic en **Mostrar estado de cuenta**: **Saldo inicial**, operaciones, **Saldo final**.
 3. Haga clic en **Imprimir** (o guárdelo en PDF) y entrégueselo al cliente.
+
+> **Consejo:** un cliente puede pagar su cuenta en gourdes. En **Recibir pago**, elija **HTG** junto al monto y escriba el monto en gourdes: la aplicación muestra su valor en dólares a la tasa de venta, y ese valor se descuenta del saldo. En efectivo, los gourdes van a los gourdes del cajón.

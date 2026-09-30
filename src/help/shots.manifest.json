@@ -1533,6 +1533,21 @@
         },
         {
           "waitFor": {
+            "label": "Register"
+          }
+        },
+        {
+          "select": {
+            "label": "Register"
+          },
+          "option": "Register 1 · Main Store — Capois",
+          "raw": true
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "waitFor": {
             "css": "button.min-h-28"
           }
         },
@@ -1573,6 +1588,73 @@
         },
         {
           "wait": 800
+        }
+      ],
+      "capture": "dialog"
+    },
+    "shift-movement": {
+      "steps": [
+        {
+          "goto": "/pos"
+        },
+        {
+          "waitFor": {
+            "label": "Register"
+          }
+        },
+        {
+          "select": {
+            "label": "Register"
+          },
+          "option": "Register 1 · Main Store — Capois",
+          "raw": true
+        },
+        {
+          "wait": 1500
+        },
+        {
+          "waitFor": {
+            "css": "button.min-h-28"
+          }
+        },
+        {
+          "click": {
+            "title": "Shift and cash drawer"
+          }
+        },
+        {
+          "waitFor": {
+            "role": "dialog"
+          }
+        },
+        {
+          "click": {
+            "role": "button",
+            "name": "Paid in",
+            "within": "dialog",
+            "exact": true
+          }
+        },
+        {
+          "waitFor": {
+            "css": "#movement-amount"
+          }
+        },
+        {
+          "click": {
+            "role": "radio",
+            "name": "HTG",
+            "raw": true
+          }
+        },
+        {
+          "fill": {
+            "css": "#movement-amount"
+          },
+          "value": "1000"
+        },
+        {
+          "wait": 400
         }
       ],
       "capture": "dialog"

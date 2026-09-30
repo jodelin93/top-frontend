@@ -26,3 +26,5 @@ La página **Gastos** lleva el control de los gastos de la tienda: suministros, 
 Un gasto por encima del umbral de aprobación de la tienda pasa al estado **enviado** y espera una [aprobación](topic:expenses-approve). Por debajo del umbral, se aprueba automáticamente.
 
 > **Consejo:** la pestaña **Categorías** crea sus categorías de gastos (electricidad, reparaciones…) con **Agregar categoría**, para los reportes.
+
+> **Consejo:** un gasto pagado en gourdes se registra en gourdes: elija **HTG** junto al **Monto**. La aplicación lo convierte a dólares a la tasa de venta para los reportes y conserva el monto en gourdes. Pagado en efectivo en una caja, sale de los gourdes del cajón.

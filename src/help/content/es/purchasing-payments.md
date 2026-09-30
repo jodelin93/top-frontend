@@ -27,3 +27,5 @@ La pestaña **Cuentas por pagar** muestra lo que usted debe a cada proveedor, cl
 1. Cambie la fecha **Antigüedad de saldos al** si hace falta.
 2. Haga clic en un proveedor para abrir su **Estado de cuenta**: facturas, notas de crédito y pagos con el saldo acumulado.
 3. Haga clic en **Imprimir** para imprimir el estado de cuenta.
+
+> **Consejo:** puede pagar a un proveedor en otra moneda que la suya. Elija la moneda junto al **Monto**: los gourdes pagados sobre una deuda en dólares se convierten a la tasa de venta; los dólares pagados sobre una deuda en gourdes se convierten a la tasa de compra. La línea debajo del monto indica lo que se liquida.

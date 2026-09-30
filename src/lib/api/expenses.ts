@@ -21,6 +21,10 @@ export interface Expense {
   categoryName: string | null;
   amount: number;
   currencyCode: string;
+  // Paid in another currency (e.g. HTG): the amount in it and the sell rate used
+  tenderedCurrency?: string | null;
+  tenderedAmount?: number | null;
+  exchangeRate?: number | null;
   description: string;
   payee: string | null;
   receiptReference: string | null;
@@ -50,6 +54,9 @@ export interface ExpenseInput {
   expenseDate?: string;
   categoryId?: string | null;
   amount: number;
+  // Paid in another accepted currency (e.g. HTG): the server values it at the sell rate
+  currencyCode?: string;
+  tenderedAmount?: number;
   description: string;
   payee?: string | null;
   receiptReference?: string | null;

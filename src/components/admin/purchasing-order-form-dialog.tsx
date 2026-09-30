@@ -59,12 +59,15 @@ export function PurchaseOrderFormDialog({
   onSaved: (order: PurchaseOrderDetail) => void;
 }) {
   const queryClient = useQueryClient();
-  const currency = useCurrency();
+  const storeCurrency = useCurrency();
   const { data: suppliers = [] } = useSuppliers();
   const { options: locations } = useLocationOptions();
   const isRevision = !!order && order.status !== 'draft';
   const hasReceipts = !!order?.items.some((i) => i.quantityReceived > 0);
   const [supplierId, setSupplierId] = useState(order?.supplierId ?? '');
+  // Orders are in the supplier's currency (e.g. HTG), else the store's
+  const currency =
+    suppliers.find((s) => s.id === supplierId)?.currencyCode ?? order?.currencyCode ?? storeCurrency;
   const [supplierReference, setSupplierReference] = useState(order?.supplierReference ?? '');
   const [reason, setReason] = useState('');
   const [locationId, setLocationId] = useState(

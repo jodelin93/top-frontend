@@ -31,6 +31,10 @@ export interface ReturnRefund {
   paymentMethodId: string;
   originalPaymentId: string | null;
   amount: number;
+  // Cash paid in another currency goes back in it, at the original payment's rate
+  tenderedCurrency?: string | null;
+  tenderedAmount?: number | string | null;
+  exchangeRate?: number | string | null;
   provider: string | null;
   status: 'pending' | 'completed' | 'failed';
   failureReason: string | null;

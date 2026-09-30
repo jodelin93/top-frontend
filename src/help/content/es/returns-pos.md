@@ -42,3 +42,5 @@ La columna **REEMBOLSO** calcula el monto por línea, con los descuentos e impue
 ## Entregar la nota de crédito
 
 La ventana **Devolución completada** muestra el documento **NOTA DE CRÉDITO**, con su propio número (por ejemplo MAIN-R-000001) y la factura original. Haga clic en **Imprimir nota de crédito**, haga firmar al cliente si hace falta, entregue el dinero y luego haga clic en **Listo**.
+
+> **Consejo:** si el cliente pagó en gourdes, el reembolso en efectivo se hace en gourdes, a la tasa de la venta original (no a la tasa del día). La ventana muestra en verde el monto en HTG a devolver, y sale de los gourdes del cajón.

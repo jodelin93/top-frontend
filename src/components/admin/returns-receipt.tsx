@@ -113,7 +113,11 @@ export function ReturnReceipt({
           <Row
             key={refund.id}
             label={`${text(refund.paymentMethod?.name, t('Refund'))}${refund.status !== 'completed' ? ` (${t(refund.status)})` : ''}`}
-            value={money(refund.amount)}
+            value={
+              refund.tenderedCurrency
+                ? `${formatMoney(Number(refund.tenderedAmount), refund.tenderedCurrency)} (${money(refund.amount)})`
+                : money(refund.amount)
+            }
           />
         ))}
       </div>

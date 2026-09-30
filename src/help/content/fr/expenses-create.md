@@ -26,3 +26,5 @@ La page **Dépenses** suit les frais du magasin : fournitures, transport, répar
 Une dépense au-dessus du seuil d'approbation du magasin passe au statut **soumise** et attend une [approbation](topic:expenses-approve). Sous le seuil, elle est approuvée automatiquement.
 
 > **Astuce :** l'onglet **Catégories** crée vos catégories de dépenses (électricité, réparations…) avec **Ajouter une catégorie**, pour les rapports.
+
+> **Astuce :** une dépense payée en gourdes se saisit en gourdes : choisissez **HTG** à côté du **Montant**. L'application la convertit en dollars au taux de vente pour les rapports et garde le montant en gourdes. Payée en espèces à une caisse, elle sort des gourdes du tiroir.

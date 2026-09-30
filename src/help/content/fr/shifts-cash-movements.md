@@ -4,7 +4,7 @@ title: Entrées, sorties, dépôts au coffre et ouverture du tiroir
 category: Sessions de caisse
 order: 302
 routes: [/pos]
-keywords: [entrée d'espèces, sortie d'espèces, dépôt au coffre, coffre, tiroir, ouvrir le tiroir, sans vente, mouvement, petite caisse]
+keywords: [HTG, gourdes, devise, entrée d'espèces, sortie d'espèces, dépôt au coffre, coffre, tiroir, ouvrir le tiroir, sans vente, mouvement, petite caisse]
 related: [shifts-open, shifts-close, approvals]
 ---
 Tout mouvement d'espèces hors vente doit être enregistré ; sinon le tiroir sera faux à la clôture.
@@ -24,13 +24,18 @@ Cliquez sur le bouton de session (par exemple **SH-000004 · Ouverte**). La fen�
 | **Dépôts au coffre** | Espèces transférées du tiroir vers le coffre. |
 | **Paiements de dépenses** | Dépenses payées avec l'argent du tiroir. |
 | **Attendu dans le tiroir** | Ce qui devrait se trouver dans le tiroir maintenant. |
+| **Attendu HTG** | Les gourdes qui devraient se trouver dans le tiroir (fonds, ventes, entrées, sorties et dépôts en HTG). Elles sont comptées à part à la clôture. |
 
 ## Enregistrer un mouvement
 
 1. Dans la fenêtre de la session, cliquez sur **Entrée d'espèces**, **Sortie d'espèces** ou **Dépôt au coffre**.
-2. Saisissez le **Montant** et le **Motif** (au moins 2 caractères).
+2. Choisissez la **Devise** : **USD** ou **HTG**, selon les billets qui entrent ou sortent du tiroir. Saisissez le **Montant** dans cette devise et le **Motif** (au moins 2 caractères).
 3. Si vous avez un numéro de sac ou de reçu, saisissez-le dans **Référence (facultatif)**.
 4. Cliquez sur **Enregistrer**.
+
+![La fenêtre Entrée d'espèces, en gourdes](shot:shift-movement)
+
+> **Astuce :** un mouvement en HTG ne change que les gourdes attendues ; les dollars attendus ne bougent pas.
 
 > **Attention :** le caissier n'a pas le droit de faire ces mouvements seul : la fenêtre **Approbation du gérant requise** s'ouvre après **Enregistrer**. Le gérant saisit ses identifiants et clique sur **Approuver** (voir [Faire approuver par un responsable](topic:approvals)).
 

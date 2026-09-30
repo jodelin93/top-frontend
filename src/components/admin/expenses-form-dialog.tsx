@@ -1,5 +1,7 @@
 'use client';
 
+import { CurrencyAmountField, currencyAmountInput, useMoneyCurrencies, type CurrencyAmount } from '@/components/admin/currency-amount-field';
+import { useCurrency } from '@/hooks/use-store-settings';
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -54,7 +56,14 @@ function ExpenseForm({ expense, onClose }: { expense: Expense | null; onClose: (
 
   const [expenseDate, setExpenseDate] = useState(expense?.expenseDate ?? today());
   const [categoryId, setCategoryId] = useState(expense?.categoryId ?? '');
-  const [amount, setAmount] = useState(expense ? String(expense.amount) : '');
+  const storeCurrency = useCurrency();
+  const { rates } = useMoneyCurrencies(storeCurrency);
+  // Typed in the store currency or another accepted one (e.g. HTG)
+  const [amount, setAmount] = useState<CurrencyAmount>(
+    expense?.tenderedCurrency
+      ? { currencyCode: expense.tenderedCurrency, amount: String(expense.tenderedAmount ?? '') }
+      : { currencyCode: expense?.currencyCode ?? storeCurrency, amount: expense ? String(expense.amount) : '' }
+  );
   const [description, setDescription] = useState(expense?.description ?? '');
   const [payee, setPayee] = useState(expense?.payee ?? '');
   const [receiptReference, setReceiptReference] = useState(expense?.receiptReference ?? '');
@@ -64,7 +73,7 @@ function ExpenseForm({ expense, onClose }: { expense: Expense | null; onClose: (
   // One per form: a retried create is not recorded twice
   const [idempotencyKey] = useState(newIdempotencyKey);
 
-  const value = Number(amount);
+  const value = Number(amount.amount);
   const dateError = expenseDate && expenseDate > todayLocalIso() ? t('The expense date cannot be in the future') : undefined;
   const valid = value > 0 && description.trim().length >= 2 && !dateError;
 
@@ -73,7 +82,7 @@ function ExpenseForm({ expense, onClose }: { expense: Expense | null; onClose: (
       const input: ExpenseInput = {
         expenseDate,
         categoryId: categoryId || null,
-        amount: Math.round(value * 100) / 100,
+        ...currencyAmountInput(amount, storeCurrency, rates),
         description: description.trim(),
         payee: payee.trim() || null,
         receiptReference: receiptReference.trim() || null,
@@ -118,14 +127,13 @@ function ExpenseForm({ expense, onClose }: { expense: Expense | null; onClose: (
               onChange={(e) => setExpenseDate(e.target.value)}
             />
           </Field>
-          <Field label={t('Amount')} htmlFor="expense-amount">
-            <Input
-              id="expense-amount"
-              inputMode="decimal"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ''))}
-            />
-          </Field>
+          <CurrencyAmountField
+            id="expense-amount"
+            label={t('Amount')}
+            storeCurrency={storeCurrency}
+            value={amount}
+            onChange={setAmount}
+          />
         </div>
         <Field label={t('Description')} htmlFor="expense-description">
           <Input

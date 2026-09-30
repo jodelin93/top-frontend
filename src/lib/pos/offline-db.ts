@@ -38,6 +38,8 @@ export interface SaleSnapshot {
   pricesIncludeTax: boolean;
   maxDiscountPercent: number | null;
   exchangeRates: Record<string, number>;
+  // Absent on sales captured before buy rates existed
+  exchangeBuyRates?: Record<string, number>;
   settingsVersion: number | null;
   discount: { code: string; type?: string; value?: number } | null;
   cartDiscount: { type: string; value: number } | null;

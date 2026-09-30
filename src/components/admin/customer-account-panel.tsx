@@ -1,5 +1,6 @@
 'use client';
 
+import { CurrencyAmountField, currencyAmountInput, useMoneyCurrencies, type CurrencyAmount } from '@/components/admin/currency-amount-field';
 import { useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { BookOpen, Printer } from 'lucide-react';
@@ -76,7 +77,8 @@ export function CustomerAccountPanel({ customerId }: { customerId: string }) {
 
   // ---- Receive a payment ----
   const [paying, setPaying] = useState(false);
-  const [payAmount, setPayAmount] = useState('');
+  const [payAmount, setPayAmount] = useState<CurrencyAmount>({ currencyCode: currency, amount: '' });
+  const { rates: payRates } = useMoneyCurrencies(currency);
   const [payMethodId, setPayMethodId] = useState('');
   const [payReference, setPayReference] = useState('');
   const [payRegisterId, setPayRegisterId] = useState('');
@@ -103,7 +105,7 @@ export function CustomerAccountPanel({ customerId }: { customerId: string }) {
         customerAccountsApi.receivePayment(
           customerId,
           {
-            amount: Math.round(Number(payAmount) * 100) / 100,
+            ...currencyAmountInput(payAmount, currency, payRates),
             paymentMethodId: payMethod!.id,
             reference: payReference.trim() || undefined,
             registerId: payMethod?.methodType === 'cash' ? register : undefined,
@@ -115,7 +117,7 @@ export function CustomerAccountPanel({ customerId }: { customerId: string }) {
     onSuccess: () => {
       payKey.current = newIdempotencyKey();
       setPaying(false);
-      setPayAmount('');
+      setPayAmount({ currencyCode: currency, amount: '' });
       setPayReference('');
       refresh();
     },
@@ -245,9 +247,13 @@ export function CustomerAccountPanel({ customerId }: { customerId: string }) {
             receive.mutate();
           }}
         >
-          <Field label={t('Amount')} htmlFor="pay-amount">
-            <Input id="pay-amount" inputMode="decimal" value={payAmount} onChange={(e) => setPayAmount(e.target.value)} />
-          </Field>
+          <CurrencyAmountField
+            id="pay-amount"
+            label={t('Amount')}
+            storeCurrency={currency}
+            value={payAmount}
+            onChange={setPayAmount}
+          />
           <Field label={t('Paid with')} htmlFor="pay-method">
             <Select id="pay-method" value={payMethod?.id ?? ''} onChange={(e) => setPayMethodId(e.target.value)}>
               {payMethods.map((m) => (
@@ -274,7 +280,7 @@ export function CustomerAccountPanel({ customerId }: { customerId: string }) {
             <div />
           )}
           <div className="flex items-end">
-            <Button type="submit" disabled={receive.isPending || !Number(payAmount) || !payMethod}>
+            <Button type="submit" disabled={receive.isPending || !Number(payAmount.amount) || !payMethod}>
               {receive.isPending ? t('Saving...') : t('Record payment')}
             </Button>
           </div>

@@ -44,7 +44,7 @@ import { PaymentDialog, TenderedPayment } from '@/components/pos/payment-dialog'
 import { GiftCardDialog } from '@/components/pos/gift-card-dialog';
 import { NewReturnDialog } from '@/components/admin/returns-new-dialog';
 import { storedValueApi } from '@/lib/api/stored-value';
-import { amountDueIn, changeIn, exchangeRate, toSaleCurrency } from '@/lib/pos/currency-math';
+import { amountDueIn, buyRatesOf, exchangeRate, foreignChange, toSaleCurrency } from '@/lib/pos/currency-math';
 import { ReceiptDialog } from '@/components/pos/receipt-dialog';
 import { useScannerInput } from '@/lib/hardware/scanner';
 import { useCustomerDisplayBroadcast } from '@/lib/hardware/customer-display';
@@ -712,6 +712,7 @@ function POSScreen() {
         pricesIncludeTax: tax.pricesIncludeTax,
         maxDiscountPercent: context?.settings.maxDiscountPercent ?? null,
         exchangeRates: context?.settings.exchangeRates ?? {},
+        exchangeBuyRates: context?.settings.exchangeBuyRates ?? {},
         settingsVersion: (context?.settings as { version?: number } | undefined)?.version ?? null,
         discount: pos.discount ? { code: pos.discount.code } : null,
         cartDiscount: pos.cartDiscount ? { type: pos.cartDiscount.type, value: pos.cartDiscount.value } : null,
@@ -736,9 +737,28 @@ function POSScreen() {
       (sum, p) => sum + (p.tenderedAmount && p.exchangeRate ? toSaleCurrency(p.tenderedAmount, p.exchangeRate) : p.amount),
       0
     );
-    const changeRate = input.changeCurrency
-      ? exchangeRate(context?.settings.exchangeRates, context?.settings.currencyCode ?? currency, currency, input.changeCurrency)
+    const storeCurrency = context?.settings.currencyCode ?? currency;
+    const sellRate = input.changeCurrency
+      ? exchangeRate(context?.settings.exchangeRates, storeCurrency, currency, input.changeCurrency)
       : null;
+    const buyRate = input.changeCurrency
+      ? exchangeRate(
+          buyRatesOf(context?.settings.exchangeRates, context?.settings.exchangeBuyRates),
+          storeCurrency,
+          currency,
+          input.changeCurrency
+        )
+      : null;
+    // Cash paid in the change currency goes back at the rate it came in (as the server does)
+    const paidInChangeCurrency = payments
+      .filter(
+        (p) =>
+          p.currencyCode === input.changeCurrency &&
+          p.tenderedAmount &&
+          p.exchangeRate &&
+          methods.get(p.paymentMethodId)?.methodType === 'cash'
+      )
+      .reduce((sum, p) => sum + toSaleCurrency(p.tenderedAmount!, p.exchangeRate!), 0);
     return {
       id: input.idempotencyKey!,
       saleNumber: offlineNumber,
@@ -769,11 +789,12 @@ function POSScreen() {
             }
           : null,
         changeTender:
-          change > 0 && input.changeCurrency && changeRate
+          change > 0 && input.changeCurrency && sellRate && buyRate
             ? {
                 currencyCode: input.changeCurrency,
-                amount: changeIn(Math.max(0, exact - totals.total), changeRate),
-                exchangeRate: changeRate,
+                amount: foreignChange(Math.max(0, exact - totals.total), paidInChangeCurrency, sellRate, buyRate),
+                exchangeRate: buyRate,
+                sellRate,
               }
             : null,
       },
@@ -1962,6 +1983,7 @@ function POSScreen() {
         currency={currency}
         storeCurrency={context.settings.currencyCode}
         exchangeRates={context.settings.exchangeRates ?? {}}
+        exchangeBuyRates={context.settings.exchangeBuyRates ?? {}}
         paymentMethods={context.paymentMethods}
         online={online}
         submitting={submitting}
