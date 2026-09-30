@@ -35,15 +35,20 @@ describe('usePOSStore', () => {
     expect(store().cart[1]).toMatchObject({ variantId: 'v2', quantity: 1, unitPrice: 4 });
   });
 
-  it('does not merge into a line that has a manual discount', () => {
+  it('adds to the line of the same product even when it has a discount or a changed price', () => {
     store().addItem(item());
     store().setLineDiscount(store().cart[0].key, 10);
     store().addItem(item());
 
-    expect(store().cart).toHaveLength(2);
-    expect(store().cart.map((l) => [l.quantity, l.discountPercent])).toEqual([
-      [1, 10],
-      [1, 0],
+    expect(store().cart.map((l) => [l.quantity, l.discountPercent])).toEqual([[2, 10]]);
+
+    store().addItem(item({ variantId: 'v2', productName: 'Tea', price: 4 }));
+    store().setUnitPrice(store().cart[1].key, 3.5);
+    store().addItem(item({ variantId: 'v2', productName: 'Tea', price: 4 }));
+
+    expect(store().cart.map((l) => [l.variantId, l.quantity, l.unitPrice])).toEqual([
+      ['v1', 2, 10],
+      ['v2', 2, 3.5],
     ]);
   });
 
@@ -167,11 +172,11 @@ describe('price overrides, held carts and per-product tax', () => {
     expect(store().cart[0].unitPrice).toBe(11);
   });
 
-  it('does not merge a scan into an overridden line', () => {
+  it('merges a scan into an overridden line, keeping its price', () => {
     store().addItem(item());
     store().setUnitPrice(store().cart[0].key, 5);
     store().addItem(item());
-    expect(store().cart.map((l) => l.unitPrice)).toEqual([5, 10]);
+    expect(store().cart.map((l) => [l.quantity, l.unitPrice])).toEqual([[2, 5]]);
   });
 
   it('loads a resumed held cart and forgets it when cleared', () => {

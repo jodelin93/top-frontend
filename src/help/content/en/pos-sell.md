@@ -15,6 +15,8 @@ You have three ways to add a product:
 
 Each tile shows the name, the variant (size, color), the SKU, the price and the stock, for example **65 in stock**.
 
+Clicking the same tile again (or scanning the product again) increases the quantity on its line: the product appears only once in the cart. The line keeps its discount or changed price. Only items sold by weight get one line per weighing.
+
 ![The cart with several items](shot:pos-cart)
 
 ## Manage the cart

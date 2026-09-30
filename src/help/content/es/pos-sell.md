@@ -15,6 +15,8 @@ Tiene tres formas de agregar un producto:
 
 Cada ficha muestra el nombre, la variante (talla, color), el SKU, el precio y las existencias, por ejemplo **65 en existencia**.
 
+Hacer clic de nuevo en la misma ficha (o escanear de nuevo el producto) aumenta la cantidad de su línea: el producto aparece una sola vez en el carrito. La línea conserva su descuento o su precio modificado. Solo los productos vendidos por peso tienen una línea por pesada.
+
 ![El carrito con varios artículos](shot:pos-cart)
 
 ## Gestionar el carrito

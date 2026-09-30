@@ -15,6 +15,8 @@ Vous avez trois façons d'ajouter un produit :
 
 Chaque fiche affiche le nom, la variante (taille, couleur), le SKU, le prix et le stock, par exemple **65 en stock**.
 
+Cliquer de nouveau sur la même fiche (ou scanner de nouveau le produit) augmente la quantité de sa ligne : le produit n'apparaît qu'une fois dans le panier. La ligne garde sa remise ou son prix modifié. Seuls les produits vendus au poids ont une ligne par pesée.
+
 ![Le panier avec plusieurs articles](shot:pos-cart)
 
 ## Gérer le panier

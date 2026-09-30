@@ -15,6 +15,8 @@ Ou gen twa fason pou ajoute yon pwodui:
 
 Chak fich montre non an, varyant lan (gwosè, koulè), SKU a, pri a ak stòk la, pa egzanp **65 nan stòk**.
 
+Si w klike ankò sou menm fich la (oswa si w eskane pwodui a ankò), kantite liy li a ogmante: pwodui a parèt yon sèl fwa nan panye a. Liy lan kenbe rabè li oswa pri ki chanje a. Se sèlman pwodui ki vann pa pwa ki gen yon liy pou chak peze.
+
 ![Panye a ak plizyè atik](shot:pos-cart)
 
 ## Jere panye a

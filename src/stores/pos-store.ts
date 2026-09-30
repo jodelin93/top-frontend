@@ -137,13 +137,12 @@ export const usePOSStore = create<POSState>()(
       addItem: (item, quantity = 1) => {
         const cart = get().cart;
         const measured = isMeasured(item.unit);
-        // Scanning the same item again adds to the existing line at the normal price.
+        // Clicking or scanning the same item again adds to its line, which keeps its
+        // discount or changed price (a line at the normal price first, if there is one).
         // Measured items never merge: each weighing is its own line (1.250 kg, 0.800 kg)
-        const existing = measured
-          ? undefined
-          : cart.find(
-              (line) => line.variantId === item.variantId && line.discountPercent === 0 && !isPriceOverridden(line)
-            );
+        const lines = measured ? [] : cart.filter((line) => line.variantId === item.variantId);
+        const existing =
+          lines.find((line) => line.discountPercent === 0 && !isPriceOverridden(line)) ?? lines[lines.length - 1];
         if (existing) {
           set({
             cart: cart.map((line) =>
