@@ -1477,14 +1477,23 @@
         },
         {
           "waitFor": {
-            "css": "button.min-h-28"
+            "label": "Register"
           }
+        },
+        {
+          "select": {
+            "label": "Register"
+          },
+          "option": "Register 2 (express) · Main Store — Capois",
+          "raw": true
+        },
+        {
+          "wait": 1500
         },
         {
           "click": {
             "role": "button",
-            "name": "Open shift",
-            "exact": true
+            "name": "Open shift"
           }
         },
         {
@@ -1493,7 +1502,26 @@
           }
         },
         {
-          "wait": 600
+          "click": {
+            "role": "button",
+            "name": "Enter total",
+            "within": "dialog"
+          }
+        },
+        {
+          "fill": {
+            "css": "#opening-float"
+          },
+          "value": "100"
+        },
+        {
+          "fill": {
+            "css": "#open-float-HTG"
+          },
+          "value": "2500"
+        },
+        {
+          "wait": 400
         }
       ],
       "capture": "dialog"

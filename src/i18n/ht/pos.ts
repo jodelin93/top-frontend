@@ -205,6 +205,7 @@ export const pos: Record<string, string> = {
   'Start count': 'Kòmanse konte',
   'Expected in drawer:': 'Prevwa nan tiwa a :',
   '{currency} cash in the drawer': 'Lajan kach {currency} nan tiwa a',
+  'Leave empty if there is none': 'Kite l vid si pa genyen',
   'Expected: {amount}': 'Prevwa : {amount}',
   'Count the notes and coins in this currency': 'Konte biye ak pyès nan deviz sa a',
   'Back to selling': 'Retounen vann',

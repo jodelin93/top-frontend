@@ -234,6 +234,7 @@ export const pos: Record<string, string> = {
   'Start count': 'Iniciar conteo',
   'Expected in drawer:': 'Esperado en el cajón:',
   '{currency} cash in the drawer': 'Efectivo en {currency} en el cajón',
+  'Leave empty if there is none': 'Déjelo vacío si no hay',
   'Expected: {amount}': 'Esperado: {amount}',
   'Count the notes and coins in this currency': 'Cuente los billetes y monedas en esta moneda',
   'Back to selling': 'Volver a vender',

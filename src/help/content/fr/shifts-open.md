@@ -4,7 +4,7 @@ title: Ouvrir une session de caisse
 category: Sessions de caisse
 order: 301
 routes: [/pos]
-keywords: [session, quart, ouvrir la session, fond de caisse, coupures, billets, pièces, début de journée, shift]
+keywords: [HTG, gourdes, session, quart, ouvrir la session, fond de caisse, coupures, billets, pièces, début de journée, shift]
 related: [shifts-cash-movements, shifts-close, shifts-settings]
 ---
 Dans l'application, un quart de travail s'appelle une **session**. Une session appartient à une caisse : elle commence par le comptage du fond de caisse et se termine par le comptage du tiroir. Chaque caissier ouvre et clôture sa propre session.
@@ -16,8 +16,11 @@ Ouvrez la session avant la première vente :
 3. Laissez l'onglet **Compter par coupure** actif.
 4. Pour chaque billet ou pièce, tapez le nombre trouvé dans le tiroir. Le **Total compté** se calcule tout seul.
 5. Si vous préférez, cliquez sur **Saisir le total** et tapez directement le montant du **Fonds de caisse**.
-6. Ajoutez une remarque dans **Notes (facultatif)** si besoin.
-7. Vérifiez la ligne **Fonds de caisse** en bas, puis cliquez sur **Ouvrir la session**.
+6. Si le magasin accepte une autre monnaie (par exemple la gourde), tapez dans **Espèces en HTG dans le tiroir** le montant de cette monnaie déjà dans le tiroir. Laissez vide s'il n'y en a pas. À la clôture, ce montant compte dans les HTG attendus.
+7. Ajoutez une remarque dans **Notes (facultatif)** si besoin.
+8. Vérifiez la ligne **Fonds de caisse** en bas, puis cliquez sur **Ouvrir la session**.
+
+![La fenêtre Ouvrir la session, avec le fonds de caisse en dollars et les gourdes du tiroir](shot:shift-open)
 
 
 Le bouton de la barre du haut affiche alors le numéro de session, par exemple **SH-000004 · Ouverte**. Cliquez dessus à tout moment pour voir le détail du tiroir.

@@ -10,6 +10,7 @@ import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { getErrorMessage } from '@/lib/api/client';
 import { countTotal, shiftsApi } from '@/lib/api/shifts';
 import { formatMoney } from '@/lib/format';
+import { useStoreSettings } from '@/hooks/use-store-settings';
 import { CountState, countsFromState, DenominationCountForm, useDenominations } from './denomination-count';
 import { t } from '@/i18n';
 
@@ -58,6 +59,10 @@ function OpenShiftForm({
 }) {
   const queryClient = useQueryClient();
   const denominations = useDenominations(currency);
+  // Other currencies the store accepts (e.g. HTG): their cash in the drawer is typed too
+  const { data: settings } = useStoreSettings();
+  const foreignCurrencies = Object.keys(settings?.exchangeRates ?? {}).filter((c) => c !== currency);
+  const [foreign, setForeign] = useState<Record<string, string>>({});
   const [mode, setMode] = useState<'count' | 'amount'>('count');
   const [counts, setCounts] = useState<CountState>({});
   const [amount, setAmount] = useState('');
@@ -75,6 +80,10 @@ function OpenShiftForm({
       await shiftsApi.open({
         registerId,
         ...(mode === 'count' ? { denominations: counted } : { openingFloat: Math.round(float * 100) / 100 }),
+        // Blank = none of that currency in the drawer
+        foreignFloats: foreignCurrencies
+          .map((code) => ({ currencyCode: code, amount: Math.round((Number(foreign[code]) || 0) * 100) / 100 }))
+          .filter((f) => f.amount > 0),
         notes: notes.trim() || undefined,
       });
       await queryClient.invalidateQueries({ queryKey: ['shifts'] });
@@ -122,12 +131,33 @@ function OpenShiftForm({
           />
         </Field>
       )}
+      {foreignCurrencies.map((code) => (
+        <Field
+          key={code}
+          label={t('{currency} cash in the drawer', { currency: code })}
+          htmlFor={`open-float-${code}`}
+          hint={t('Leave empty if there is none')}
+        >
+          <Input
+            id={`open-float-${code}`}
+            inputMode="decimal"
+            value={foreign[code] ?? ''}
+            onChange={(e) => setForeign({ ...foreign, [code]: e.target.value.replace(/[^\d.]/g, '') })}
+            placeholder="0.00"
+          />
+        </Field>
+      ))}
       <Field label={t('Notes (optional)')} htmlFor="open-notes">
         <Input id="open-notes" maxLength={500} value={notes} onChange={(e) => setNotes(e.target.value)} />
       </Field>
       <div className={cn('flex items-center justify-between gap-2', dialogStickyFooter)}>
         <span className="text-sm text-gray-600">
           {t('Float:')} <strong>{formatMoney(float, currency)}</strong>
+          {foreignCurrencies
+            .filter((code) => Number(foreign[code]) > 0)
+            .map((code) => (
+              <strong key={code}> + {formatMoney(Number(foreign[code]), code)}</strong>
+            ))}
         </span>
         <div className="flex gap-2">
           <Button variant="outline" onClick={onDone} disabled={busy}>

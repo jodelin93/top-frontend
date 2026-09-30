@@ -350,6 +350,8 @@ export const shiftsApi = {
     drawerId?: string;
     openingFloat?: number;
     denominations?: DenominationCount[];
+    // Cash already in the drawer in the other accepted currencies (e.g. HTG)
+    foreignFloats?: { currencyCode: string; amount: number }[];
     notes?: string;
   }): Promise<ShiftDetail> => {
     const { data } = await apiClient.post('/shifts/open', input);
