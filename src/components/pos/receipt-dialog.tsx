@@ -10,7 +10,7 @@ import { ErrorMessage } from '@/components/admin/page-header';
 import type { Sale } from '@/lib/api/sales';
 import type { StoreSettings } from '@/lib/api/settings';
 import { getErrorMessage } from '@/lib/api/client';
-import { getPairing } from '@/lib/hardware/bridge-client';
+import { directPaperWidth } from '@/lib/hardware/direct-print';
 import { printDocument, retryPrint, type PrintOutcome, type PrintRequest } from '@/lib/hardware/print-manager';
 import { receiptToEscPos } from '@/lib/hardware/receipt-escpos';
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
@@ -46,7 +46,7 @@ export function useReceiptPrinter() {
       escpos: thermal
         ? (copyNumber) =>
             receiptToEscPos(sale, options.settings, {
-              paper: getPairing()?.widthMm ?? (format === '58mm' ? 58 : 80),
+              paper: directPaperWidth() ?? (format === '58mm' ? 58 : 80),
               copyNumber,
             })
         : null,

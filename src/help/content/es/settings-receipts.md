@@ -4,7 +4,7 @@ title: Recibos e impresión
 category: Configuración
 order: 1304
 routes: [/admin/settings?tab=receipts, /admin/settings]
-keywords: [recibo, ticket, comprobante, modelo de recibo, papel, 80 mm, 58 mm, A4, encabezado, pie de página, copias, impresión automática, vista previa]
+keywords: [Carta, Letter, papel de documentos, recibo, ticket, comprobante, modelo de recibo, papel, 80 mm, 58 mm, A4, encabezado, pie de página, copias, impresión automática, vista previa]
 related: [settings-business, hardware, pos-receipt]
 ---
 1. Abra la pestaña **Recibos e impresión**.
@@ -21,3 +21,5 @@ related: [settings-business, hardware, pos-receipt]
 > **Consejo:** marque **Imprimir automáticamente al completar una venta** para ahorrar tiempo. **Imprimir recibo de prueba** permite revisar el resultado en papel.
 
 > **Consejo:** conserve el código de barras del número de venta: al escanearlo, se encuentra la venta durante una devolución.
+
+> **Consejo:** los demás documentos (cotizaciones, órdenes de compra, estados de cuenta de clientes y proveedores, informes PDF) se imprimen en papel **Carta (US Letter)**. Para usar A4, cambie **Papel de los demás documentos**. El informe Z y la nota de crédito siguen el papel del recibo.

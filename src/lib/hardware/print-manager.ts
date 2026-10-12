@@ -1,4 +1,5 @@
-import { BridgeError, type BridgeResult, bridgePrint, isBridgeAvailable, getPairing } from './bridge-client';
+import { BridgeError, type BridgeResult } from './bridge-client';
+import { directPrint, directPrinterId, isDirectPrintAvailable } from './direct-print';
 import { documentsApi, type DocumentType, type PrintChannel, type PrintJob, type PrintJobStatus } from './documents-api';
 import { randomId } from '@/lib/uuid';
 
@@ -6,11 +7,13 @@ import { randomId } from '@/lib/uuid';
  * One way to print any document (spec §15):
  * 1. record a print job on the server, which says whether this is the original or
  *    COPY #n (and needs sales.reprint for copies);
- * 2. print it: ESC/POS through the paired print bridge when the document has a
- *    thermal layout and the bridge answers, else the browser print dialog;
+ * 2. print it: ESC/POS straight to the receipt printer (JodaPrint agent, else the
+ *    paired print bridge) when the document has a thermal layout and one of them
+ *    answers, else the browser print dialog;
  * 3. report the outcome (printed / failed / unknown; the browser dialog can only
  *    say "sent").
- * A bridge print that failed before anything was sent falls back to the browser.
+ * A direct print that failed before anything was printed falls back to the browser.
+ * "bridge" below (deps, channel) means either direct connection.
  * Nothing here ever opens the cash drawer: printing and retries never kick it.
  */
 export interface PrintRequest {
@@ -40,13 +43,15 @@ export interface PrintDeps {
   api: Pick<typeof documentsApi, 'createPrintJob' | 'updatePrintJob' | 'retryPrintJob'>;
   bridge: {
     available: () => Promise<boolean>;
-    print: (bytes: Uint8Array, options: { commandId: string; printerId?: string | null }) => Promise<BridgeResult>;
+    print: (bytes: Uint8Array, options: { commandId: string }) => Promise<BridgeResult>;
+    // Recorded on the print job (absent in tests: none)
+    printerId?: () => Promise<string | null>;
   };
 }
 
 export const defaultPrintDeps: PrintDeps = {
   api: documentsApi,
-  bridge: { available: isBridgeAvailable, print: bridgePrint },
+  bridge: { available: isDirectPrintAvailable, print: directPrint, printerId: directPrinterId },
 };
 
 // An API call that got no answer at all (connection lost)
@@ -62,7 +67,7 @@ function outcomeOf(error: unknown): BridgeResult {
 
 async function sendToBridge(deps: PrintDeps, bytes: Uint8Array, commandId: string): Promise<BridgeResult> {
   try {
-    return await deps.bridge.print(bytes, { commandId, printerId: getPairing()?.printerId ?? null });
+    return await deps.bridge.print(bytes, { commandId });
   } catch (error) {
     return outcomeOf(error);
   }
@@ -113,7 +118,7 @@ export async function printDocument(request: PrintRequest, deps: PrintDeps = def
       documentId: request.documentId,
       copy: request.copy,
       channel: useBridge ? 'bridge' : 'browser',
-      printerId: useBridge ? (getPairing()?.printerId ?? null) : null,
+      printerId: useBridge ? ((await deps.bridge.printerId?.().catch(() => null)) ?? null) : null,
     });
   } catch (error) {
     // Connection lost: the till still prints (as when offline)

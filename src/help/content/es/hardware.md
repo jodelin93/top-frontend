@@ -4,14 +4,37 @@ title: "Hardware: impresora, cajón de efectivo y lector"
 category: Hardware y sistema
 order: 1401
 routes: [/admin/hardware]
-keywords: [hardware, equipo, impresora, impresora térmica, puente de impresión, código de vinculación, cajón de efectivo, gaveta, lector de códigos de barras, escáner, pantalla del cliente]
+keywords: [JodaPrint, agente de impresión, impresora USB, hardware, equipo, impresora, impresora térmica, puente de impresión, código de vinculación, cajón de efectivo, gaveta, lector de códigos de barras, escáner, pantalla del cliente]
 related: [faq-hardware, customer-display, settings-receipts]
 ---
-El **Puente de impresión** es un pequeño programa instalado en la PC de la caja. Envía los recibos a la impresora térmica y abre el cajón de efectivo. Sin él, los recibos pasan por la ventana de impresión del navegador. La página **Hardware** requiere el permiso para administrar el hardware (propietario, administrador, gerente).
+Los recibos se imprimen directamente en la impresora térmica gracias a **JodaPrint**, un pequeño programa instalado en la computadora de la caja. Funciona con impresoras USB y de red y abre el cajón de efectivo. Sin él, los recibos pasan por el cuadro de impresión del navegador. La página **Hardware** requiere el permiso de gestionar el hardware (propietario, administrador, gerente).
 
 ![La página Hardware](shot:admin-hardware)
 
-## Vincular el puente de impresión
+## Imprimir con JodaPrint
+
+El agente JodaPrint se instala y se activa una vez en cada computadora de caja. Después:
+
+1. En la administración, haga clic en **Hardware**.
+2. En **Impresora de recibos (JodaPrint)**, verifique el estado **Conectado · versión …**.
+3. Elija la impresora de recibos en la lista y su **Ancho del papel** (80 mm o 58 mm). La impresora con el alias «receipt» en el panel de JodaPrint se elige por defecto.
+4. Haga clic en **Imprimir un recibo de prueba**.
+
+| Estado | Significado |
+| --- | --- |
+| Conectado · versión … | Todo funciona: los recibos salen sin el cuadro de impresión. |
+| No encontrado en esta computadora | El agente no está instalado o no está iniciado. Haga clic en **Descargar JodaPrint**, instálelo y luego **Actualizar**. |
+| Instalado, sin activar | Active el agente con su cuenta de JodaPrint. |
+| Rechazado por el agente | La dirección de la caja no está permitida: agréguela en el panel de JodaPrint (**Developers › Origins & security**). |
+| No configurado en el servidor del POS | El técnico debe agregar la clave de firma de JodaPrint en el servidor. |
+
+> **Atención:** sin conexión a Internet la caja no puede hacer firmar la impresión: los recibos pasan entonces por el cuadro de impresión del navegador, y el cajón se abre con su llave.
+
+> **Consejo:** la impresora y el ancho del papel se guardan en el navegador de la caja: elíjalos en cada caja.
+
+## Método anterior: el puente de impresión
+
+El **puente de impresión** es la forma anterior de imprimir, solo para impresoras de red. Las cajas que usan JodaPrint no lo necesitan.
 
 Su técnico instala el puente una sola vez. Después, en la PC de la caja:
 

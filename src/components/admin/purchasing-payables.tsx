@@ -1,5 +1,7 @@
 'use client';
 
+import { documentPrintClass } from '@/lib/document-paper';
+import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Printer } from 'lucide-react';
@@ -11,7 +13,7 @@ import { DataCardField, DataCardFields, DataCardHeader, DataCards, useSmallScree
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { today } from '@/components/admin/purchasing-invoices';
-import { useCurrency } from '@/hooks/use-store-settings';
+import { useCurrency, useStoreSettings } from '@/hooks/use-store-settings';
 import { getErrorMessage } from '@/lib/api/client';
 import { payablesApi, SupplierAging } from '@/lib/api/purchasing';
 import { formatDate, formatMoney } from '@/lib/format';
@@ -200,6 +202,7 @@ function StatementDialog({ supplierId, to: initialTo, onClose }: { supplierId: s
   });
   const currency = data?.supplier.currencyCode ?? storeCurrency;
   const smallScreen = useSmallScreen();
+  const { data: settings } = useStoreSettings();
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
@@ -217,9 +220,18 @@ function StatementDialog({ supplierId, to: initialTo, onClose }: { supplierId: s
           </Field>
         </div>
         <ErrorMessage>{error ? getErrorMessage(error, 'Could not load the statement') : null}</ErrorMessage>
+        {/* Printed alone on the store's document paper (the dialog chrome is not) */}
+        <div className={cn(documentPrintClass(settings), 'space-y-2 bg-white text-black')}>
+        <div className="hidden print:block">
+          <div className="text-lg font-bold">{settings?.storeName}</div>
+          <div className="text-base font-semibold">{t('Statement: {name}', { name: data?.supplier.name ?? '' })}</div>
+          <div className="text-sm">
+            {formatDate(from)} – {formatDate(to)}
+          </div>
+        </div>
         {smallScreen ? (
           // Phones: one line per document with the running balance (the table scrolls sideways)
-          <div id="supplier-statement" className="max-h-[50vh] divide-y overflow-y-auto rounded-md border text-sm">
+          <div id="supplier-statement" className="max-h-[50vh] divide-y overflow-y-auto rounded-md border text-sm print:max-h-none print:overflow-visible">
             {isLoading || !data ? (
               <p className="px-3 py-6 text-center text-gray-400">{t('Loading...')}</p>
             ) : (
@@ -268,7 +280,7 @@ function StatementDialog({ supplierId, to: initialTo, onClose }: { supplierId: s
             )}
           </div>
         ) : (
-          <div id="supplier-statement" className="max-h-[50vh] overflow-auto rounded-md border">
+          <div id="supplier-statement" className="max-h-[50vh] overflow-auto rounded-md border print:max-h-none print:overflow-visible">
             <table className="w-full text-sm">
               <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
                 <tr>
@@ -329,6 +341,7 @@ function StatementDialog({ supplierId, to: initialTo, onClose }: { supplierId: s
             {BUCKETS.map((b) => `${t(b.label)}: ${formatMoney(Number(data.aging![b.key]), currency)}`).join(' · ')}
           </p>
         )}
+        </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => window.print()}>
             <Printer className="h-4 w-4" />

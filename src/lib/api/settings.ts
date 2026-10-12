@@ -11,6 +11,8 @@ export interface StoreSettings {
   lowStockThreshold: number;
   maxDiscountPercent: number;
   receiptFormat: '58mm' | '80mm' | 'a4' | 'letter';
+  // Paper of estimates, purchase orders, statements and report PDFs (default: Letter)
+  documentPaper?: 'letter' | 'a4';
   heldCartExpiryHours: number;
   requireOpenShift: boolean;
   // Hour (branch time) the trading day starts: sales before it count for the previous business date

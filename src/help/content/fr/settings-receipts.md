@@ -4,7 +4,7 @@ title: Reçus et impression
 category: Paramètres
 order: 1304
 routes: [/admin/settings?tab=receipts, /admin/settings]
-keywords: [reçu, ticket, modèle de reçu, papier, 80 mm, 58 mm, A4, en-tête, pied de page, copies, impression automatique, aperçu]
+keywords: [Lettre US, Letter, papier des documents, reçu, ticket, modèle de reçu, papier, 80 mm, 58 mm, A4, en-tête, pied de page, copies, impression automatique, aperçu]
 related: [settings-business, hardware, pos-receipt]
 ---
 1. Ouvrez l'onglet **Reçus et impression**.
@@ -21,3 +21,5 @@ related: [settings-business, hardware, pos-receipt]
 > **Astuce :** cochez **Imprimer automatiquement à la fin d'une vente** pour gagner du temps. **Imprimer un reçu de test** vérifie le résultat sur papier.
 
 > **Astuce :** gardez le code-barres du numéro de vente : en le scannant, on retrouve la vente lors d'un retour.
+
+> **Astuce :** les autres documents (devis, bons de commande, relevés des clients et des fournisseurs, rapports PDF) s'impriment sur du papier **Lettre US**. Pour utiliser de l'A4, changez **Papier des autres documents**. Le rapport Z et la note de crédit suivent le papier du reçu.

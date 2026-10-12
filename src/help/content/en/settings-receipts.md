@@ -4,7 +4,7 @@ title: Receipts and printing
 category: Settings
 order: 1304
 routes: [/admin/settings?tab=receipts, /admin/settings]
-keywords: [receipt, ticket, receipt template, receipt layout, paper, 80 mm, 58 mm, A4, Letter, header, footer, copies, auto print, automatic printing, preview, test print]
+keywords: [US Letter, document paper, receipt, ticket, receipt template, receipt layout, paper, 80 mm, 58 mm, A4, Letter, header, footer, copies, auto print, automatic printing, preview, test print]
 related: [settings-business, hardware, pos-receipt]
 ---
 1. Open the **Receipts & printing** tab.
@@ -21,3 +21,5 @@ related: [settings-business, hardware, pos-receipt]
 > **Tip:** check **Print automatically when a sale is completed** to save time. **Print test receipt** checks the result on paper.
 
 > **Tip:** keep the sale-number barcode: scanning it finds the sale during a return.
+
+> **Tip:** the other documents (estimates, purchase orders, customer and supplier statements, report PDFs) print on **US Letter** paper. To use A4, change **Paper for other documents**. The Z-report and the credit note follow the receipt paper.

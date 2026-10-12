@@ -17,6 +17,7 @@ import { t } from '@/i18n';
 const KEYS = [
   'receiptTemplate',
   'receiptFormat',
+  'documentPaper',
   'receiptFontSize',
   'receiptHeader',
   'receiptFooter',
@@ -122,6 +123,20 @@ export function SettingsReceipts() {
                 <option value="58mm">{t('58 mm thermal roll')}</option>
                 <option value="a4">{t('A4 invoice')}</option>
                 <option value="letter">{t('US Letter invoice')}</option>
+              </Select>
+            </Field>
+            <Field
+              label={t('Paper for other documents')}
+              htmlFor="documentPaper"
+              hint={t('Estimates, purchase orders, statements and report PDFs')}
+            >
+              <Select
+                id="documentPaper"
+                value={v.documentPaper ?? 'letter'}
+                onChange={(e) => form.set('documentPaper', e.target.value as NonNullable<StoreSettings['documentPaper']>)}
+              >
+                <option value="letter">{t('US Letter')}</option>
+                <option value="a4">A4</option>
               </Select>
             </Field>
             <Field label={t('Text size')} htmlFor="receiptFontSize">

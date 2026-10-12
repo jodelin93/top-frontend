@@ -18,6 +18,7 @@ import { hardwareApi } from '@/lib/hardware/documents-api';
 import { formatDateTime } from '@/lib/format';
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
 import { t } from '@/i18n';
+import { JodaPrintSection } from './jodaprint-section';
 import { BridgeSection, DrawerSection, ScannerSection } from './sections';
 
 // Wording of each capability flag (GET /hardware/capabilities)
@@ -65,6 +66,7 @@ export default function HardwarePage() {
         description={t('Receipt printer, cash drawer, scanner and customer display of this till. These settings are kept in this browser.')}
       />
 
+      <JodaPrintSection />
       <BridgeSection />
       <DrawerSection />
       <ScannerSection />

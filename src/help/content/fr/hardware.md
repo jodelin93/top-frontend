@@ -4,14 +4,37 @@ title: "Matériel : imprimante, tiroir-caisse et lecteur"
 category: Matériel et système
 order: 1401
 routes: [/admin/hardware]
-keywords: [matériel, imprimante, imprimante thermique, pont d'impression, code d'association, tiroir-caisse, lecteur de codes-barres, scanner, afficheur client]
+keywords: [JodaPrint, agent d'impression, imprimante USB, matériel, imprimante, imprimante thermique, pont d'impression, code d'association, tiroir-caisse, lecteur de codes-barres, scanner, afficheur client]
 related: [faq-hardware, customer-display, settings-receipts]
 ---
-Le **pont d'impression** est un petit programme installé sur le PC de la caisse. Il envoie les reçus à l'imprimante thermique et ouvre le tiroir-caisse. Sans lui, les reçus passent par la fenêtre d'impression du navigateur. La page **Matériel** demande le droit de gérer le matériel (propriétaire, administrateur, gérant).
+Les reçus s'impriment directement sur l'imprimante thermique grâce à **JodaPrint**, un petit programme installé sur l'ordinateur de la caisse. Il fonctionne avec les imprimantes USB et réseau et ouvre le tiroir-caisse. Sans lui, les reçus passent par la fenêtre d'impression du navigateur. La page **Matériel** demande le droit de gérer le matériel (propriétaire, administrateur, gérant).
 
 ![La page Matériel](shot:admin-hardware)
 
-## Associer le pont d'impression
+## Imprimer avec JodaPrint
+
+L'agent JodaPrint est installé et activé une fois sur chaque ordinateur de caisse. Ensuite :
+
+1. Dans l'administration, cliquez sur **Matériel**.
+2. Sous **Imprimante de reçus (JodaPrint)**, vérifiez le statut **Connecté · version …**.
+3. Choisissez l'imprimante de reçus dans la liste et sa **Largeur du papier** (80 mm ou 58 mm). L'imprimante qui porte l'alias « receipt » dans le tableau de bord JodaPrint est choisie d'office.
+4. Cliquez sur **Imprimer un ticket de test**.
+
+| Statut | Signification |
+| --- | --- |
+| Connecté · version … | Tout fonctionne : les reçus sortent sans fenêtre d'impression. |
+| Introuvable sur cet ordinateur | L'agent n'est pas installé ou pas démarré. Cliquez sur **Télécharger JodaPrint**, installez-le, puis **Actualiser**. |
+| Installé, non activé | Activez l'agent avec votre compte JodaPrint. |
+| Refusé par l'agent | L'adresse de la caisse n'est pas autorisée : ajoutez-la dans le tableau de bord JodaPrint (**Developers › Origins & security**). |
+| Non configuré sur le serveur de la caisse | Le technicien doit ajouter la clé de signature JodaPrint sur le serveur. |
+
+> **Attention :** sans connexion à Internet, la caisse ne peut pas faire signer l'impression : les reçus passent alors par la fenêtre d'impression du navigateur, et le tiroir s'ouvre avec sa clé.
+
+> **Astuce :** l'imprimante et la largeur du papier sont gardées dans le navigateur de la caisse : choisissez-les sur chaque caisse.
+
+## Ancienne méthode : le pont d'impression
+
+Le **pont d'impression** est l'ancienne façon d'imprimer, pour les imprimantes réseau seulement. Les caisses qui utilisent JodaPrint n'en ont pas besoin.
 
 L'installation du pont est faite une fois par votre technicien. Ensuite, sur le PC de la caisse :
 

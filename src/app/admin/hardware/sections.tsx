@@ -25,6 +25,7 @@ import {
 } from '@/lib/hardware/bridge-client';
 import { hardwareApi } from '@/lib/hardware/documents-api';
 import { kickDrawer } from '@/lib/hardware/drawer-kick';
+import { isAgentAvailable } from '@/lib/hardware/jodaprint-client';
 import { testPageEscPos } from '@/lib/hardware/receipt-escpos';
 import {
   analyzeKeystrokes,
@@ -79,6 +80,8 @@ export function BridgeSection() {
       }
     }
     setPrinters(list);
+    // A till that prints through JodaPrint reports from its own section
+    if (!current && (await isAgentAvailable().catch(() => false))) return;
     // Tell the back office how this till is doing (ignored when the till is not registered)
     hardwareApi
       .report({
@@ -152,7 +155,7 @@ export function BridgeSection() {
         </Button>
       </div>
       <p className="text-sm text-gray-600">
-        {t('The print bridge is a small program installed on this PC (see print-bridge/README.md). Without it, receipts open the browser print dialog.')}
+        {t('The print bridge is the older way to print, for network printers only (see print-bridge/README.md). Tills that use JodaPrint do not need it.')}
       </p>
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <span>{t('Status')}:</span>
@@ -246,7 +249,7 @@ export function DrawerSection() {
       outcome.opened
         ? t('Drawer pulse sent.')
         : outcome.status === 'no_bridge'
-          ? t('Pair the print bridge first: the drawer opens through the receipt printer.')
+          ? t('Set up JodaPrint (or pair the print bridge) first: the drawer opens through the receipt printer.')
           : outcome.status === 'unknown'
             ? t('No answer from the printer. Check the drawer before trying again.')
             : t('The drawer did not open: {error}', { error: outcome.error ?? outcome.status })

@@ -4,14 +4,37 @@ title: "Materyèl: enprimant, tiwa kès ak eskanè"
 category: Materyèl ak sistèm
 order: 1401
 routes: [/admin/hardware]
-keywords: [materyèl, materyel, enprimant, enprimant tèmik, pon enpresyon, kòd asosyasyon, tiwa kès, eskanè kòd ba, eskane, ekran kliyan, matériel, imprimante, pont d'impression, code d'association, tiroir-caisse, lecteur de codes-barres, scanner, afficheur client]
+keywords: [JodaPrint, ajan enpresyon, enprimant USB, materyèl, materyel, enprimant, enprimant tèmik, pon enpresyon, kòd asosyasyon, tiwa kès, eskanè kòd ba, eskane, ekran kliyan, matériel, imprimante, pont d'impression, code d'association, tiroir-caisse, lecteur de codes-barres, scanner, afficheur client]
 related: [faq-hardware, customer-display, settings-receipts]
 ---
-**Pon enpresyon** an se yon ti pwogram yo enstale sou PC kès la. Li voye resi yo bay enprimant tèmik la epi li louvri tiwa kès la. San li, resi yo pase pa fenèt enpresyon navigatè a. Paj **Materyèl** la mande dwa pou jere materyèl (pwopriyetè, administratè, manadjè).
+Resi yo enprime dirèkteman sou enprimant tèmik la gras ak **JodaPrint**, yon ti pwogram ki enstale sou òdinatè kès la. Li mache ak enprimant USB ak enprimant rezo, epi li louvri tiwa kès la. San li, resi yo pase nan fenèt enpresyon navigatè a. Paj **Materyèl** la mande dwa pou jere materyèl (pwopriyetè, administratè, jeran).
 
 ![Paj Materyèl la](shot:admin-hardware)
 
-## Asosye pon enpresyon an
+## Enprime ak JodaPrint
+
+Ajan JodaPrint la enstale epi aktive yon sèl fwa sou chak òdinatè kès. Apre sa:
+
+1. Nan administrasyon an, klike sou **Materyèl**.
+2. Anba **Enprimant resi (JodaPrint)**, verifye estati **Konekte · vèsyon …**.
+3. Chwazi enprimant resi a nan lis la ak **Lajè papye a** (80 mm oswa 58 mm). Enprimant ki gen alyas « receipt » nan tablo bò JodaPrint la chwazi pa defo.
+4. Klike sou **Enprime yon resi tès**.
+
+| Estati | Sa li vle di |
+| --- | --- |
+| Konekte · vèsyon … | Tout bagay mache: resi yo soti san fenèt enpresyon. |
+| Pa jwenn sou òdinatè sa a | Ajan an pa enstale oswa li pa demare. Klike sou **Telechaje JodaPrint**, enstale l, apre sa **Rafrechi**. |
+| Enstale, poko aktive | Aktive ajan an ak kont JodaPrint ou. |
+| Ajan an refize | Adrès kès la pa otorize: ajoute l nan tablo bò JodaPrint la (**Developers › Origins & security**). |
+| Pa konfigire sou sèvè kès la | Teknisyen an dwe ajoute kle siyati JodaPrint la sou sèvè a. |
+
+> **Atansyon:** san koneksyon Entènèt, kès la pa ka fè siyen enpresyon an: resi yo pase lè sa a nan fenèt enpresyon navigatè a, epi tiwa a louvri ak kle li.
+
+> **Konsèy:** enprimant lan ak lajè papye a rete nan navigatè kès la: chwazi yo sou chak kès.
+
+## Ansyen metòd: pon enpresyon an
+
+**Pon enpresyon** an se ansyen fason pou enprime, pou enprimant rezo sèlman. Kès ki itilize JodaPrint pa bezwen li.
 
 Teknisyen ou a enstale pon an yon sèl fwa. Apre sa, sou PC kès la:
 

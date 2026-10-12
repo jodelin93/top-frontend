@@ -1,4 +1,5 @@
-import { BridgeError, bridgeKick, getPairing } from './bridge-client';
+import { BridgeError } from './bridge-client';
+import { directKick } from './direct-print';
 import { randomId } from '@/lib/uuid';
 
 export type KickOutcome =
@@ -7,17 +8,17 @@ export type KickOutcome =
   | { opened: false; status: 'failed' | 'unknown' | 'replayed' | 'no_bridge'; error: string | null };
 
 /**
- * Open the cash drawer through the paired print bridge (pulse on the printer's
- * drawer port). One call = one command id = at most one opening: the bridge
- * refuses a repeated id for 10 minutes and this function never retries. Callers
+ * Open the cash drawer through the JodaPrint agent or the paired print bridge (pulse
+ * on the printer's drawer port). One call = at most one opening: the bridge refuses
+ * a repeated command id for 10 minutes and this function never retries. Callers
  * decide (and audit) when the drawer may open; a failed kick is shown to the
  * cashier, who opens the drawer with its key if needed.
  */
 export async function kickDrawer(options: { commandId?: string; pin?: 2 | 5 } = {}): Promise<KickOutcome> {
-  if (!getPairing()) return { opened: false, status: 'no_bridge', error: null };
   const commandId = options.commandId ?? randomId();
   try {
-    const result = await bridgeKick({ commandId, pin: options.pin });
+    const result = await directKick({ commandId, pin: options.pin });
+    if (!result) return { opened: false, status: 'no_bridge', error: null };
     if (result.status === 'printed') return { opened: true, status: 'printed' };
     return { opened: false, status: result.status, error: result.error };
   } catch (error) {

@@ -1,5 +1,6 @@
 'use client';
 
+import { documentPrintClass } from '@/lib/document-paper';
 import { CurrencyAmountField, currencyAmountInput, useMoneyCurrencies, type CurrencyAmount } from '@/components/admin/currency-amount-field';
 import { useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -434,12 +435,12 @@ function Stat({ label, value, strong }: { label: string; value: string; strong?:
   );
 }
 
-/** Printable statement (A4): opening balance, entries, closing balance and aging */
+/** Printable statement (the store's document paper): opening balance, entries, closing balance and aging */
 export function StatementDocument({ statement, currency }: { statement: Statement; currency: string }) {
   const { data: settings } = useStoreSettings();
   const money = (value: number) => formatMoney(value, currency);
   return (
-    <div className="print-receipt receipt-a4 rounded-md border bg-white p-4 text-sm text-black">
+    <div className={cn(documentPrintClass(settings), 'rounded-md border bg-white p-4 text-sm text-black')}>
       <div className="flex justify-between">
         <div>
           <div className="text-base font-bold">{settings?.storeName}</div>

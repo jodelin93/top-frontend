@@ -4,7 +4,7 @@ title: Resi ak enpresyon
 category: Paramèt
 order: 1304
 routes: [/admin/settings?tab=receipts, /admin/settings]
-keywords: [resi, tikè, modèl resi, papye, 80 mm, 58 mm, A4, antèt, pye paj, kopi, enpresyon otomatik, apèsi, apesi, reçu, ticket, modèle de reçu, papier, en-tête, pied de page, copies, impression automatique, aperçu]
+keywords: [Lèt US, Letter, papye dokiman, resi, tikè, modèl resi, papye, 80 mm, 58 mm, A4, antèt, pye paj, kopi, enpresyon otomatik, apèsi, apesi, reçu, ticket, modèle de reçu, papier, en-tête, pied de page, copies, impression automatique, aperçu]
 related: [settings-business, hardware, pos-receipt]
 ---
 1. Ouvri onglè **Resi ak enpresyon**.
@@ -21,3 +21,5 @@ related: [settings-business, hardware, pos-receipt]
 > **Konsèy:** tcheke **Enprime otomatikman lè yon vant fini** pou genyen tan. **Enprime yon resi tès** pèmèt ou verifye rezilta a sou papye.
 
 > **Konsèy:** kenbe kòd ba nimewo vant lan: lè ou eskane l, ou jwenn vant lan pandan yon retou.
+
+> **Konsèy:** lòt dokiman yo (devi, bon kòmand, relve kliyan ak founisè, rapò PDF) enprime sou papye **Lèt US**. Pou itilize A4, chanje **Papye pou lòt dokiman yo**. Rapò Z a ak nòt kredi a swiv papye resi a.

@@ -73,9 +73,14 @@ body {
     top: 0;
     width: 72mm;
   }
-  /* Receipts are usually printed from a dialog: undo its centring transform so the
-     receipt lands at the top-left of the page instead of offset with the dialog */
+  /* Documents are usually printed from a dialog: undo its centring so the document
+     lands at the top-left of the page instead of offset with the dialog. Tailwind
+     centres with the `translate` property, built from these two variables: they are
+     zeroed here because `translate: none` next to `transform: none` is merged into
+     one `transform` by the CSS optimizer, which leaves the dialog shifted. */
   [role="dialog"] {
+    --tw-translate-x: 0 !important;
+    --tw-translate-y: 0 !important;
     transform: none !important;
     left: 0 !important;
     top: 0 !important;

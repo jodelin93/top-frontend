@@ -1,5 +1,7 @@
 'use client';
 
+import { documentPrintClass } from '@/lib/document-paper';
+import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { PackageCheck, Printer } from 'lucide-react';
@@ -923,7 +925,7 @@ function PurchaseOrderPrintView({
           <DialogTitle>{t('Print {number}', { number: order.poNumber })}</DialogTitle>
           <DialogDescription>{t('Preview of the order as it will be printed or saved as PDF.')}</DialogDescription>
         </DialogHeader>
-        <div id="po-print" className="space-y-6 text-sm text-black">
+        <div id="po-print" className={cn(documentPrintClass(settings), 'space-y-6 bg-white text-sm text-black')}>
           <div className="flex items-start justify-between">
             <div>
               <div className="text-xl font-bold">{settings?.storeName ?? t('Purchase order')}</div>

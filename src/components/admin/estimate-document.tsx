@@ -1,5 +1,6 @@
 'use client';
 
+import { documentPaper } from '@/lib/document-paper';
 import type { Estimate } from '@/lib/api/estimates';
 import { estimateCustomerName } from '@/lib/api/estimates';
 import type { StoreSettings } from '@/lib/api/settings';
@@ -32,7 +33,7 @@ export function EstimateDocument({
   ].filter(Boolean);
   const hasSavings = estimate.items?.some((i) => Number(i.unitPrice) < Number(i.catalogPrice));
 
-  const paper = settings?.receiptFormat === 'letter' ? 'letter' : 'a4';
+  const paper = documentPaper(settings);
 
   return (
     <div

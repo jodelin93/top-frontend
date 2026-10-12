@@ -27,6 +27,15 @@ const BACKEND_URL = (process.env.BACKEND_URL || "http://localhost:3000").replace
 // Local print bridge (print-bridge/, always on the till itself)
 const PRINT_BRIDGE = ["http://127.0.0.1:17777", "http://localhost:17777"];
 
+// JodaPrint agent on the till computer (@jodaprint/sdk): a secure WebSocket on one of
+// these ports. When none answers the SDK asks the agent's plain-http /ping (is it
+// running, is this address allowed?) and then tries https (certificate not trusted?)
+const JODAPRINT_AGENT = [8182, 8283, 8384, 8485].flatMap((port) => [
+  `wss://localhost:${port}`,
+  `https://localhost:${port}`,
+  `http://127.0.0.1:${port}`,
+]);
+
 /**
  * Content-Security-Policy.
  *
@@ -51,7 +60,7 @@ function contentSecurityPolicy(): string {
     "style-src": ["'self'", "'unsafe-inline'"],
     "img-src": ["'self'", "data:", "blob:", "https:", api],
     "font-src": ["'self'", "data:"],
-    "connect-src": ["'self'", api, ...PRINT_BRIDGE, ...(isDev ? ["ws:", "wss:"] : [])],
+    "connect-src": ["'self'", api, ...PRINT_BRIDGE, ...JODAPRINT_AGENT, ...(isDev ? ["ws:", "wss:"] : [])],
     "worker-src": ["'self'"],
     "manifest-src": ["'self'"],
     "object-src": ["'none'"],

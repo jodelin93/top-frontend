@@ -107,7 +107,22 @@
           "goto": "/admin/hardware"
         },
         {
-          "wait": 1500
+          "waitFor": {
+            "testid": "jodaprint-section"
+          }
+        },
+        {
+          "wait": 5000
+        },
+        {
+          "click": {
+            "css": "input[name=\"jodaprint-printer\"]",
+            "nth": 1
+          },
+          "optional": true
+        },
+        {
+          "wait": 500
         }
       ]
     },
