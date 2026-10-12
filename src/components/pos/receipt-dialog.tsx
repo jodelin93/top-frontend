@@ -11,10 +11,11 @@ import type { Sale } from '@/lib/api/sales';
 import type { StoreSettings } from '@/lib/api/settings';
 import { getErrorMessage } from '@/lib/api/client';
 import { directPaperWidth } from '@/lib/hardware/direct-print';
+import { loadReceiptLogo, logoRaster, type LogoImage } from '@/lib/hardware/receipt-logo';
 import { printDocument, retryPrint, type PrintOutcome, type PrintRequest } from '@/lib/hardware/print-manager';
 import { receiptToEscPos } from '@/lib/hardware/receipt-escpos';
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
-import { Receipt, receiptSettings } from './receipt';
+import { Receipt, receiptOptions, receiptSettings } from './receipt';
 import { ReceiptShare } from './receipt-share';
 import { ChangeBanner } from './change-banner';
 import { t } from '@/i18n';
@@ -33,7 +34,11 @@ export function useReceiptPrinter() {
   const [busy, setBusy] = useState(false);
   const last = useRef<PrintRequest | null>(null);
 
-  const request = (sale: Sale, options: { original: boolean; offline?: boolean; settings?: StoreSettings }): PrintRequest => {
+  const request = (
+    sale: Sale,
+    options: { original: boolean; offline?: boolean; settings?: StoreSettings },
+    logo: { url: string; image: LogoImage } | null
+  ): PrintRequest => {
     const format = receiptSettings(sale, options.settings)?.receiptFormat ?? '80mm';
     const thermal = format === '58mm' || format === '80mm';
     return {
@@ -44,11 +49,15 @@ export function useReceiptPrinter() {
       offline: options.offline,
       localCopyNumber: (copy ?? 0) + 1,
       escpos: thermal
-        ? (copyNumber) =>
-            receiptToEscPos(sale, options.settings, {
-              paper: directPaperWidth() ?? (format === '58mm' ? 58 : 80),
+        ? (copyNumber) => {
+            const paper = directPaperWidth() ?? (format === '58mm' ? 58 : 80);
+            return receiptToEscPos(sale, options.settings, {
+              paper,
               copyNumber,
-            })
+              // The store logo as printer dots (the browser receipt shows it as an image)
+              logo: logo ? logoRaster(logo.url, logo.image, paper) : null,
+            });
+          }
         : null,
       browserPrint: (copyNumber) => {
         flushSync(() => setCopy(copyNumber));
@@ -74,8 +83,13 @@ export function useReceiptPrinter() {
     }
   };
 
-  const print = (sale: Sale, options: { original: boolean; offline?: boolean; settings?: StoreSettings }) => {
-    const req = request(sale, options);
+  const print = async (sale: Sale, options: { original: boolean; offline?: boolean; settings?: StoreSettings }) => {
+    // The logo is loaded before printing (cached after the first receipt; a receipt
+    // never waits long for it and prints without it when it can't be loaded)
+    const seller = receiptSettings(sale, options.settings);
+    const url = receiptOptions(seller).showLogo ? seller?.businessLogoUrl : null;
+    const image = url ? await loadReceiptLogo(url) : null;
+    const req = request(sale, options, url && image ? { url, image } : null);
     last.current = req;
     return run(() => printDocument(req));
   };
