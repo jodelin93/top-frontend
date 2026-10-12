@@ -123,6 +123,23 @@ export interface RasterImage {
 /**
  * Builds an ESC/POS job. Every text call wraps to the paper width.
  */
+// Rows per image strip (what receipt printer drivers send)
+export const IMAGE_STRIP_ROWS = 24;
+// Printable dots per line at 203 dpi
+const PRINT_DOTS: Record<PaperWidth, number> = { 58: 384, 80: 576 };
+
+/**
+ * Bar width (dots per module) of a CODE128 barcode of `characters` characters on this
+ * paper: the widest of 3 or 2 that fits with its quiet zones, or null when even 2-dot
+ * bars do not fit. Set B: 11 modules per character, start and check characters, a
+ * 13-module stop, 10 modules of quiet zone each side.
+ */
+export function barcodeModuleWidth(characters: number, paper: PaperWidth): 2 | 3 | null {
+  const modules = 11 * (characters + 2) + 13 + 20;
+  const width = Math.floor(PRINT_DOTS[paper] / modules);
+  return width >= 3 ? 3 : width === 2 ? 2 : null;
+}
+
 export class EscPosBuilder {
   private out: number[] = [];
   readonly width: number;
@@ -168,30 +185,38 @@ export class EscPosBuilder {
     return this.raw([ESC, 0x64, Math.max(0, Math.min(lines, 255))]);
   }
 
-  /** CODE128 (set B) barcode, number printed under it: GS h, GS w, GS H, GS k 73 */
+  /**
+   * CODE128 (set B) barcode, number printed under it: GS h, GS w, GS H, GS k 73.
+   * The bar width is the widest that fits the paper (3 dots at most): a printer prints
+   * nothing at all for a barcode wider than the paper. A value too long to fit with
+   * 2-dot bars is left out (thinner bars do not scan); it is printed as text anyway.
+   */
   barcode(value: string, heightDots = 60): this {
     const data = [0x7b, 0x42, ...encodeCp858(value).filter((b) => b >= 0x20 && b < 0x7f)];
     if (data.length <= 2 || data.length > 255) return this;
+    const moduleWidth = barcodeModuleWidth(data.length - 2, this.paper);
+    if (!moduleWidth) return this;
     return this.raw([GS, 0x68, Math.min(255, heightDots)])
-      .raw([GS, 0x77, this.paper === 58 ? 2 : 3])
+      .raw([GS, 0x77, moduleWidth])
       .raw([GS, 0x48, 2])
       .raw([GS, 0x6b, 73, data.length, ...data])
       .raw([0x0a]);
   }
 
-  /** Raster bit image (GS v 0), e.g. the store logo */
+  /**
+   * Raster bit image (GS v 0), e.g. the store logo, sent in strips of 24 rows one after
+   * the other. Many receipt printers (the common POS80 models among them) print a
+   * single tall block as garbage characters; their own drivers send 24-row strips.
+   */
   image(image: RasterImage): this {
     const bytesPerRow = Math.ceil(image.widthDots / 8);
-    return this.raw([
-      GS,
-      0x76,
-      0x30,
-      0,
-      bytesPerRow & 0xff,
-      (bytesPerRow >> 8) & 0xff,
-      image.heightDots & 0xff,
-      (image.heightDots >> 8) & 0xff,
-    ]).raw(image.data);
+    for (let row = 0; row < image.heightDots; row += IMAGE_STRIP_ROWS) {
+      const rows = Math.min(IMAGE_STRIP_ROWS, image.heightDots - row);
+      this.raw([GS, 0x76, 0x30, 0, bytesPerRow & 0xff, (bytesPerRow >> 8) & 0xff, rows & 0xff, (rows >> 8) & 0xff]).raw(
+        image.data.subarray(row * bytesPerRow, (row + rows) * bytesPerRow)
+      );
+    }
+    return this;
   }
 
   cut(): this {

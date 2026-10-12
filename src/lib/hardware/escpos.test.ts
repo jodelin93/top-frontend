@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Sale } from '@/lib/api/sales';
-import { CMD, columns, encodeCp858, EscPosBuilder, rasterize, toBase64, wrap } from './escpos';
+import { CMD, EscPosBuilder, barcodeModuleWidth, columns, encodeCp858, rasterize, toBase64, wrap } from './escpos';
 import { receiptToEscPos } from './receipt-escpos';
 
 const has = (haystack: Uint8Array, needle: readonly number[]) => {
@@ -113,3 +113,65 @@ describe('receipt as ESC/POS', () => {
     for (const line of lines) expect(line.length).toBeLessThanOrEqual(32);
   });
 });
+
+describe('images and barcodes that printers accept', () => {
+  // GS v 0 commands in the output: [bytes per row, rows]
+  const strips = (bytes: Uint8Array) => {
+    const found: [number, number][] = [];
+    for (let i = 0; i + 8 <= bytes.length; i++) {
+      if (bytes[i] === 0x1d && bytes[i + 1] === 0x76 && bytes[i + 2] === 0x30 && bytes[i + 3] === 0) {
+        const perRow = bytes[i + 4] | (bytes[i + 5] << 8);
+        const rows = bytes[i + 6] | (bytes[i + 7] << 8);
+        found.push([perRow, rows]);
+        i += 7 + perRow * rows;
+      }
+    }
+    return found;
+  };
+
+  it('sends an image as strips of 24 rows, like receipt printer drivers do', () => {
+    // 576 dots wide, 127 rows: 5 full strips and one of 7 rows, nothing lost
+    const data = Uint8Array.from({ length: 72 * 127 }, (_, i) => (i % 251) + 1);
+    const bytes = new EscPosBuilder(80).image({ widthDots: 576, heightDots: 127, data }).bytes();
+    expect(strips(bytes)).toEqual([[72, 24], [72, 24], [72, 24], [72, 24], [72, 24], [72, 7]]);
+    const start = bytes.length - (72 * 127 + 6 * 8);
+    const image: number[] = [];
+    for (let i = start; i < bytes.length; ) {
+      const rows = bytes[i + 6] | (bytes[i + 7] << 8);
+      image.push(...bytes.subarray(i + 8, i + 8 + 72 * rows));
+      i += 8 + 72 * rows;
+    }
+    expect(Uint8Array.from(image)).toEqual(data);
+  });
+
+  it('never sends a strip taller than 24 rows', () => {
+    const data = new Uint8Array(48 * 180).fill(0xff);
+    const all = strips(new EscPosBuilder(58).image({ widthDots: 384, heightDots: 180, data }).bytes());
+    expect(all).toHaveLength(8);
+    expect(Math.max(...all.map(([, rows]) => rows))).toBe(24);
+    expect(all.reduce((sum, [, rows]) => sum + rows, 0)).toBe(180);
+  });
+
+  it('uses the widest bars that fit the paper', () => {
+    // Short number: 3-dot bars. A long one (TOPPRINTING-000006, 18 characters) needs
+    // 2-dot bars on 80 mm paper: at 3 dots it is wider than the paper and prints nothing
+    expect(barcodeModuleWidth('S-000123'.length, 80)).toBe(3);
+    expect(barcodeModuleWidth('TOPPRINTING-000006'.length, 80)).toBe(2);
+    expect(barcodeModuleWidth('S-000123'.length, 58)).toBe(2);
+    expect(barcodeModuleWidth('TOPPRINTING-000006'.length, 58)).toBeNull();
+  });
+
+  it('prints a long sale number with 2-dot bars and leaves out one that cannot fit', () => {
+    const widthCommand = (bytes: Uint8Array) => {
+      const at = bytes.findIndex((b, i) => b === 0x1d && bytes[i + 1] === 0x77);
+      return at < 0 ? null : bytes[at + 2];
+    };
+    expect(widthCommand(new EscPosBuilder(80).barcode('TOPPRINTING-000006').bytes())).toBe(2);
+    expect(widthCommand(new EscPosBuilder(80).barcode('S-000123').bytes())).toBe(3);
+    // 58 mm: no barcode command at all (the number is on the receipt as text)
+    const narrow = new EscPosBuilder(58).barcode('TOPPRINTING-000006').bytes();
+    expect(widthCommand(narrow)).toBeNull();
+    expect([...narrow].some((b, i) => b === 0x1d && narrow[i + 1] === 0x6b)).toBe(false);
+  });
+});
+
