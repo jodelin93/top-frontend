@@ -154,7 +154,6 @@ export const pos: Record<string, string> = {
     'La terminal de pago se cobra cuando usted completa la venta.',
   'Give back to the customer': 'Cambio para el cliente',
   'tap the currency you hand back': 'toque la moneda en la que entrega el cambio',
-  '1 {currency} = {sell} {other} (sell) · {buy} {other} (buy)': '1 {currency} = {sell} {other} (venta) · {buy} {other} (compra)',
   'Completing sale...': 'Completando la venta...',
   'Complete sale · give {amount} change': 'Completar venta · entregar {amount} de cambio',
   'Complete sale': 'Completar venta',

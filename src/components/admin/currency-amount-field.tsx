@@ -6,6 +6,7 @@ import { Field } from '@/components/admin/page-header';
 import { useStoreSettings } from '@/hooks/use-store-settings';
 import { formatMoney } from '@/lib/format';
 import { toSaleCurrency } from '@/lib/pos/currency-math';
+import { quoteRate, receivedRateName } from '@/lib/pos/rate-quote';
 import { t } from '@/i18n';
 
 export interface CurrencyAmount {
@@ -69,7 +70,9 @@ export function CurrencyAmountField({
       htmlFor={id}
       hint={
         worth !== null
-          ? t('= {amount} at the sell rate ({rate})', { amount: formatMoney(worth, storeCurrency), rate })
+          ? receivedRateName(rate) === 'sell'
+            ? t('= {amount} at the sell rate ({rate})', { amount: formatMoney(worth, storeCurrency), rate: quoteRate(storeCurrency, value.currencyCode, rate) })
+            : t('= {amount} at the buy rate ({rate})', { amount: formatMoney(worth, storeCurrency), rate: quoteRate(storeCurrency, value.currencyCode, rate) })
           : hint
       }
     >

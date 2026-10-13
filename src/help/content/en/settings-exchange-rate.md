@@ -18,10 +18,21 @@ The store has two rates between the dollar and the gourde. The **Exchange rates*
 
 When the customer pays in gourdes and gets change in gourdes, the change is worked out directly in gourdes, with no rate spread: 2,000 HTG given for 1,350 HTG due gives back 650 HTG.
 
+## When the store works in gourdes
+
+The rates are always written with the store's currency first:
+
+| Store currency | The rate is written | Paying in the other currency |
+| --- | --- | --- |
+| Dollars (USD) | 1 USD = 135 HTG | A customer paying in HTG: **sell rate**. Change given in HTG: **buy rate**. |
+| Gourdes (HTG) | 135 HTG = 1 USD | A customer paying in USD: **buy rate**. Change given in USD: **sell rate**. |
+
+The names do not change: the sell rate turns gourdes into dollars, the buy rate turns dollars into gourdes. In a gourde store, a customer who pays 10 USD at a buy rate of 130 HTG = 1 USD has paid 1,300 HTG.
+
 ## Change the rates
 
 1. On the **Exchange rates** card, click **Update rate**.
-2. Type the **Sell rate** and the **Buy rate**, for example 135 and 130. Leave the buy rate empty to use the sell rate.
+2. Type the **Sell rate** and the **Buy rate**, for example 135 and 130: the number of gourdes for one dollar, whatever the store's currency. Leave one empty to use the same rate for both.
 3. To accept another currency, click **Another currency** (or **Add a currency** if only one currency is accepted).
 4. Click **Save rates** (or **Cancel**).
 

@@ -7,6 +7,7 @@ import { text } from '@/lib/api/crud';
 import { loyaltyMath } from '@/lib/api/loyalty';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { amountDueIn } from '@/lib/pos/currency-math';
+import { givenRateName, quoteRateShort } from '@/lib/pos/rate-quote';
 import { formatQuantity, lineQuantityText, lineUnit } from '@/lib/pos/quantity';
 import { cn } from '@/lib/utils';
 import { Barcode } from './barcode';
@@ -617,7 +618,7 @@ function PaymentRows({ sale, money }: { sale: Sale; money: (value: number) => st
           <div key={payment.id}>
             <Row label={label} value={formatMoney(Number(payment.tenderedAmount), payment.tenderedCurrency)} />
             <Row
-              label={`  @ ${Number(payment.exchangeRate).toLocaleString(undefined, { maximumFractionDigits: 4 })} ${payment.tenderedCurrency}/${sale.currencyCode}`}
+              label={`  @ ${quoteRateShort(sale.currencyCode, payment.tenderedCurrency, Number(payment.exchangeRate))}`}
               value={`= ${money(Number(payment.amount))}`}
             />
           </div>
@@ -634,7 +635,7 @@ function PaymentRows({ sale, money }: { sale: Sale; money: (value: number) => st
             />
             {changeBuyRate && (
               <Row
-                label={`  ${t('Buy rate')} @ ${changeBuyRate.toLocaleString(undefined, { maximumFractionDigits: 4 })} ${changeTender.currencyCode}/${sale.currencyCode}`}
+                label={`  ${givenRateName(changeBuyRate) === 'buy' ? t('Buy rate') : t('Sell rate')} @ ${quoteRateShort(sale.currencyCode, changeTender.currencyCode, changeBuyRate)}`}
                 value=""
               />
             )}

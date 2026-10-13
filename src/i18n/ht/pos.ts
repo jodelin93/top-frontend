@@ -132,7 +132,6 @@ export const pos: Record<string, string> = {
   'The card terminal is charged when you complete the sale.': 'Tèminal kat la debite lè ou fini vant lan.',
   'Give back to the customer': 'Pou remèt kliyan an',
   'tap the currency you hand back': 'peze sou deviz ou remèt la',
-  '1 {currency} = {sell} {other} (sell) · {buy} {other} (buy)': '1 {currency} = {sell} {other} (vant) · {buy} {other} (acha)',
   'Completing sale...': 'Ap fini vant lan...',
   'Complete sale · give {amount} change': 'Fini vant lan · remèt {amount} monnen',
   'Complete sale': 'Fini vant lan',

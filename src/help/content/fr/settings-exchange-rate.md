@@ -18,10 +18,21 @@ Le magasin a deux taux entre le dollar et la gourde. La carte **Taux de change**
 
 Quand le client paie en gourdes et reçoit sa monnaie en gourdes, la monnaie se calcule directement en gourdes, sans écart de taux : 2 000 HTG donnés pour 1 350 HTG dus, on rend 650 HTG.
 
+## Quand le magasin travaille en gourdes
+
+Les taux s'écrivent toujours avec la devise du magasin en premier :
+
+| Devise du magasin | Le taux s'écrit | Paiement dans l'autre devise |
+| --- | --- | --- |
+| Dollars (USD) | 1 USD = 135 HTG | Un client qui paie en HTG : **taux de vente**. Monnaie rendue en HTG : **taux d'achat**. |
+| Gourdes (HTG) | 135 HTG = 1 USD | Un client qui paie en USD : **taux d'achat**. Monnaie rendue en USD : **taux de vente**. |
+
+Les noms ne changent pas : le taux de vente change des gourdes en dollars, le taux d'achat change des dollars en gourdes. Dans un magasin en gourdes, un client qui paie 10 USD au taux d'achat de 130 HTG = 1 USD a payé 1 300 HTG.
+
 ## Changer les taux
 
 1. Sur la carte **Taux de change**, cliquez sur **Mettre à jour le taux**.
-2. Tapez le **Taux de vente** et le **Taux d'achat**, par exemple 135 et 130. Laissez le taux d'achat vide pour utiliser le taux de vente.
+2. Tapez le **Taux de vente** et le **Taux d'achat**, par exemple 135 et 130 : le nombre de gourdes pour un dollar, quelle que soit la devise du magasin. Laissez-en un vide pour utiliser le même taux pour les deux.
 3. Pour accepter une autre devise, cliquez sur **Autre devise** (ou **Ajouter une devise** si une seule devise est acceptée).
 4. Cliquez sur **Enregistrer les taux** (ou **Annuler**).
 

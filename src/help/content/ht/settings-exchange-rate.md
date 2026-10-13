@@ -18,10 +18,21 @@ Magazen an gen de to ant dola ak goud. Kat **To chanj** la anlè **Tablo bò** a
 
 Lè kliyan an peye an goud epi li pran monnen an goud, monnen an kalkile dirèkteman an goud, san diferans to: 2 000 HTG bay pou 1 350 HTG dwe, ou remèt 650 HTG.
 
+## Lè magazen an travay an goud
+
+To yo toujou ekri ak lajan magazen an an premye:
+
+| Lajan magazen an | Jan to a ekri | Peman nan lòt lajan an |
+| --- | --- | --- |
+| Dola (USD) | 1 USD = 135 HTG | Yon kliyan k ap peye an HTG: **to vant**. Monnen ou remèt an HTG: **to acha**. |
+| Goud (HTG) | 135 HTG = 1 USD | Yon kliyan k ap peye an USD: **to acha**. Monnen ou remèt an USD: **to vant**. |
+
+Non yo pa chanje: to vant lan chanje goud an dola, to acha a chanje dola an goud. Nan yon magazen an goud, yon kliyan ki peye 10 USD nan to acha 130 HTG = 1 USD peye 1 300 HTG.
+
 ## Chanje to yo
 
 1. Sou kat **To chanj** la, klike sou **Mete to a ajou**.
-2. Tape **To vant** lan ak **To acha** a, pa egzanp 135 ak 130. Kite to acha a vid pou itilize to vant lan.
+2. Tape **To vant** lan ak **To acha** a, pa egzanp 135 ak 130: kantite goud pou yon dola, kèlkeswa lajan magazen an. Kite youn vid pou sèvi ak menm to a pou toude.
 3. Pou aksepte yon lòt deviz, klike sou **Yon lòt deviz** (oswa **Ajoute yon deviz** si se yon sèl deviz ki aksepte).
 4. Klike sou **Anrejistre to yo** (oswa **Anile**).
 

@@ -19,6 +19,7 @@ import { text } from '@/lib/api/crud';
 import { formatMoney } from '@/lib/format';
 import { round2 } from '@/lib/pos/sale-calculator';
 import { acceptedCurrencies, amountDueIn, buyRatesOf, exchangeRate, foreignChange, toSaleCurrency } from '@/lib/pos/currency-math';
+import { quoteRate, receivedRateName } from '@/lib/pos/rate-quote';
 import { LoyaltyRules, loyaltyMath } from '@/lib/api/loyalty';
 import {
   EXCHANGE_CREDIT_CODE,
@@ -417,15 +418,12 @@ export function PaymentDialog({
             {currencies
               .slice(1)
               .map((c) => {
-                const rate = (r: number) => r.toLocaleString(undefined, { maximumFractionDigits: 4 });
-                return Math.abs(buyRateOf(c) - rateOf(c)) < 1e-9
-                  ? `1 ${currency} = ${rate(rateOf(c))} ${c}`
-                  : t('1 {currency} = {sell} {other} (sell) · {buy} {other} (buy)', {
-                      currency,
-                      other: c,
-                      sell: rate(rateOf(c)),
-                      buy: rate(buyRateOf(c)),
-                    });
+                // Written with the store currency first; "sell" and "buy" are named
+                // after the stronger currency
+                const [sell, buy] = receivedRateName(rateOf(c)) === 'sell' ? [rateOf(c), buyRateOf(c)] : [buyRateOf(c), rateOf(c)];
+                return Math.abs(buyRateOf(c) - rateOf(c)) < 1e-12
+                  ? quoteRate(currency, c, rateOf(c))
+                  : `${t('Sell rate')}: ${quoteRate(currency, c, sell)} · ${t('Buy rate')}: ${quoteRate(currency, c, buy)}`;
               })
               .join(' · ')}
           </p>
