@@ -10,6 +10,22 @@ export function formatMoney(amount: number | null | undefined, currency = 'USD')
   }
 }
 
+/** A price on a small label: without the cents when there are none */
+export function formatLabelPrice(amount: number | null | undefined, currency = 'USD'): string {
+  const value = Number(amount ?? 0);
+  const digits = Number.isInteger(value) ? 0 : 2;
+  try {
+    return new Intl.NumberFormat(currentLocale(), {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    }).format(value);
+  } catch {
+    return `${currency} ${value.toFixed(digits)}`;
+  }
+}
+
 export function formatDateTime(value: string | Date | null | undefined): string {
   if (!value) return '—';
   return new Intl.DateTimeFormat(currentLocale(), { dateStyle: 'medium', timeStyle: 'short' }).format(

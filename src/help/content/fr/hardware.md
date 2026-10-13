@@ -4,7 +4,7 @@ title: "Matériel : imprimante, tiroir-caisse et lecteur"
 category: Matériel et système
 order: 1401
 routes: [/admin/hardware]
-keywords: [JodaPrint, agent d'impression, imprimante USB, matériel, imprimante, imprimante thermique, pont d'impression, code d'association, tiroir-caisse, lecteur de codes-barres, scanner, afficheur client]
+keywords: [JodaPrint, agent d'impression, imprimante USB, matériel, imprimante, imprimante thermique, imprimante d'étiquettes, étiquettes, pont d'impression, code d'association, tiroir-caisse, lecteur de codes-barres, scanner, afficheur client]
 related: [faq-hardware, customer-display, settings-receipts]
 ---
 Les reçus s'impriment directement sur l'imprimante thermique grâce à **JodaPrint**, un petit programme installé sur l'ordinateur de la caisse. Il fonctionne avec les imprimantes USB et réseau et ouvre le tiroir-caisse. Sans lui, les reçus passent par la fenêtre d'impression du navigateur. La page **Matériel** demande le droit de gérer le matériel (propriétaire, administrateur, gérant).
@@ -31,6 +31,18 @@ L'agent JodaPrint est installé et activé une fois sur chaque ordinateur de cai
 > **Attention :** sans connexion à Internet, la caisse ne peut pas faire signer l'impression : les reçus passent alors par la fenêtre d'impression du navigateur, et le tiroir s'ouvre avec sa clé.
 
 > **Astuce :** l'imprimante et la largeur du papier sont gardées dans le navigateur de la caisse : choisissez-les sur chaque caisse.
+
+## Imprimante d'étiquettes
+
+Les étiquettes de produits (1 × 1 pouce) s'impriment sur une imprimante d'étiquettes grâce à JodaPrint, sans la fenêtre d'impression du navigateur.
+
+1. Dans le tableau de bord JodaPrint, donnez l'alias **label** à l'imprimante d'étiquettes. Elle est alors choisie d'office.
+2. Sur la page **Matériel**, sous **Imprimante d'étiquettes**, vérifiez que la bonne imprimante est choisie, ou choisissez-la dans la liste.
+3. Chargez un rouleau d'étiquettes de 1 × 1 pouce et cliquez sur **Imprimer une étiquette de test**.
+
+Les étiquettes s'impriment depuis la liste des produits : voir [La liste des produits et les étiquettes](topic:products-list).
+
+> **Astuce :** l'imprimante d'étiquettes se choisit sur chaque ordinateur. Faites-le une fois sur chaque ordinateur qui imprime des étiquettes.
 
 ## Ancienne méthode : le pont d'impression
 

@@ -484,8 +484,6 @@ export const adminCatalog: Record<string, string> = {
   'Filter by branch': 'Filtrar por sucursal',
   'Show products tagged {tag}': 'Mostrar productos con la etiqueta {tag}',
   // ---- Shelf labels ----
-  'Choose products and how many labels to print for each. Labels show the name, price and barcode.':
-    'Elija los productos y cuántas etiquetas imprimir de cada uno. Las etiquetas muestran el nombre, el precio y el código de barras.',
   'Each line needs between 1 and {max} copies': 'Cada línea necesita entre 1 y {max} copias',
   'At most {max} labels can be printed at once':
     'Se pueden imprimir como máximo {max} etiquetas a la vez',
@@ -494,6 +492,14 @@ export const adminCatalog: Record<string, string> = {
   'Copies for {sku}': 'Copias para {sku}',
   'Label language': 'Idioma de las etiquetas',
   'Preparing...': 'Preparando...',
+  'Choose products and how many labels to print for each. Labels are 1 × 1 inch and show the name, price and barcode.': 'Elija los productos y cuántas etiquetas imprimir para cada uno. Las etiquetas miden 1 × 1 pulgada y muestran el nombre, el precio y el código de barras.',
+  '{count} label sent to the label printer.': '{count} etiqueta enviada a la impresora de etiquetas.',
+  '{count} labels sent to the label printer.': '{count} etiquetas enviadas a la impresora de etiquetas.',
+  'The label printer did not confirm the labels: check the printer before printing again.': 'La impresora de etiquetas no confirmó las etiquetas: revise la impresora antes de volver a imprimir.',
+  'The label printer did not print: {error}': 'La impresora de etiquetas no imprimió: {error}',
+  'Labels are 1 × 1 inch and go straight to the label printer (JodaPrint).': 'Las etiquetas miden 1 × 1 pulgada y van directamente a la impresora de etiquetas (JodaPrint).',
+  'Labels are 1 × 1 inch. The label printer was not found through JodaPrint: the browser print window opens, choose the label printer and a 1 × 1 inch paper there.': 'Las etiquetas miden 1 × 1 pulgada. JodaPrint no encontró la impresora de etiquetas: se abre la ventana de impresión del navegador; elija allí la impresora de etiquetas y un papel de 1 × 1 pulgada.',
+  'Printing...': 'Imprimiendo...',
   '{count} label': '{count} etiqueta',
   '{count} labels': '{count} etiquetas',
   'Prepare {count} label': 'Preparar {count} etiqueta',

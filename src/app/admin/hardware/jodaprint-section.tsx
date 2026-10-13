@@ -17,6 +17,7 @@ import {
   agentPrint,
   agentPrinters,
   getAgentSettings,
+  isAgentPrinter,
   resetAgent,
   saveAgentSettings,
   type AgentConfig,
@@ -24,6 +25,7 @@ import {
   type AgentPrinter,
   type AgentSettings,
 } from '@/lib/hardware/jodaprint-client';
+import { testLabelTspl } from '@/lib/hardware/label-tspl';
 import { testPageEscPos } from '@/lib/hardware/receipt-escpos';
 import { t } from '@/i18n';
 import { randomId } from '@/lib/uuid';
@@ -126,7 +128,27 @@ export function JodaPrintSection() {
     setBusy(false);
   };
 
+  const chooseLabelPrinter = (id: string) => {
+    const printer = printers.find((p) => p.id === id);
+    if (!printer) return;
+    saveAgentSettings({ labelPrinter: printer.alias ? { alias: printer.alias } : { id: printer.id } });
+    setSettings(getAgentSettings());
+  };
+
+  const testLabel = async () => {
+    setBusy(true);
+    setError(null);
+    setNotice(null);
+    const result = await agentPrint(testLabelTspl(store?.storeName ?? ''), { commandId: randomId(), target: 'label' });
+    if (result.status === 'printed') setNotice(t('Test label printed.'));
+    else setError(t('The printer did not print: {error}', { error: result.error ?? result.status }));
+    setBusy(false);
+  };
+
   const receiptPrinters = printers.filter((p) => p.kind === 'thermal');
+  // Label printers are seen as label or document printers (never the receipt ones)
+  const labelPrinters = printers.filter((p) => p.kind !== 'thermal');
+  const labelPrinter = settings ? labelPrinters.find((p) => isAgentPrinter(p, settings, 'label')) : undefined;
   const ready = !!info?.orgId;
 
   return (
@@ -213,6 +235,34 @@ export function JodaPrintSection() {
               <Printer className="h-4 w-4" />
               {t('Print a test receipt')}
             </Button>
+          </div>
+
+          <div className="space-y-2 border-t pt-3" data-testid="jodaprint-labels">
+            <h3 className="font-medium">{t('Label printer')}</h3>
+            <p className="text-sm text-gray-600">
+              {t('Product labels (1 × 1 inch) are sent to this printer, without the browser print window. By default: the printer with the alias “label” in the JodaPrint dashboard.')}
+            </p>
+            <div className="flex flex-wrap items-end gap-3">
+              <Field label={t('Label printer')} htmlFor="jodaprint-label-printer">
+                <Select
+                  id="jodaprint-label-printer"
+                  value={labelPrinter?.id ?? ''}
+                  onChange={(e) => chooseLabelPrinter(e.target.value)}
+                  className="w-72"
+                >
+                  {!labelPrinter && <option value="">{t('No label printer chosen')}</option>}
+                  {labelPrinters.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.alias ? `${p.name} (${p.alias})` : p.name}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+              <Button variant="outline" onClick={testLabel} disabled={busy || !labelPrinter}>
+                <Printer className="h-4 w-4" />
+                {t('Print a test label')}
+              </Button>
+            </div>
           </div>
         </>
       )}

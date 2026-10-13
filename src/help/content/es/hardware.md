@@ -4,7 +4,7 @@ title: "Hardware: impresora, cajón de efectivo y lector"
 category: Hardware y sistema
 order: 1401
 routes: [/admin/hardware]
-keywords: [JodaPrint, agente de impresión, impresora USB, hardware, equipo, impresora, impresora térmica, puente de impresión, código de vinculación, cajón de efectivo, gaveta, lector de códigos de barras, escáner, pantalla del cliente]
+keywords: [JodaPrint, agente de impresión, impresora USB, hardware, equipo, impresora, impresora térmica, impresora de etiquetas, etiquetas, puente de impresión, código de vinculación, cajón de efectivo, gaveta, lector de códigos de barras, escáner, pantalla del cliente]
 related: [faq-hardware, customer-display, settings-receipts]
 ---
 Los recibos se imprimen directamente en la impresora térmica gracias a **JodaPrint**, un pequeño programa instalado en la computadora de la caja. Funciona con impresoras USB y de red y abre el cajón de efectivo. Sin él, los recibos pasan por el cuadro de impresión del navegador. La página **Hardware** requiere el permiso de gestionar el hardware (propietario, administrador, gerente).
@@ -31,6 +31,18 @@ El agente JodaPrint se instala y se activa una vez en cada computadora de caja. 
 > **Atención:** sin conexión a Internet la caja no puede hacer firmar la impresión: los recibos pasan entonces por el cuadro de impresión del navegador, y el cajón se abre con su llave.
 
 > **Consejo:** la impresora y el ancho del papel se guardan en el navegador de la caja: elíjalos en cada caja.
+
+## Impresora de etiquetas
+
+Las etiquetas de productos (1 × 1 pulgada) se imprimen en una impresora de etiquetas gracias a JodaPrint, sin la ventana de impresión del navegador.
+
+1. En el panel de JodaPrint, dé el alias **label** a la impresora de etiquetas. Así se elige por defecto.
+2. En la página **Hardware**, en **Impresora de etiquetas**, verifique que esté elegida la impresora correcta, o elíjala en la lista.
+3. Cargue un rollo de etiquetas de 1 × 1 pulgada y haga clic en **Imprimir una etiqueta de prueba**.
+
+Las etiquetas se imprimen desde la lista de productos: vea [La lista de productos y las etiquetas](topic:products-list).
+
+> **Consejo:** la impresora de etiquetas se elige en cada computadora. Hágalo una vez en cada computadora que imprima etiquetas.
 
 ## Método anterior: el puente de impresión
 

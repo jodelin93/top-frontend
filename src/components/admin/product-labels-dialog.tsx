@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { ArrowLeft, Plus, Printer, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,8 +18,11 @@ import { VariantPicker, variantLabel } from '@/components/admin/inventory-varian
 import { Barcode } from '@/components/pos/barcode';
 import { useCurrency } from '@/hooks/use-store-settings';
 import { getErrorMessage } from '@/lib/api/client';
+import { isLabelPrintAvailable } from '@/lib/hardware/direct-print';
+import { labelsToTspl } from '@/lib/hardware/label-tspl';
+import { labelPrintDeps } from '@/lib/hardware/print-manager';
 import { usePrintDocument } from '@/lib/hardware/use-print-document';
-import { formatMoney } from '@/lib/format';
+import { formatLabelPrice } from '@/lib/format';
 import { Label, LabelLanguage, MAX_LABEL_COPIES, MAX_LABELS, productsApi } from '@/lib/api/products';
 import { LANGUAGES, plural, t, useLang } from '@/i18n';
 import { randomId } from '@/lib/uuid';
@@ -36,34 +39,38 @@ const copiesOf = (line: LabelLine) => {
   return Number.isFinite(copies) ? copies : 0;
 };
 
-// Only the label sheet is printed, on A4 pages (the global print rules target receipts)
+// Only the labels are printed, one label per 1 x 1 inch page (the global print rules
+// target receipts). Used when the label printer is not reached through JodaPrint.
 const PRINT_CSS = `
 @media print {
-  @page { size: A4; margin: 8mm; }
+  @page { size: 1in 1in; margin: 0; }
   .print-labels, .print-labels * { visibility: visible; }
-  .print-labels { position: absolute; left: 0; top: 0; width: 100%; }
-  [role="dialog"] { translate: none !important; }
+  .print-labels { position: absolute; left: 0; top: 0; display: block; }
+  .print-labels > div { border: 0; border-radius: 0; break-after: page; break-inside: avoid; }
+  [role="dialog"] { --tw-translate-x: 0 !important; --tw-translate-y: 0 !important; transform: none !important; left: 0 !important; top: 0 !important; }
 }
 `;
 
 /**
- * Printable sheet of shelf labels: name, variant, price and a Code 128 barcode
- * of the code (barcode, else SKU). Labels never carry the cost.
+ * Product labels, 1 x 1 inch each: name, variant, price and a Code 128 barcode of the
+ * code (barcode, else SKU). Labels never carry the cost.
  */
 export function ProductLabelsSheet({ labels, currency }: { labels: Label[]; currency: string }) {
   return (
-    <div className="print-labels grid grid-cols-2 gap-2 sm:grid-cols-3 print:grid-cols-3">
+    <div className="print-labels flex flex-wrap gap-2">
       {labels.map((label, index) => (
         <div
           key={`${label.variantId}-${index}`}
-          className="flex break-inside-avoid flex-col gap-1 rounded border border-gray-300 bg-white p-2 text-black"
+          className="flex h-[1in] w-[1in] flex-col items-center justify-center overflow-hidden rounded border border-gray-300 bg-white p-1 text-center text-black"
           data-testid="product-label"
         >
-          <div className="truncate text-sm font-semibold">{label.name}</div>
-          {label.variantName && <div className="truncate text-xs text-gray-600">{label.variantName}</div>}
-          <div className="text-lg font-bold">{formatMoney(label.price, currency)}</div>
-          <Barcode value={label.code} height={36} />
-          <div className="text-center font-mono text-[10px]">{label.code}</div>
+          <div className={`w-full text-[8px] font-semibold leading-tight ${label.variantName ? 'truncate' : 'line-clamp-2'}`}>
+            {label.name}
+          </div>
+          {label.variantName && <div className="w-full truncate text-[8px] leading-tight">{label.variantName}</div>}
+          <div className="text-[12px] font-bold leading-tight">{formatLabelPrice(label.price, currency)}</div>
+          <Barcode value={label.code} height={26} />
+          <div className="w-full truncate font-mono text-[7px] leading-tight">{label.code}</div>
         </div>
       ))}
     </div>
@@ -79,6 +86,38 @@ export function ProductLabelsDialog({ open, onOpenChange }: { open: boolean; onO
   const [language, setLanguage] = useState<LabelLanguage | null>(null);
   const [labels, setLabels] = useState<Label[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Is the label printer of this till reached through JodaPrint? (null: checking)
+  const [direct, setDirect] = useState<boolean | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [printing, setPrinting] = useState(false);
+
+  useEffect(() => {
+    if (!labels) return;
+    let current = true;
+    isLabelPrintAvailable().then((available) => {
+      if (current) setDirect(available);
+    });
+    return () => {
+      current = false;
+    };
+  }, [labels]);
+
+  const print = async () => {
+    if (!labels) return;
+    setPrinting(true);
+    setNotice(null);
+    const outcome = await printer.print('label', randomId(), {
+      direct: { bytes: () => labelsToTspl(labels, (price) => formatLabelPrice(price, currency)), deps: labelPrintDeps },
+    });
+    if (outcome?.channel === 'bridge') {
+      if (outcome.status === 'printed') setNotice(plural(labels.length, '{count} label sent to the label printer.', '{count} labels sent to the label printer.'));
+      else setError(t('The label printer did not confirm the labels: check the printer before printing again.'));
+    } else if (outcome?.error) {
+      // Sent to the browser dialog after the label printer refused
+      setError(t('The label printer did not print: {error}', { error: outcome.error }));
+    }
+    setPrinting(false);
+  };
 
   const total = lines.reduce((sum, line) => sum + Math.max(0, copiesOf(line)), 0);
   const invalid = lines.some((line) => copiesOf(line) < 1 || copiesOf(line) > MAX_LABEL_COPIES);
@@ -101,6 +140,7 @@ export function ProductLabelsDialog({ open, onOpenChange }: { open: boolean; onO
       setLines([]);
       setLabels(null);
       setError(null);
+      setNotice(null);
     }
     onOpenChange(next);
   };
@@ -124,11 +164,12 @@ export function ProductLabelsDialog({ open, onOpenChange }: { open: boolean; onO
         <DialogHeader>
           <DialogTitle>{t('Print labels')}</DialogTitle>
           <DialogDescription>
-            {t('Choose products and how many labels to print for each. Labels show the name, price and barcode.')}
+            {t('Choose products and how many labels to print for each. Labels are 1 × 1 inch and show the name, price and barcode.')}
           </DialogDescription>
         </DialogHeader>
 
-        <ErrorMessage>{error}</ErrorMessage>
+        <ErrorMessage>{error ?? printer.error}</ErrorMessage>
+        {notice && <p className="rounded-md bg-green-50 p-3 text-sm text-green-700">{notice}</p>}
 
         {labels ? (
           <>
@@ -138,16 +179,29 @@ export function ProductLabelsDialog({ open, onOpenChange }: { open: boolean; onO
                 {plural(labels.length, '{count} label', '{count} labels')}
               </p>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setLabels(null)}>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setLabels(null);
+                    setNotice(null);
+                  }}
+                >
                   <ArrowLeft className="h-4 w-4" />
                   {t('Back')}
                 </Button>
-                <Button onClick={() => printer.print('label', randomId())} disabled={labels.length === 0}>
+                <Button onClick={print} disabled={labels.length === 0 || printing}>
                   <Printer className="h-4 w-4" />
-                  {t('Print')}
+                  {printing ? t('Printing...') : t('Print')}
                 </Button>
               </div>
             </div>
+            {direct !== null && (
+              <p className="text-sm text-gray-600" data-testid="label-printer-hint">
+                {direct
+                  ? t('Labels are 1 × 1 inch and go straight to the label printer (JodaPrint).')
+                  : t('Labels are 1 × 1 inch. The label printer was not found through JodaPrint: the browser print window opens, choose the label printer and a 1 × 1 inch paper there.')}
+              </p>
+            )}
             {labels.length === 0 ? (
               <p className="text-sm text-gray-500">{t('No labels: the chosen variants were not found.')}</p>
             ) : (

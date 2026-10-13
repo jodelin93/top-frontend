@@ -7,7 +7,14 @@
  */
 import { bridgeKick, bridgePrint, getPairing, isBridgeAvailable, type BridgeResult } from './bridge-client';
 import type { PaperWidth } from './escpos';
-import { agentKick, agentPrint, agentPrinterLabel, getAgentSettings, isAgentAvailable } from './jodaprint-client';
+import {
+  agentKick,
+  agentPrint,
+  agentPrinterLabel,
+  getAgentSettings,
+  isAgentAvailable,
+  isAgentLabelPrinterAvailable,
+} from './jodaprint-client';
 
 export type DirectChannel = 'agent' | 'bridge';
 
@@ -54,3 +61,14 @@ export async function directKick(options: { commandId: string; pin?: 2 | 5 }): P
   if (getPairing()) return bridgeKick(options);
   return null;
 }
+
+// ---------------------------------------------------------------------------
+// Label printer (product labels): only through the JodaPrint agent
+
+export const isLabelPrintAvailable = () => isAgentLabelPrinterAvailable().catch(() => false);
+
+/** Send the label printer's commands (TSPL); `commandId` makes it idempotent */
+export const labelPrint = (bytes: Uint8Array, options: { commandId: string }): Promise<BridgeResult> =>
+  agentPrint(bytes, { ...options, target: 'label' });
+
+export const labelPrinterId = async (): Promise<string | null> => agentPrinterLabel(getAgentSettings(), 'label');

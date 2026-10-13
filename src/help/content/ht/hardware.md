@@ -4,7 +4,7 @@ title: "Materyèl: enprimant, tiwa kès ak eskanè"
 category: Materyèl ak sistèm
 order: 1401
 routes: [/admin/hardware]
-keywords: [JodaPrint, ajan enpresyon, enprimant USB, materyèl, materyel, enprimant, enprimant tèmik, pon enpresyon, kòd asosyasyon, tiwa kès, eskanè kòd ba, eskane, ekran kliyan, matériel, imprimante, pont d'impression, code d'association, tiroir-caisse, lecteur de codes-barres, scanner, afficheur client]
+keywords: [JodaPrint, ajan enpresyon, enprimant USB, materyèl, materyel, enprimant, enprimant tèmik, enprimant etikèt, etikèt, pon enpresyon, kòd asosyasyon, tiwa kès, eskanè kòd ba, eskane, ekran kliyan, matériel, imprimante, pont d'impression, code d'association, tiroir-caisse, lecteur de codes-barres, scanner, afficheur client]
 related: [faq-hardware, customer-display, settings-receipts]
 ---
 Resi yo enprime dirèkteman sou enprimant tèmik la gras ak **JodaPrint**, yon ti pwogram ki enstale sou òdinatè kès la. Li mache ak enprimant USB ak enprimant rezo, epi li louvri tiwa kès la. San li, resi yo pase nan fenèt enpresyon navigatè a. Paj **Materyèl** la mande dwa pou jere materyèl (pwopriyetè, administratè, jeran).
@@ -31,6 +31,18 @@ Ajan JodaPrint la enstale epi aktive yon sèl fwa sou chak òdinatè kès. Apre 
 > **Atansyon:** san koneksyon Entènèt, kès la pa ka fè siyen enpresyon an: resi yo pase lè sa a nan fenèt enpresyon navigatè a, epi tiwa a louvri ak kle li.
 
 > **Konsèy:** enprimant lan ak lajè papye a rete nan navigatè kès la: chwazi yo sou chak kès.
+
+## Enprimant etikèt
+
+Etikèt pwodui yo (1 × 1 pous) enprime sou yon enprimant etikèt gras ak JodaPrint, san fenèt enpresyon navigatè a.
+
+1. Nan tablo bò JodaPrint la, bay enprimant etikèt la alyas **label**. Konsa li chwazi pa defo.
+2. Sou paj **Materyèl** la, anba **Enprimant etikèt**, verifye se bon enprimant lan ki chwazi, oswa chwazi l nan lis la.
+3. Mete yon woulo etikèt 1 × 1 pous epi klike sou **Enprime yon etikèt tès**.
+
+Etikèt yo enprime apati lis pwodui yo: gade [Lis pwodui yo ak etikèt yo](topic:products-list).
+
+> **Konsèy:** enprimant etikèt la chwazi sou chak òdinatè. Fè sa yon fwa sou chak òdinatè ki enprime etikèt.
 
 ## Ansyen metòd: pon enpresyon an
 

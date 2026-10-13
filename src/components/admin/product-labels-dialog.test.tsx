@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { Label } from '@/lib/api/products';
-import { formatMoney } from '@/lib/format';
+import { formatLabelPrice, formatMoney } from '@/lib/format';
 import { ProductLabelsSheet } from './product-labels-dialog';
 
 const label = (overrides: Partial<Label> = {}): Label => ({
@@ -27,9 +27,10 @@ describe('ProductLabelsSheet', () => {
 
     expect(screen.getAllByTestId('product-label')).toHaveLength(3);
     expect(screen.getAllByText('Rice 1kg')).toHaveLength(2);
-    expect(screen.getAllByText(formatMoney(4.5, 'USD'))).toHaveLength(2);
+    expect(screen.getAllByText(formatLabelPrice(4.5, 'USD'))).toHaveLength(2);
     expect(screen.getByText('Large')).toBeInTheDocument();
-    expect(screen.getByText(formatMoney(12, 'USD'))).toBeInTheDocument();
+    // Whole prices are written without cents on a small label
+    expect(screen.getByText('$12')).toBeInTheDocument();
     // Code printed under the Code 128 barcode (SKU when there is no barcode)
     expect(screen.getAllByText('5012345678900')).toHaveLength(2);
     expect(screen.getByText('TS-L')).toBeInTheDocument();

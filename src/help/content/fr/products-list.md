@@ -29,6 +29,14 @@ En haut de la page, d'autres boutons ouvrent : **Unités** ([produits au poids](
 
 1. Cliquez sur **Imprimer des étiquettes**.
 2. Cliquez sur **Ajouter** à côté de chaque produit voulu, puis indiquez le nombre d'étiquettes.
-3. Choisissez la **Langue des étiquettes**, puis cliquez sur **Imprimer**. Chaque étiquette affiche le nom, le prix et le code-barres.
+3. Choisissez la **Langue des étiquettes**, puis cliquez sur **Préparer … étiquettes** : les étiquettes s'affichent comme elles seront imprimées.
+4. Cliquez sur **Imprimer**.
+
+Les étiquettes font **1 × 1 pouce**. Chacune affiche le nom, le prix et le code-barres du code du produit (le SKU quand le produit n'a pas de code-barres).
+
+- **Avec une imprimante d'étiquettes configurée dans JodaPrint**, les étiquettes partent directement dessus, sans la fenêtre d'impression du navigateur. Le message **… étiquettes envoyées à l'imprimante d'étiquettes** le confirme. Voir [Matériel](topic:hardware).
+- **Sans elle**, la fenêtre d'impression du navigateur s'ouvre : choisissez-y l'imprimante d'étiquettes et un papier de 1 × 1 pouce.
+
+> **Astuce :** un code fait seulement de chiffres s'imprime avec des barres plus épaisses, que les lecteurs lisent plus facilement. Un code très long ne tient pas sur l'étiquette : il est écrit sans code-barres.
 
 > **Astuce :** sur téléphone, les produits s'affichent en cartes, avec les mêmes boutons.

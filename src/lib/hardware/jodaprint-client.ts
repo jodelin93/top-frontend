@@ -8,9 +8,9 @@
  * staff get a signature. Without a connection to the server nothing can be signed,
  * so offline the POS prints through the browser dialog instead.
  *
- * The receipt printer and its paper width are chosen per browser (localStorage),
- * i.e. per till: by default the printer with the alias "receipt" in the JodaPrint
- * dashboard.
+ * The receipt printer, its paper width and the label printer are chosen per browser
+ * (localStorage), i.e. per till: by default the printers with the aliases "receipt"
+ * and "label" in the JodaPrint dashboard.
  */
 import { JodaPrint, JodaPrintError, type AgentInfo, type Job, type Printer, type PrinterRef } from '@jodaprint/sdk';
 import apiClient from '@/lib/api/client';
@@ -20,6 +20,7 @@ import { toBase64 } from './escpos';
 
 const STORAGE_KEY = 'pos_jodaprint';
 export const DEFAULT_ALIAS = 'receipt';
+export const DEFAULT_LABEL_ALIAS = 'label';
 // How long a receipt may take before the till stops waiting (the agent keeps retrying)
 const PRINT_WAIT_MS = 15_000;
 
@@ -27,7 +28,12 @@ export interface AgentSettings {
   // Receipt printer: an alias from the JodaPrint dashboard, or a printer id
   printer: { alias: string } | { id: string };
   widthMm: PaperWidth;
+  // Label printer (product labels): an alias or a printer id
+  labelPrinter: { alias: string } | { id: string };
 }
+
+// Which printer of the till a job is for
+export type AgentTarget = 'receipt' | 'label';
 
 export interface AgentConfig {
   enabled: boolean;
@@ -40,7 +46,13 @@ export type { AgentInfo };
 // ---------------------------------------------------------------------------
 // Settings (per browser)
 
-const DEFAULT_SETTINGS: AgentSettings = { printer: { alias: DEFAULT_ALIAS }, widthMm: 80 };
+const DEFAULT_SETTINGS: AgentSettings = {
+  printer: { alias: DEFAULT_ALIAS },
+  widthMm: 80,
+  labelPrinter: { alias: DEFAULT_LABEL_ALIAS },
+};
+
+const refOf = (settings: AgentSettings, target: AgentTarget) => (target === 'label' ? settings.labelPrinter : settings.printer);
 
 export function getAgentSettings(): AgentSettings {
   try {
@@ -60,8 +72,15 @@ export function saveAgentSettings(changes: Partial<AgentSettings>) {
 }
 
 /** What print jobs record as their printer, e.g. "jodaprint:receipt" */
-export function agentPrinterLabel(settings = getAgentSettings()): string {
-  return `jodaprint:${'alias' in settings.printer ? settings.printer.alias : settings.printer.id}`;
+export function agentPrinterLabel(settings = getAgentSettings(), target: AgentTarget = 'receipt'): string {
+  const ref = refOf(settings, target);
+  return `jodaprint:${'alias' in ref ? ref.alias : ref.id}`;
+}
+
+/** Is this printer of the agent the one chosen for receipts / for labels? */
+export function isAgentPrinter(printer: Pick<Printer, 'id' | 'alias'>, settings: AgentSettings, target: AgentTarget): boolean {
+  const ref = refOf(settings, target);
+  return 'alias' in ref ? printer.alias === ref.alias : printer.id === ref.id;
 }
 
 // ---------------------------------------------------------------------------
@@ -159,6 +178,20 @@ export async function agentPrinters(deps: AgentDeps = defaultAgentDeps): Promise
   return sdk.printers.list();
 }
 
+/**
+ * Labels can go straight to the label printer: the agent answers and it has the
+ * printer chosen for labels on this till.
+ */
+export async function isAgentLabelPrinterAvailable(deps: AgentDeps = defaultAgentDeps): Promise<boolean> {
+  if (!(await isAgentAvailable(deps))) return false;
+  const settings = getAgentSettings();
+  try {
+    return (await agentPrinters(deps)).some((printer) => isAgentPrinter(printer, settings, 'label'));
+  } catch {
+    return false;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Printing
 
@@ -191,8 +224,9 @@ function waitForJob(sdk: AgentSdk, jobId: string, ms: number): Promise<Job | nul
 }
 
 /**
- * Send ESC/POS bytes to the receipt printer through the agent. `commandId` is the
- * idempotency key: the agent prints one key once.
+ * Send printer commands through the agent: ESC/POS bytes to the receipt printer, or
+ * (target "label") the label printer's own commands, passed on as they are.
+ * `commandId` is the idempotency key: the agent prints one key once.
  *  - printed: paper came out;
  *  - failed: nothing was printed (refused, agent gone, printer error, or the job was
  *    cancelled after waiting): safe to print another way;
@@ -200,19 +234,21 @@ function waitForJob(sdk: AgentSdk, jobId: string, ms: number): Promise<Job | nul
  */
 export async function agentPrint(
   bytes: Uint8Array,
-  options: { commandId: string },
+  options: { commandId: string; target?: AgentTarget },
   deps: AgentDeps = defaultAgentDeps,
   waitMs = PRINT_WAIT_MS
 ): Promise<BridgeResult> {
   const sdk = await sdkFor(deps);
   if (!sdk) return { status: 'failed', error: 'JodaPrint is not set up' };
-  const printerId = agentPrinterLabel();
+  const target = options.target ?? 'receipt';
+  const settings = getAgentSettings();
+  const printerId = agentPrinterLabel(settings, target);
   let jobId: string;
   try {
     const stored = await sdk.print({
-      type: 'escpos',
+      type: target === 'label' ? 'raw' : 'escpos',
       data: toBase64(bytes),
-      printer: getAgentSettings().printer as PrinterRef,
+      printer: refOf(settings, target) as PrinterRef,
       idempotencyKey: options.commandId,
     });
     jobId = stored.jobId;

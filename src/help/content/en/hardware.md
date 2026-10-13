@@ -4,7 +4,7 @@ title: "Hardware: printer, cash drawer and scanner"
 category: Hardware and system
 order: 1401
 routes: [/admin/hardware]
-keywords: [JodaPrint, print agent, USB printer, hardware, printer, receipt printer, thermal printer, print bridge, pairing code, pair, cash drawer, drawer kick, barcode scanner, scanner, customer display]
+keywords: [JodaPrint, print agent, USB printer, hardware, printer, receipt printer, label printer, labels, thermal printer, print bridge, pairing code, pair, cash drawer, drawer kick, barcode scanner, scanner, customer display]
 related: [faq-hardware, customer-display, settings-receipts]
 ---
 Receipts print straight to the thermal printer through **JodaPrint**, a small program installed on the till computer. It works with USB and network printers and opens the cash drawer. Without it, receipts go through the browser's print dialog. The **Hardware** page needs the right to manage hardware (owner, administrator, manager).
@@ -31,6 +31,18 @@ The JodaPrint agent is installed and activated once on each till computer. Then:
 > **Warning:** without an Internet connection the till cannot get the print signed: receipts then go through the browser's print dialog, and the drawer opens with its key.
 
 > **Tip:** the printer and paper width are kept in the till's browser: choose them on each till.
+
+## Label printer
+
+Product labels (1 × 1 inch) print on a label printer through JodaPrint, without the browser's print window.
+
+1. In the JodaPrint dashboard, give the label printer the alias **label**. It is then chosen by default.
+2. On the **Hardware** page, under **Label printer**, check that the right printer is chosen, or choose it in the list.
+3. Load a roll of 1 × 1 inch labels and click **Print a test label**.
+
+Labels are printed from the product list: see [The product list and labels](topic:products-list).
+
+> **Tip:** the label printer is chosen on each computer. Do it once on every computer that prints labels.
 
 ## Older method: the print bridge
 

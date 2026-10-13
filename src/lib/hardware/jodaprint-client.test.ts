@@ -6,6 +6,7 @@ import {
   agentPrint,
   agentPrinterLabel,
   isAgentAvailable,
+  isAgentLabelPrinterAvailable,
   resetAgent,
   saveAgentSettings,
   type AgentDeps,
@@ -80,6 +81,31 @@ describe('JodaPrint agent client', () => {
       printer: { alias: 'receipt' },
       idempotencyKey: 'print-job-7',
     });
+  });
+
+  it('sends label commands as they are to the "label" printer', async () => {
+    const { sdk, deps } = fakeAgent();
+    const result = await agentPrint(bytes, { commandId: 'labels-1', target: 'label' }, deps);
+    expect(result).toEqual({ status: 'printed', error: null, printerId: 'jodaprint:label' });
+    expect(sdk.print).toHaveBeenCalledWith({
+      type: 'raw',
+      data: 'G0A=',
+      printer: { alias: 'label' },
+      idempotencyKey: 'labels-1',
+    });
+  });
+
+  it('knows whether this till has its label printer', async () => {
+    const { sdk, deps } = fakeAgent();
+    expect(await isAgentLabelPrinterAvailable(deps)).toBe(false);
+    sdk.printers.list.mockResolvedValue([
+      { id: 'prn_1', name: 'POS80', alias: 'receipt', kind: 'thermal' },
+      { id: 'prn_2', name: 'Westinghouse', alias: 'label', kind: 'document' },
+    ]);
+    expect(await isAgentLabelPrinterAvailable(deps)).toBe(true);
+    saveAgentSettings({ labelPrinter: { id: 'prn_7' } });
+    expect(await isAgentLabelPrinterAvailable(deps)).toBe(false);
+    expect(agentPrinterLabel(undefined, 'label')).toBe('jodaprint:prn_7');
   });
 
   it('uses the printer chosen on this till', async () => {

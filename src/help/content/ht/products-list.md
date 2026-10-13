@@ -29,6 +29,14 @@ Anlè paj la, lòt bouton ouvri: **Inite** ([pwodui ki vann pa pwa](topic:produc
 
 1. Klike sou **Enprime etikèt**.
 2. Klike sou **Ajoute** bò kote chak pwodui ou vle, epi mete kantite etikèt yo.
-3. Chwazi **Lang etikèt yo**, epi klike sou **Enprime**. Chak etikèt montre non, pri ak kòd ba a.
+3. Chwazi **Lang etikèt yo**, epi klike sou **Prepare … etikèt**: etikèt yo parèt jan yo pral enprime.
+4. Klike sou **Enprime**.
+
+Etikèt yo se **1 × 1 pous**. Chak etikèt montre non an, pri a ak kòd ba kòd pwodui a (SKU a lè pwodui a pa gen kòd ba).
+
+- **Ak yon enprimant etikèt ki konfigire nan JodaPrint**, etikèt yo ale dirèkteman sou li, san fenèt enpresyon navigatè a. Mesaj **… etikèt ale sou enprimant etikèt la** konfime sa. Gade [Materyèl](topic:hardware).
+- **San li**, fenèt enpresyon navigatè a louvri: chwazi enprimant etikèt la ak yon papye 1 × 1 pous ladan l.
+
+> **Konsèy:** yon kòd ki gen chif sèlman enprime ak ba ki pi epè, eskanè yo li yo pi fasil. Yon kòd ki twò long pa antre sou etikèt la: li ekri san kòd ba.
 
 > **Konsèy:** sou telefòn, pwodui yo parèt an kat, ak menm bouton yo.

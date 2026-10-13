@@ -1,5 +1,12 @@
 import { BridgeError, type BridgeResult } from './bridge-client';
-import { directPrint, directPrinterId, isDirectPrintAvailable } from './direct-print';
+import {
+  directPrint,
+  directPrinterId,
+  isDirectPrintAvailable,
+  isLabelPrintAvailable,
+  labelPrint,
+  labelPrinterId,
+} from './direct-print';
 import { documentsApi, type DocumentType, type PrintChannel, type PrintJob, type PrintJobStatus } from './documents-api';
 import { randomId } from '@/lib/uuid';
 
@@ -22,7 +29,9 @@ export interface PrintRequest {
   documentId: string | null;
   // Ask for a copy (the server may also turn an original into a copy)
   copy: boolean;
-  // ESC/POS for the bridge, given the copy number; absent: browser only
+  // Printer commands for the direct connection (ESC/POS for a receipt printer, the
+  // label printer's commands with labelPrintDeps), given the copy number; absent:
+  // browser only
   escpos?: ((copyNumber: number | null) => Uint8Array) | null;
   // Show the document with this copy number and open the print dialog
   browserPrint: (copyNumber: number | null) => void | Promise<void>;
@@ -52,6 +61,12 @@ export interface PrintDeps {
 export const defaultPrintDeps: PrintDeps = {
   api: documentsApi,
   bridge: { available: isDirectPrintAvailable, print: directPrint, printerId: directPrinterId },
+};
+
+// Product labels: the bytes are the label printer's commands, sent to the label printer
+export const labelPrintDeps: PrintDeps = {
+  api: documentsApi,
+  bridge: { available: isLabelPrintAvailable, print: labelPrint, printerId: labelPrinterId },
 };
 
 // An API call that got no answer at all (connection lost)

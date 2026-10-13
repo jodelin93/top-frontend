@@ -29,6 +29,14 @@ En la parte superior de la página, otros botones abren: **Unidades** ([producto
 
 1. Haga clic en **Imprimir etiquetas**.
 2. Haga clic en **Agregar** junto a cada producto que desee y luego indique la cantidad de etiquetas.
-3. Elija el **Idioma de las etiquetas** y luego haga clic en **Imprimir**. Cada etiqueta muestra el nombre, el precio y el código de barras.
+3. Elija el **Idioma de las etiquetas** y luego haga clic en **Preparar … etiquetas**: las etiquetas se muestran como se imprimirán.
+4. Haga clic en **Imprimir**.
+
+Las etiquetas miden **1 × 1 pulgada**. Cada una muestra el nombre, el precio y el código de barras del código del producto (el SKU cuando el producto no tiene código de barras).
+
+- **Con una impresora de etiquetas configurada en JodaPrint**, las etiquetas van directamente a ella, sin la ventana de impresión del navegador. El mensaje **… etiquetas enviadas a la impresora de etiquetas** lo confirma. Vea [Hardware](topic:hardware).
+- **Sin ella**, se abre la ventana de impresión del navegador: elija allí la impresora de etiquetas y un papel de 1 × 1 pulgada.
+
+> **Consejo:** un código hecho solo de dígitos se imprime con barras más gruesas, que los lectores leen más fácilmente. Un código muy largo no cabe en la etiqueta: se escribe sin código de barras.
 
 > **Consejo:** en el teléfono, los productos se muestran como tarjetas, con los mismos botones.

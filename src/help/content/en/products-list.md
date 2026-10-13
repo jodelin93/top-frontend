@@ -29,6 +29,14 @@ At the top of the page, other buttons open: **Units** ([products sold by weight]
 
 1. Click **Print labels**.
 2. Click **Add** next to each product you want, then enter the number of labels.
-3. Choose the **Label language**, then click **Print**. Each label shows the name, price and barcode.
+3. Choose the **Label language**, then click **Prepare … labels**: the labels are shown as they will print.
+4. Click **Print**.
+
+Labels are **1 × 1 inch**. Each one shows the name, the price and the barcode of the product code (the SKU when the product has no barcode).
+
+- **With a label printer set up through JodaPrint**, the labels go straight to it, without the browser's print window. The message **… labels sent to the label printer** confirms it. See [Hardware](topic:hardware).
+- **Without it**, the browser's print window opens: choose the label printer and a 1 × 1 inch paper there.
+
+> **Tip:** a code made of digits only prints with thicker bars, which scanners read more easily. A very long code does not fit on the label: it is written without a barcode.
 
 > **Tip:** on a phone, products are shown as cards, with the same buttons.

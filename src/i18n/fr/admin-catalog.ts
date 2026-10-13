@@ -493,14 +493,20 @@ export const adminCatalog: Record<string, string> = {
   'Show products tagged {tag}': 'Afficher les produits avec le mot-clé {tag}',
 
   // ---- Shelf labels ----
-  'Choose products and how many labels to print for each. Labels show the name, price and barcode.':
-    "Choisissez les produits et le nombre d'étiquettes à imprimer pour chacun. Les étiquettes affichent le nom, le prix et le code-barres.",
   'Each line needs between 1 and {max} copies': 'Chaque ligne doit avoir entre 1 et {max} exemplaires',
   'At most {max} labels can be printed at once': "Au plus {max} étiquettes peuvent être imprimées à la fois",
   'No labels: the chosen variants were not found.': 'Aucune étiquette : les variantes choisies sont introuvables.',
   'Copies for {sku}': 'Exemplaires pour {sku}',
   'Label language': 'Langue des étiquettes',
   'Preparing...': 'Préparation...',
+  'Choose products and how many labels to print for each. Labels are 1 × 1 inch and show the name, price and barcode.': "Choisissez les produits et le nombre d'étiquettes à imprimer pour chacun. Les étiquettes font 1 × 1 pouce et affichent le nom, le prix et le code-barres.",
+  '{count} label sent to the label printer.': "{count} étiquette envoyée à l'imprimante d'étiquettes.",
+  '{count} labels sent to the label printer.': "{count} étiquettes envoyées à l'imprimante d'étiquettes.",
+  'The label printer did not confirm the labels: check the printer before printing again.': "L'imprimante d'étiquettes n'a pas confirmé les étiquettes : vérifiez l'imprimante avant de réimprimer.",
+  'The label printer did not print: {error}': "L'imprimante d'étiquettes n'a pas imprimé : {error}",
+  'Labels are 1 × 1 inch and go straight to the label printer (JodaPrint).': "Les étiquettes font 1 × 1 pouce et partent directement sur l'imprimante d'étiquettes (JodaPrint).",
+  'Labels are 1 × 1 inch. The label printer was not found through JodaPrint: the browser print window opens, choose the label printer and a 1 × 1 inch paper there.': "Les étiquettes font 1 × 1 pouce. L'imprimante d'étiquettes n'a pas été trouvée par JodaPrint : la fenêtre d'impression du navigateur s'ouvre, choisissez-y l'imprimante d'étiquettes et un papier de 1 × 1 pouce.",
+  'Printing...': 'Impression...',
   '{count} label': '{count} étiquette',
   '{count} labels': '{count} étiquettes',
   'Prepare {count} label': 'Préparer {count} étiquette',

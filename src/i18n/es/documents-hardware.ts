@@ -149,6 +149,11 @@ export const documentsHardware: Record<string, string> = {
   Pair: 'Vincular',
   'No printer set up in the print bridge.':
     'No hay ninguna impresora configurada en el puente de impresión.',
+  'Label printer': 'Impresora de etiquetas',
+  'Product labels (1 × 1 inch) are sent to this printer, without the browser print window. By default: the printer with the alias “label” in the JodaPrint dashboard.': 'Las etiquetas de productos (1 × 1 pulgada) se envían a esta impresora, sin la ventana de impresión del navegador. Por defecto: la impresora con el alias «label» en el panel de JodaPrint.',
+  'No label printer chosen': 'Ninguna impresora de etiquetas elegida',
+  'Print a test label': 'Imprimir una etiqueta de prueba',
+  'Test label printed.': 'Etiqueta de prueba impresa.',
   'Print a test receipt': 'Imprimir un recibo de prueba',
   'Unpair this browser from the print bridge?':
     '¿Desvincular este navegador del puente de impresión?',
