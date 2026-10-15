@@ -4,7 +4,7 @@ title: Istorik vant, re-enprime epi voye resi a
 category: Vant ak depans
 order: 602
 routes: [/admin/sales]
-keywords: [vant, istorik, chèche yon vant, re-enprime, kopi, resi, imèl, imel, lyen resi, estati, nimewo vant, OFFLINE, ventes, historique, rechercher une vente, réimprimer, copie, reçu, e-mail, lien du ticket, statut, numéro de vente]
+keywords: [vant, kesye, filtre pa kesye, istorik, chèche yon vant, re-enprime, kopi, resi, imèl, imel, lyen resi, estati, nimewo vant, OFFLINE, ventes, historique, rechercher une vente, réimprimer, copie, reçu, e-mail, lien du ticket, statut, numéro de vente]
 related: [sales-void, returns-pos, pos-receipt]
 ---
 Paj **Vant** la montre tout vant yo ak nimewo a, dat la, kliyan an, kesye a, total la ak estati a.
@@ -14,6 +14,7 @@ Paj **Vant** la montre tout vant yo ak nimewo a, dat la, kliyan an, kesye a, tot
 1. Nan meni an, klike sou **Vant**.
 2. Tape yon nimewo vant nan rechèch la. Vant ki fèt san entènèt yo gen yon nimewo OFFLINE-… tou ou ka chèche.
 3. Filtre pa estati: **Fini**, **Anile**, **Peman ann atant**, **Ann atant**…
+   Pou wè vant yon sèl moun, chwazi l nan **Tout kesye yo** (pa egzanp pou verifye jounen yon kesye).
 4. Chwazi yon peryòd: **Jodi a**, **Yè**, **7 dènye jou**, **30 dènye jou**, **Mwa sa a** oswa **Peryòd pèsonalize** (soti ≤ rive).
 5. Sèvi ak **Anvan** ak **Swivan** pou chanje paj.
 

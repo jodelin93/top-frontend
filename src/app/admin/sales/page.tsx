@@ -40,6 +40,7 @@ export default function SalesPage() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [status, setStatus] = useState<SaleStatus | ''>('');
+  const [cashierId, setCashierId] = useState('');
   const [range, setRange] = useState<DateRange>(() => presetRange('all'));
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -58,6 +59,7 @@ export default function SalesPage() {
     from: range.from ? startOfDayIso(range.from) : undefined,
     to: range.to ? endOfDayIso(range.to) : undefined,
     status: status || undefined,
+    userId: cashierId || undefined,
     search: debouncedSearch || undefined,
     page,
     limit: PAGE_SIZE,
@@ -72,7 +74,8 @@ export default function SalesPage() {
 
   const sales = data?.data ?? [];
   const meta = data?.meta;
-  const hasFilters = !!(debouncedSearch || status || range.from || range.to);
+  const hasFilters = !!(debouncedSearch || status || cashierId || range.from || range.to);
+  const { data: cashiers = [] } = useQuery({ queryKey: ['sales', 'cashiers'], queryFn: salesApi.cashiers });
 
   const handleRange = (next: DateRange) => {
     setRange(next);
@@ -112,6 +115,22 @@ export default function SalesPage() {
             <option value="payment_pending">{t('Payment pending')}</option>
             <option value="held">{t('Held')}</option>
             <option value="cancelled">{t('Cancelled')}</option>
+          </Select>
+          <Select
+            value={cashierId}
+            onChange={(e) => {
+              setCashierId(e.target.value);
+              setPage(1);
+            }}
+            className="lg:w-48"
+            aria-label={t('Filter by cashier')}
+          >
+            <option value="">{t('All cashiers')}</option>
+            {cashiers.map((cashier) => (
+              <option key={cashier.id} value={cashier.id}>
+                {cashier.name}
+              </option>
+            ))}
           </Select>
           <DateRangeFilter
             value={range}

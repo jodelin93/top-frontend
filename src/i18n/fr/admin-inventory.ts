@@ -144,6 +144,8 @@ export const adminInventory: Record<string, string> = {
     'Vous avez besoin de l’autorisation « Effectuer des comptages de stock » pour voir les comptages.',
   'Count a location (or one category), review the differences, then post them as recount adjustments.':
     'Comptez un emplacement (ou une catégorie), vérifiez les écarts, puis validez-les en ajustements de recomptage.',
+  "Filter by cashier": "Filtrer par caissier",
+  "All cashiers": "Tous les caissiers",
   'Filter by status': 'Filtrer par statut',
   'All statuses': 'Tous les statuts',
   'New count': 'Nouveau comptage',

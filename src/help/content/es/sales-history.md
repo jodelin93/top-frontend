@@ -4,7 +4,7 @@ title: Historial de ventas, reimpresión y envío del recibo
 category: Ventas y gastos
 order: 602
 routes: [/admin/sales]
-keywords: [ventas, historial, buscar una venta, reimprimir, copia, recibo, ticket, correo electrónico, email, enlace del recibo, WhatsApp, estado, número de venta, OFFLINE]
+keywords: [ventas, cajero, filtrar por cajero, historial, buscar una venta, reimprimir, copia, recibo, ticket, correo electrónico, email, enlace del recibo, WhatsApp, estado, número de venta, OFFLINE]
 related: [sales-void, returns-pos, pos-receipt]
 ---
 La página **Ventas** lista todas las ventas con el número, la fecha, el cliente, el cajero, el total y el estado.
@@ -14,6 +14,7 @@ La página **Ventas** lista todas las ventas con el número, la fecha, el client
 1. En el menú, haga clic en **Ventas**.
 2. Escriba un número de venta en la búsqueda. Las ventas hechas sin conexión también tienen un número OFFLINE-… que puede buscar.
 3. Filtre por estado: **Completada**, **Anulada**, **Pago pendiente**, **En espera**…
+   Para ver las ventas de una sola persona, elíjala en **Todos los cajeros** (por ejemplo, para revisar el día de un cajero).
 4. Elija un período: **Hoy**, **Ayer**, **Últimos 7 días**, **Últimos 30 días**, **Este mes** o **Rango personalizado** (desde ≤ hasta).
 5. Use **Anterior** y **Siguiente** para cambiar de página.
 

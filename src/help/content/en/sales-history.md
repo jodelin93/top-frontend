@@ -4,7 +4,7 @@ title: Sales history, reprinting and sending the receipt
 category: Sales and expenses
 order: 602
 routes: [/admin/sales]
-keywords: [sales, history, transactions, find a sale, search sale, reprint, copy, receipt, email receipt, receipt link, status, sale number, OFFLINE]
+keywords: [sales, cashier, filter by cashier, history, transactions, find a sale, search sale, reprint, copy, receipt, email receipt, receipt link, status, sale number, OFFLINE]
 related: [sales-void, returns-pos, pos-receipt]
 ---
 The **Sales** page lists all sales with the number, date, customer, cashier, total and status.
@@ -14,6 +14,7 @@ The **Sales** page lists all sales with the number, date, customer, cashier, tot
 1. In the menu, click **Sales**.
 2. Type a sale number in the search. Sales made offline also have an OFFLINE-… number you can search for.
 3. Filter by status: **Completed**, **Voided**, **Payment pending**, **Held**…
+   To see one person's sales, choose them in **All cashiers** (for example, to check a cashier's day).
 4. Choose a period: **Today**, **Yesterday**, **Last 7 days**, **Last 30 days**, **This month** or **Custom range** (from ≤ to).
 5. Use **Previous** and **Next** to change pages.
 

@@ -395,6 +395,11 @@ export interface CatalogItem {
 }
 
 export const salesApi = {
+  // Cashiers who rang up sales (for the sales list filter)
+  cashiers: async (): Promise<StaffMember[]> => {
+    const { data } = await apiClient.get('/sales/cashiers');
+    return data;
+  },
   list: async (params: {
     from?: string;
     to?: string;
@@ -402,6 +407,8 @@ export const salesApi = {
     customerId?: string;
     registerId?: string;
     salespersonId?: string;
+    // The cashier who rang the sale up
+    userId?: string;
     search?: string;
     page?: number;
     limit?: number;

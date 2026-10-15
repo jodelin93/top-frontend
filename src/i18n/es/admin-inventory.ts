@@ -144,6 +144,8 @@ export const adminInventory: Record<string, string> = {
     'Necesita el permiso “Realizar conteos de inventario” para ver los conteos.',
   'Count a location (or one category), review the differences, then post them as recount adjustments.':
     'Cuente una ubicación (o una categoría), revise las diferencias y luego regístrelas como ajustes de reconteo.',
+  "Filter by cashier": "Filtrar por cajero",
+  "All cashiers": "Todos los cajeros",
   'Filter by status': 'Filtrar por estado',
   'All statuses': 'Todos los estados',
   'New count': 'Nuevo conteo',

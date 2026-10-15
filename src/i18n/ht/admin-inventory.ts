@@ -119,6 +119,8 @@ export const adminInventory: Record<string, string> = {
   'Cancelled': 'Anile',
   'You need the "Run stock counts" permission to see count sessions.': 'Ou bezwen pèmisyon "Fè konte stòk" pou w wè konte stòk yo.',
   'Count a location (or one category), review the differences, then post them as recount adjustments.': 'Konte yon anplasman (oswa yon kategori), revize diferans yo, epi valide yo kòm ajisteman rekonte.',
+  "Filter by cashier": "Filtre pa kesye",
+  "All cashiers": "Tout kesye yo",
   'Filter by status': 'Filtre pa estati',
   'All statuses': 'Tout estati yo',
   'New count': 'Nouvo konte',

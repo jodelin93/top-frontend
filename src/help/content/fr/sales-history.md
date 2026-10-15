@@ -4,7 +4,7 @@ title: Historique des ventes, réimpression et envoi du reçu
 category: Ventes et dépenses
 order: 602
 routes: [/admin/sales]
-keywords: [ventes, historique, rechercher une vente, réimprimer, copie, reçu, e-mail, lien du ticket, statut, numéro de vente, OFFLINE]
+keywords: [ventes, caissier, filtrer par caissier, historique, rechercher une vente, réimprimer, copie, reçu, e-mail, lien du ticket, statut, numéro de vente, OFFLINE]
 related: [sales-void, returns-pos, pos-receipt]
 ---
 La page **Ventes** liste toutes les ventes avec le numéro, la date, le client, le caissier, le total et le statut.
@@ -14,6 +14,7 @@ La page **Ventes** liste toutes les ventes avec le numéro, la date, le client, 
 1. Dans le menu, cliquez sur **Ventes**.
 2. Tapez un numéro de vente dans la recherche. Les ventes faites hors ligne ont aussi un numéro OFFLINE-… que vous pouvez chercher.
 3. Filtrez par statut : **Terminée**, **Annulée**, **Paiement en attente**, **En attente**…
+   Pour voir les ventes d'une seule personne, choisissez-la dans **Tous les caissiers** (par exemple pour vérifier la journée d'un caissier).
 4. Choisissez une période : **Aujourd'hui**, **Hier**, **7 derniers jours**, **30 derniers jours**, **Ce mois-ci** ou **Période personnalisée** (du ≤ au).
 5. Utilisez **Précédent** et **Suivant** pour changer de page.
 
