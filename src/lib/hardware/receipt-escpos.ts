@@ -3,7 +3,7 @@ import type { StoreSettings } from '@/lib/api/settings';
 import { customerName } from '@/lib/api/customers';
 import { text } from '@/lib/api/crud';
 import { formatDateTime, formatMoney } from '@/lib/format';
-import { receiptOptions, receiptSettings } from '@/components/pos/receipt';
+import { receiptName, receiptOptions, receiptSettings } from '@/components/pos/receipt';
 import { t } from '@/i18n';
 import { EscPosBuilder, type PaperWidth, type RasterImage } from './escpos';
 import { lineQuantityText } from '@/lib/pos/quantity';
@@ -38,7 +38,7 @@ export function receiptToEscPos(
   // ---- Seller ----
   p.align('center');
   if (o.showLogo && options.logo) p.image(options.logo);
-  p.bold().size('double').text(s?.storeName || branch?.name || '', Math.floor(p.width / 2)).size('normal').bold(false);
+  p.bold().size('double').text(receiptName(s, branch), Math.floor(p.width / 2)).size('normal').bold(false);
   if (o.showBusinessDetails) {
     if (s?.businessLegalName && s.businessLegalName !== s.storeName) p.text(s.businessLegalName);
     const address = [

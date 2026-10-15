@@ -18,6 +18,8 @@ related: [settings-business, hardware, pos-receipt]
 
 ![Onglè Resi ak enpresyon an](shot:settings-receipts)
 
+> **Konsèy:** lè logo a deja montre non antrepriz la, chwazi **Non siksisal la** nan **Non anba logo a**: chak resi ap montre siksisal kote vant lan fèt la (pa egzanp « TOP Printing »). Non siksisal la regle nan **Paramèt › Siksisal ak kès**.
+
 > **Konsèy:** tcheke **Enprime otomatikman lè yon vant fini** pou genyen tan. **Enprime yon resi tès** pèmèt ou verifye rezilta a sou papye.
 
 > **Konsèy:** kenbe kòd ba nimewo vant lan: lè ou eskane l, ou jwenn vant lan pandan yon retou.

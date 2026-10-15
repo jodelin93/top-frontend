@@ -18,6 +18,8 @@ related: [settings-business, hardware, pos-receipt]
 
 ![The Receipts & printing tab](shot:settings-receipts)
 
+> **Tip:** when the logo already shows the company name, set **Name under the logo** to **Branch name**: each receipt then shows the branch where the sale was made (for example "TOP Printing"). The branch name is set in **Settings › Branches & registers**.
+
 > **Tip:** check **Print automatically when a sale is completed** to save time. **Print test receipt** checks the result on paper.
 
 > **Tip:** keep the sale-number barcode: scanning it finds the sale during a return.

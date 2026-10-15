@@ -13,6 +13,8 @@ export interface StoreSettings {
   receiptFormat: '58mm' | '80mm' | 'a4' | 'letter';
   // Paper of estimates, purchase orders, statements and report PDFs (default: Letter)
   documentPaper?: 'letter' | 'a4';
+  // Name in the receipt header: the store's or the selling branch's
+  receiptNameSource?: 'store' | 'branch';
   heldCartExpiryHours: number;
   requireOpenShift: boolean;
   // Hour (branch time) the trading day starts: sales before it count for the previous business date

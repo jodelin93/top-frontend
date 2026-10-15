@@ -1,5 +1,6 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +11,7 @@ import { CheckboxField, SettingsSection } from '@/components/admin/settings-shar
 import { SaveBar, useSettingsForm } from '@/components/admin/settings-form';
 import { Receipt } from '@/components/pos/receipt';
 import type { Sale } from '@/lib/api/sales';
-import type { ReceiptTemplate, StoreSettings } from '@/lib/api/settings';
+import { branchesApi, type Branch, type ReceiptTemplate, type StoreSettings } from '@/lib/api/settings';
 import { cn } from '@/lib/utils';
 import { t } from '@/i18n';
 
@@ -18,6 +19,7 @@ const KEYS = [
   'receiptTemplate',
   'receiptFormat',
   'documentPaper',
+  'receiptNameSource',
   'receiptFontSize',
   'receiptHeader',
   'receiptFooter',
@@ -84,9 +86,12 @@ const SAMPLE_SALE: Sale = {
 
 export function SettingsReceipts() {
   const form = useSettingsForm(KEYS);
+  // The preview is sold at the store's first branch (its name shows when chosen)
+  const { data: branches = [] } = useQuery({ queryKey: ['branches'], queryFn: () => branchesApi.list() });
   if (form.isLoading || !form.settings) return <p className="text-sm text-gray-500">{t('Loading...')}</p>;
   const v = form.values;
   const previewSettings = { ...form.settings, ...v } as StoreSettings;
+  const previewSale: Sale = { ...SAMPLE_SALE, branch: branches[0] ?? ({ id: 'b', name: 'Main' } as Branch) };
 
   return (
     <div className="grid gap-4 xl:grid-cols-[1fr_24rem]">
@@ -137,6 +142,20 @@ export function SettingsReceipts() {
               >
                 <option value="letter">{t('US Letter')}</option>
                 <option value="a4">A4</option>
+              </Select>
+            </Field>
+            <Field
+              label={t('Name under the logo')}
+              htmlFor="receiptNameSource"
+              hint={t('The branch name suits a logo that already shows the company name')}
+            >
+              <Select
+                id="receiptNameSource"
+                value={v.receiptNameSource ?? 'store'}
+                onChange={(e) => form.set('receiptNameSource', e.target.value as NonNullable<StoreSettings['receiptNameSource']>)}
+              >
+                <option value="store">{t('Store name')}</option>
+                <option value="branch">{t('Branch name')}</option>
               </Select>
             </Field>
             <Field label={t('Text size')} htmlFor="receiptFontSize">
@@ -202,7 +221,7 @@ export function SettingsReceipts() {
           </Button>
         </div>
         <div className="max-h-[75vh] overflow-auto rounded-md border bg-white p-4 shadow-sm">
-          <Receipt sale={SAMPLE_SALE} settings={previewSettings} />
+          <Receipt sale={previewSale} settings={previewSettings} />
         </div>
         <p className="text-xs text-gray-500">
           {t('The preview updates as you change options. Unsaved changes are shown too.')}

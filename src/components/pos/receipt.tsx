@@ -88,6 +88,15 @@ export function customerAddress(customer: Sale['customer']): string | null {
 // The branch as it was when the sale completed (else as it is now)
 const receiptBranch = (sale: Sale) => sale.documentSnapshot?.branch ?? sale.branch;
 
+/**
+ * Name at the top of the receipt: the store's, or the selling branch's when the store
+ * chose it (its logo already names the company)
+ */
+export function receiptName(settings: StoreSettings | undefined, branch: { name?: string | null } | null | undefined): string {
+  if (settings?.receiptNameSource === 'branch' && branch?.name) return branch.name;
+  return settings?.storeName || branch?.name || '';
+}
+
 // ---------------------------------------------------------------------------
 // Options (defaults apply when a setting has never been saved)
 
@@ -157,7 +166,7 @@ function businessLines(settings: StoreSettings | undefined, sale: Sale) {
     [settings?.businessState, settings?.businessCountry].filter(Boolean).join(', '),
   ].filter(Boolean) as string[];
   return {
-    name: settings?.storeName || branch?.name || '',
+    name: receiptName(settings, branch),
     legalName:
       settings?.businessLegalName && settings.businessLegalName !== settings.storeName
         ? settings.businessLegalName

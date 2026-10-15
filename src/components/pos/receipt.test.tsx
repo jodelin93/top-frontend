@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { Sale } from '@/lib/api/sales';
 import type { PaymentMethod, StoreSettings } from '@/lib/api/settings';
 import { formatMoney } from '@/lib/format';
-import { Receipt } from './receipt';
+import { Receipt, receiptName } from './receipt';
 
 const usd = (value: number) => formatMoney(value, 'USD');
 
@@ -388,5 +388,17 @@ describe('Receipt: customer group discount', () => {
   it('prints nothing more without a group discount', () => {
     render(<Receipt sale={baseSale()} settings={settings} />);
     expect(screen.queryByText(/Group discount/)).not.toBeInTheDocument();
+  });
+});
+
+describe('receiptName', () => {
+  const branch = { name: 'TOP Printing' };
+  it('uses the store name by default', () => {
+    expect(receiptName({ storeName: 'Top Service' } as StoreSettings, branch)).toBe('Top Service');
+  });
+  it('uses the selling branch when the store chose it', () => {
+    expect(receiptName({ storeName: 'Top Service', receiptNameSource: 'branch' } as StoreSettings, branch)).toBe('TOP Printing');
+    // No branch on the sale: the store name stays
+    expect(receiptName({ storeName: 'Top Service', receiptNameSource: 'branch' } as StoreSettings, null)).toBe('Top Service');
   });
 });
