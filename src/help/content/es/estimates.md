@@ -16,6 +16,7 @@ Una cotización presenta precios a un cliente antes de la compra. No reserva exi
 1. Haga clic en **Nueva cotización**.
 2. En **Cliente**, escriba el nombre, el teléfono o el correo y elija el cliente. Para una persona que no está entre sus clientes, simplemente escriba su nombre.
 3. Revise **Válido hasta** (30 días por defecto). Esta fecha no puede estar en el pasado.
+   Si la tienda tiene varias sucursales, elija la **Sucursal** que hace la cotización (se propone la última usada). Su nombre encabeza la cotización cuando **Nombre bajo el logotipo** está en **Nombre de la sucursal** en los [ajustes de recibos](topic:settings-receipts).
 4. En **Agregar productos**, busque cada producto y haga clic en **Agregar**.
 5. En cada línea, ajuste la **Cant.**, el **Precio unitario** si da un precio especial, el descuento (**Desc. %**) y una **Nota**.
 6. Si hace falta, agregue un descuento sobre toda la cotización, **Notas** y **Términos y condiciones** (anticipo…).

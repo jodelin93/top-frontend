@@ -16,6 +16,7 @@ Yon devi montre yon kliyan pri yo anvan li achte. Li pa rezève stòk. Paj **Dev
 1. Klike sou **Nouvo devi**.
 2. Nan **Kliyan**, tape non an, telefòn nan oswa imèl la epi chwazi kliyan an. Pou yon moun ki pa nan lis kliyan w yo, tape non l sèlman.
 3. Verifye **Valab jiska** (30 jou pa defo). Dat sa a pa ka nan tan pase.
+   Si magazen an gen plizyè siksisal, chwazi **Siksisal** k ap fè devi a (dènye ki te sèvi a ap pwopoze). Non li parèt anlè devi a lè **Non anba logo a** regle sou **Non siksisal la** nan [paramèt resi yo](topic:settings-receipts).
 4. Nan **Ajoute pwodui**, chèche chak pwodui epi klike sou **Ajoute**.
 5. Pou chak liy, regle **Kte** a, **Pri inite** a si w ap fè yon pri espesyal, rabè a (**Rabè %**) ak yon **Nòt**.
 6. Si w bezwen, ajoute yon rabè sou tout devi a, **Nòt** ak **Tèm ak kondisyon** (avans…).

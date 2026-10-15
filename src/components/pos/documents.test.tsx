@@ -128,6 +128,18 @@ describe('pro forma', () => {
   });
 });
 
+describe('estimate header', () => {
+  it("shows the branch's name when the store chose it for its documents", () => {
+    const branch = { name: 'TOP Printing' };
+    const { rerender } = render(<EstimateDocument estimate={estimate} settings={settings} branch={branch} />);
+    expect(screen.queryByText('TOP Printing')).toBeNull();
+    rerender(
+      <EstimateDocument estimate={estimate} settings={{ ...settings, receiptNameSource: 'branch' } as StoreSettings} branch={branch} />
+    );
+    expect(screen.getByText('TOP Printing')).toBeInTheDocument();
+  });
+});
+
 describe('e-mail consent', () => {
   it("prefills the customer's address and always asks the cashier to confirm", () => {
     expect(consentedEmail(sale())).toBe('ada@example.com');

@@ -16,6 +16,7 @@ Un devis présente des prix à un client avant l'achat. Il ne réserve pas de st
 1. Cliquez sur **Nouveau devis**.
 2. Dans **Client**, tapez le nom, le téléphone ou l'e-mail et choisissez le client. Pour une personne absente de vos clients, tapez simplement son nom.
 3. Vérifiez **Valable jusqu'au** (30 jours par défaut). Cette date ne peut pas être dans le passé.
+   Si le magasin a plusieurs succursales, choisissez la **Succursale** qui fait le devis (la dernière utilisée est proposée). Son nom figure en tête du devis quand **Nom sous le logo** est réglé sur **Nom de la succursale** dans les [réglages des reçus](topic:settings-receipts).
 4. Dans **Ajouter des produits**, cherchez chaque produit et cliquez sur **Ajouter**.
 5. Pour chaque ligne, réglez la **Qté**, le **Prix unitaire** si vous faites un prix spécial, la remise (**Rem. %**) et une **Note**.
 6. Ajoutez si besoin une remise sur l'ensemble du devis, des **Notes** et des **Conditions générales** (acompte…).

@@ -1,5 +1,6 @@
 // Spanish translations: admin-sales. Keys are the exact English texts passed to t().
 export const adminSales: Record<string, string> = {
+  'Branch': 'Sucursal',
   Dashboard: 'Panel',
   'Sales performance for the selected period. Detailed reports and exports are under Reports.':
     'Desempeño de ventas en el período seleccionado. Los informes detallados y las exportaciones están en Informes.',

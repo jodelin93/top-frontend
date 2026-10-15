@@ -52,6 +52,8 @@ export interface Estimate {
 }
 
 export interface EstimateInput {
+  // The branch making the estimate
+  branchId?: string | null;
   customerId?: string | null;
   customerName?: string | null;
   issueDate?: string;

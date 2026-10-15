@@ -4,6 +4,7 @@ import { documentPaper } from '@/lib/document-paper';
 import type { Estimate } from '@/lib/api/estimates';
 import { estimateCustomerName } from '@/lib/api/estimates';
 import type { StoreSettings } from '@/lib/api/settings';
+import { receiptName } from '@/components/pos/receipt';
 import { formatDate, formatMoney } from '@/lib/format';
 import { t } from '@/i18n';
 
@@ -12,17 +13,21 @@ import { t } from '@/i18n';
  * Settings. Printed like receipts via .print-receipt.
  * `proForma`: printed as a PRO FORMA invoice (same content, not a tax invoice).
  * `copy`: the number of this reprint; reprints say COPY.
+ * `branch`: the branch that made the estimate; its name heads the document when the
+ * store chose the branch name for its receipts (Name under the logo).
  */
 export function EstimateDocument({
   estimate,
   settings,
   proForma = false,
   copy,
+  branch,
 }: {
   estimate: Estimate;
   settings?: StoreSettings;
   proForma?: boolean;
   copy?: number | null;
+  branch?: { name?: string | null } | null;
 }) {
   const money = (value: number) => formatMoney(value, estimate.currencyCode);
   const address = [
@@ -48,7 +53,7 @@ export function EstimateDocument({
             <img src={settings.businessLogoUrl} alt="" className="max-h-20 max-w-40 object-contain" />
           )}
           <div>
-            <div className="text-xl font-bold">{settings?.storeName}</div>
+            <div className="text-xl font-bold">{receiptName(settings, branch)}</div>
             <div className="text-gray-700">
               {settings?.businessLegalName && settings.businessLegalName !== settings.storeName && (
                 <div>{settings.businessLegalName}</div>

@@ -18,7 +18,7 @@ related: [settings-business, hardware, pos-receipt]
 
 ![L'onglet Reçus et impression](shot:settings-receipts)
 
-> **Astuce :** quand le logo montre déjà le nom de l'entreprise, choisissez **Nom de la succursale** dans **Nom sous le logo** : chaque reçu affiche alors la succursale où la vente a été faite (par exemple « TOP Printing »). Le nom de la succursale se règle dans **Paramètres › Succursales et caisses**.
+> **Astuce :** quand le logo montre déjà le nom de l'entreprise, choisissez **Nom de la succursale** dans **Nom sous le logo** : chaque reçu affiche alors la succursale où la vente a été faite (par exemple « TOP Printing »). Les devis et factures pro forma suivent le même choix. Le nom de la succursale se règle dans **Paramètres › Succursales et caisses**.
 
 > **Astuce :** cochez **Imprimer automatiquement à la fin d'une vente** pour gagner du temps. **Imprimer un reçu de test** vérifie le résultat sur papier.
 

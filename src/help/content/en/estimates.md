@@ -16,6 +16,7 @@ An estimate shows prices to a customer before they buy. It does not reserve stoc
 1. Click **New estimate**.
 2. In **Customer**, type the name, phone number or email and choose the customer. For someone who is not in your customers, just type their name.
 3. Check **Valid until** (30 days by default). This date cannot be in the past.
+   If the store has several branches, choose the **Branch** making the estimate (the last one used is offered). Its name heads the estimate when **Name under the logo** is set to **Branch name** in [receipt settings](topic:settings-receipts).
 4. In **Add products**, search for each product and click **Add**.
 5. For each line, set the **Qty**, the **Unit price** if you are giving a special price, the discount (**Disc. %**) and a **Note**.
 6. If needed, add a discount on the whole estimate, **Notes** and **Terms & conditions** (deposit…).

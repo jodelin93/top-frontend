@@ -21,6 +21,7 @@ import { Estimate, estimateCustomerName, estimatesApi } from '@/lib/api/estimate
 import { posApi } from '@/lib/api/sales';
 import { getErrorMessage } from '@/lib/api/client';
 import { useStoreSettings } from '@/hooks/use-store-settings';
+import { branchesApi } from '@/lib/api/settings';
 import { usePrintDocument } from '@/lib/hardware/use-print-document';
 import { flushSync } from 'react-dom';
 import { usePOSStore } from '@/stores/pos-store';
@@ -45,6 +46,8 @@ export function EstimateDetailDialog({
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  // The branch that made the estimate (its name heads the document when chosen)
+  const { data: branches = [] } = useQuery({ queryKey: ['branches'], queryFn: () => branchesApi.list() });
   const { data: settings } = useStoreSettings();
   // Printed as the estimate, or as a PRO FORMA invoice (recorded as a print job)
   const printer = usePrintDocument();
@@ -166,7 +169,15 @@ export function EstimateDetailDialog({
           )}
 
           <div className="max-h-[60vh] overflow-y-auto rounded-md border p-4">
-            {estimate && <EstimateDocument estimate={estimate} settings={settings} proForma={proForma} copy={printer.copy} />}
+            {estimate && (
+              <EstimateDocument
+                estimate={estimate}
+                settings={settings}
+                proForma={proForma}
+                copy={printer.copy}
+                branch={branches.find((b) => b.id === estimate.branchId) ?? null}
+              />
+            )}
           </div>
 
           {estimate && (

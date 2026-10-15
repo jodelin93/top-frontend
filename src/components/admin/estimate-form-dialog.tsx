@@ -24,6 +24,7 @@ import { Estimate, estimatesApi, EstimateInput } from '@/lib/api/estimates';
 import { getErrorMessage } from '@/lib/api/client';
 import { formatMoney, todayLocalIso } from '@/lib/format';
 import { useCurrency } from '@/hooks/use-store-settings';
+import { branchesApi } from '@/lib/api/settings';
 import { t } from '@/i18n';
 
 interface Line {
@@ -53,6 +54,23 @@ const toLines = (estimate: Estimate | null): Line[] =>
  * Create or edit an estimate. Prices, tax and totals are computed by the server
  * (price lists, tax categories, discounts) when saving.
  */
+// The branch of the last estimate made in this browser, offered for the next one
+const BRANCH_KEY = 'pos_estimate_branch';
+const lastEstimateBranch = (): string | null => {
+  try {
+    return localStorage.getItem(BRANCH_KEY);
+  } catch {
+    return null;
+  }
+};
+const rememberEstimateBranch = (id: string) => {
+  try {
+    localStorage.setItem(BRANCH_KEY, id);
+  } catch {
+    /* not remembered: the first branch is offered next time */
+  }
+};
+
 export function EstimateFormDialog({
   open,
   onOpenChange,
@@ -79,6 +97,10 @@ export function EstimateFormDialog({
   const [cartValue, setCartValue] = useState('');
   const [notes, setNotes] = useState('');
   const [terms, setTerms] = useState('');
+  // The branch making the estimate: its name heads the document when the store
+  // chose branch names (Settings › Receipts & printing)
+  const [branchId, setBranchId] = useState<string | null>(null);
+  const { data: branches = [] } = useQuery({ queryKey: ['branches'], queryFn: () => branchesApi.list() });
   const [error, setError] = useState<string | null>(null);
   // A new validity date can't already be over (an unchanged one is kept as is)
   const validUntilError =
@@ -103,6 +125,7 @@ export function EstimateFormDialog({
       setCartValue(estimate?.cartDiscount ? String(estimate.cartDiscount.value) : '');
       setNotes(estimate?.notes ?? '');
       setTerms(estimate?.terms ?? '');
+      setBranchId(estimate ? estimate.branchId : lastEstimateBranch());
       setError(null);
     }
   }
@@ -191,7 +214,11 @@ export function EstimateFormDialog({
     }
     setSaving(true);
     setError(null);
+    // A new estimate always names its branch: the one chosen, else the only one
+    const branch = branches.some((b) => b.id === branchId) ? branchId : (branches[0]?.id ?? null);
+    if (branch) rememberEstimateBranch(branch);
     const input: EstimateInput = {
+      ...(branch && branch !== estimate?.branchId ? { branchId: branch } : {}),
       customerId: customerId,
       customerName: customerId ? null : prospectName.trim() || null,
       validUntil: validUntil || undefined,
@@ -281,6 +308,21 @@ export function EstimateFormDialog({
                   hint={t('For someone not in your customer list')}
                 >
                   <Input id="est-prospect" value={prospectName} onChange={(e) => setProspectName(e.target.value)} />
+                </Field>
+              )}
+              {branches.length > 1 && (
+                <Field label={t('Branch')} htmlFor="est-branch">
+                  <Select
+                    id="est-branch"
+                    value={branches.some((b) => b.id === branchId) ? (branchId ?? '') : (branches[0]?.id ?? '')}
+                    onChange={(e) => setBranchId(e.target.value)}
+                  >
+                    {branches.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </Select>
                 </Field>
               )}
               <Field
