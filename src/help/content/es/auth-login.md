@@ -35,6 +35,7 @@ La sesión permanece activa en este dispositivo gracias a una cookie segura: no 
 - **Credenciales no válidas**: el correo o la contraseña son incorrectos. Revise lo que escribió (tecla Mayúsculas) y vuelva a intentarlo.
 - **Demasiados intentos fallidos. Esta cuenta está bloqueada durante unos minutos.**: después de 5 intentos fallidos seguidos, la cuenta queda bloqueada 15 minutos. Vea [Cuenta bloqueada o contraseña olvidada](topic:faq-account).
 - **Demasiados intentos. Espere unos minutos e inténtelo de nuevo.**: demasiados inicios de sesión desde este dispositivo en poco tiempo. Espere un momento.
+- **Este usuario ya inició sesión en otro dispositivo**: una cuenta solo puede tener la sesión abierta en un dispositivo a la vez. El mensaje indica el otro dispositivo y su última actividad. Cierre la sesión en ese dispositivo primero, o pida a un responsable que lo desconecte (vea [Desconectar a un usuario](topic:users-manage)). Un dispositivo sin uso durante 15 minutos ya no bloquea el inicio de sesión: se cierra cuando usted inicia sesión aquí.
 
 > **Atención:** cada nuevo intento fallido durante el bloqueo lo prolonga. Espere sin volver a intentarlo.
 

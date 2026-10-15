@@ -4,7 +4,7 @@ title: Modificar o suspender un usuario, o restablecer su contraseña
 category: Personal
 order: 1204
 routes: [/admin/users]
-keywords: [modificar usuario, editar usuario, suspender, suspendido, rol, sucursales, restablecer contraseña, olvidó la contraseña, cerrar sesión, desconectar]
+keywords: [desconectar, sesión en otro dispositivo, un solo dispositivo, sesión, modificar usuario, editar usuario, suspender, suspendido, rol, sucursales, restablecer contraseña, olvidó la contraseña, cerrar sesión, desconectar]
 related: [users-invitations, roles-permissions, faq-account]
 ---
 ## Limitar el acceso a ciertas sucursales
@@ -26,6 +26,15 @@ Un usuario limitado solo ve las ventas, los turnos, las existencias y los report
 En cuanto se guarda, la sesión de la persona se cierra en todos sus dispositivos en esta tienda: el cambio se aplica de inmediato. Para devolverle el acceso, vuelva a poner el **Estado** en **Activo**.
 
 > **Atención:** no puede cambiar su propio rol ni su propio estado.
+
+## Desconectar a un usuario
+
+Una cuenta solo puede tener la sesión abierta en un dispositivo a la vez. Si alguien dejó su sesión abierta en otro dispositivo (navegador cerrado sin cerrar sesión, teléfono perdido), desconéctelo:
+
+1. Haga clic en el icono **Desconectar** (una flecha que sale de una puerta) en su fila.
+2. Confirme. Se cierra su sesión en todos los dispositivos y puede volver a iniciar sesión donde está.
+
+El trabajo aún no guardado en el otro dispositivo se pierde. No puede desconectarse a sí mismo aquí: use **Cerrar sesión**.
 
 ## Restablecer la contraseña de un miembro
 

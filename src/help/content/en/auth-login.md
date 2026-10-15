@@ -35,6 +35,7 @@ You stay signed in on this device thanks to a secure cookie: you do not need to 
 - **Invalid credentials**: the address or the password is wrong. Check what you typed (Caps Lock key) and try again.
 - **Too many failed attempts. This account is locked for a few minutes.**: after 5 wrong tries in a row, the account is locked for 15 minutes. See [Account locked or forgotten password](topic:faq-account).
 - **Too many attempts. Wait a few minutes and try again.**: too many sign-ins from this device in a short time. Wait a little.
+- **This user is already signed in on another device**: an account can only be signed in on one device at a time. The message names the other device and its last activity. Sign out on that device first, or ask a manager to disconnect you (see [Disconnect a user](topic:users-manage)). A device left unused for 15 minutes no longer blocks the sign-in: it is signed out when you sign in here.
 
 > **Warning:** each new wrong try during the lock extends it. Wait without trying again.
 

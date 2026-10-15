@@ -35,6 +35,7 @@ La connexion reste active sur cet appareil grâce à un cookie sécurisé : vous
 - **Identifiants invalides** : l'adresse ou le mot de passe est faux. Vérifiez la saisie (touche Majuscule) et réessayez.
 - **Trop de tentatives échouées. Ce compte est verrouillé pendant quelques minutes.** : après 5 essais faux à la suite, le compte est bloqué 15 minutes. Voir [Compte verrouillé ou mot de passe oublié](topic:faq-account).
 - **Trop de tentatives. Patientez quelques minutes puis réessayez.** : trop de connexions depuis cet appareil en peu de temps. Attendez un peu.
+- **Cet utilisateur est déjà connecté sur un autre appareil** : un compte ne peut être connecté que sur un seul appareil à la fois. Le message indique l'autre appareil et sa dernière activité. Déconnectez-vous d'abord sur cet appareil, ou demandez à un responsable de vous déconnecter (voir [Déconnecter un utilisateur](topic:users-manage)). Un appareil inutilisé depuis 15 minutes ne bloque plus la connexion : il est déconnecté quand vous vous connectez ici.
 
 > **Attention :** chaque nouvel essai faux pendant le verrouillage le prolonge. Attendez sans réessayer.
 

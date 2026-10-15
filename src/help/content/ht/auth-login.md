@@ -35,6 +35,7 @@ Koneksyon an rete aktif sou aparèy sa a gras a yon cookie ki an sekirite: ou pa
 - **Idantifyan yo pa valab**: adrès la oswa modpas la pa bon. Verifye sa ou tape a (bouton Majiskil) epi eseye ankò.
 - **Twòp tantativ ki echwe. Kont sa a bloke pou kèk minit.**: apre 5 fwa mal youn dèyè lòt, kont lan bloke pou 15 minit. Gade [Kont bloke oswa modpas bliye](topic:faq-account).
 - **Twòp tantativ. Tann kèk minit epi eseye ankò.**: twòp koneksyon soti sou aparèy sa a nan yon ti tan. Tann yon ti moman.
+- **Itilizatè sa a deja konekte sou yon lòt aparèy**: yon kont ka konekte sou yon sèl aparèy alafwa. Mesaj la di ki lòt aparèy ak dènye aktivite li. Dekonekte sou aparèy sa a anvan, oswa mande yon responsab dekonekte w (gade [Dekonekte yon itilizatè](topic:users-manage)). Yon aparèy ki pa sèvi depi 15 minit pa bloke koneksyon an ankò: li dekonekte lè ou konekte isit la.
 
 > **Atansyon:** chak nouvo esè ki mal pandan kont lan bloke fè blokaj la dire pi lontan. Tann san ou pa eseye ankò.
 

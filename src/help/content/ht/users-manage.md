@@ -4,7 +4,7 @@ title: Modifye, sispann yon itilizatè oswa reyinisyalize modpas li
 category: Anplwaye
 order: 1204
 routes: [/admin/users]
-keywords: [modifye itilizatè, modifye itilizate, sispann, wòl, wol, siksisal, reyinisyalize modpas, modpas bliye, dekonekte, modifier un utilisateur, suspendre, suspendu, rôle, succursales, réinitialiser le mot de passe, mot de passe oublié, déconnecter]
+keywords: [dekonekte, konekte sou yon lòt aparèy, yon sèl aparèy, sesyon, modifye itilizatè, modifye itilizate, sispann, wòl, wol, siksisal, reyinisyalize modpas, modpas bliye, dekonekte, modifier un utilisateur, suspendre, suspendu, rôle, succursales, réinitialiser le mot de passe, mot de passe oublié, déconnecter]
 related: [users-invitations, roles-permissions, faq-account]
 ---
 ## Limite aksè a kèk siksisal
@@ -26,6 +26,15 @@ Yon itilizatè ki limite wè sèlman vant, sesyon, stòk ak rapò siksisal li yo
 Depi w anrejistre, moun nan dekonekte sou tout aparèy li yo nan magazen sa a: chanjman an aplike touswit. Pou remèt li aksè, remete **Estati** a sou **Aktif**.
 
 > **Atansyon:** ou pa ka chanje pwòp wòl ou ni pwòp estati ou.
+
+## Dekonekte yon itilizatè
+
+Yon kont ka konekte sou yon sèl aparèy alafwa. Si yon moun kite sesyon li louvri sou yon lòt aparèy (navigatè fèmen san dekonekte, telefòn pèdi), dekonekte l:
+
+1. Klike sou ikòn **Dekonekte** a (yon flèch k ap soti nan yon pòt) sou liy li.
+2. Konfime. Li dekonekte sou tout aparèy epi li ka konekte ankò kote l ye a.
+
+Travay ki poko anrejistre sou lòt aparèy la ap pèdi. Ou pa ka dekonekte tèt ou isit la: sèvi ak **Dekonekte**.
 
 ## Reyinisyalize modpas yon manm
 

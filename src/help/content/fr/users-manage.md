@@ -4,7 +4,7 @@ title: Modifier, suspendre un utilisateur ou réinitialiser son mot de passe
 category: Personnel
 order: 1204
 routes: [/admin/users]
-keywords: [modifier un utilisateur, suspendre, suspendu, rôle, succursales, réinitialiser le mot de passe, mot de passe oublié, déconnecter]
+keywords: [déconnecter, connecté sur un autre appareil, un seul appareil, session, modifier un utilisateur, suspendre, suspendu, rôle, succursales, réinitialiser le mot de passe, mot de passe oublié, déconnecter]
 related: [users-invitations, roles-permissions, faq-account]
 ---
 ## Limiter l'accès à certaines succursales
@@ -26,6 +26,15 @@ Un utilisateur limité ne voit que les ventes, sessions, stock et rapports de se
 Dès l'enregistrement, la personne est déconnectée de tous ses appareils dans ce magasin : le changement s'applique tout de suite. Pour rendre l'accès, remettez le **Statut** sur **Actif**.
 
 > **Attention :** vous ne pouvez pas changer votre propre rôle ni votre propre statut.
+
+## Déconnecter un utilisateur
+
+Un compte ne peut être connecté que sur un seul appareil à la fois. Si quelqu'un a laissé sa session ouverte sur un autre appareil (navigateur fermé sans se déconnecter, téléphone perdu), déconnectez-le :
+
+1. Cliquez sur l'icône **Déconnecter** (une flèche qui sort d'une porte) sur sa ligne.
+2. Confirmez. Il est déconnecté de tous les appareils et peut se reconnecter là où il est.
+
+Le travail pas encore enregistré sur l'autre appareil est perdu. Vous ne pouvez pas vous déconnecter vous-même ici : utilisez **Se déconnecter**.
 
 ## Réinitialiser le mot de passe d'un membre
 

@@ -4,7 +4,7 @@ title: Edit or suspend a user, or reset their password
 category: Staff
 order: 1204
 routes: [/admin/users]
-keywords: [edit user, suspend, suspended, role, branches, branch access, reset password, forgot password, sign out, deactivate user, remove access]
+keywords: [disconnect, signed in on another device, one device, session, suspend, suspended, role, branches, branch access, reset password, forgot password, sign out, deactivate user, remove access]
 related: [users-invitations, roles-permissions, faq-account]
 ---
 ## Limit access to certain branches
@@ -26,6 +26,15 @@ A limited user only sees the sales, shifts, stock and reports of their branches;
 As soon as you save, the person is signed out of all their devices in this store: the change applies immediately. To restore access, set the **Status** back to **Active**.
 
 > **Warning:** you cannot change your own role or your own status.
+
+## Disconnect a user
+
+An account can only be signed in on one device at a time. If someone left their session open on another device (browser closed without signing out, lost phone), disconnect them:
+
+1. Click the **Disconnect** icon (an arrow leaving a door) on their row.
+2. Confirm. They are signed out of every device and can sign in again where they are.
+
+Work not yet saved on the other device is lost. You cannot disconnect yourself here: use **Sign out**.
 
 ## Reset a member's password
 

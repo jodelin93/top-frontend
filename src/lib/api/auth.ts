@@ -1,6 +1,8 @@
 import { AxiosError } from 'axios';
 import apiClient, { getErrorMessage } from './client';
 import { t } from '@/i18n';
+import { formatDateTime } from '@/lib/format';
+import { describeUserAgent } from './sessions';
 import type { User } from '@/stores/auth-store';
 
 export interface LoginCredentials {
@@ -123,8 +125,20 @@ export const authApi = {
 // Error of a sign-in step (login, two-factor code, sign-up). A 429 is either the account
 // lockout (its message says so) or the per-address rate limit (a technical message).
 export function signInErrorMessage(error: unknown, fallback: string): string {
-  const response = (error as AxiosError<{ message?: unknown }>)?.response;
+  const response = (error as AxiosError<{ message?: unknown; code?: string; device?: { userAgent: string | null; lastSeenAt: string } }>)
+    ?.response;
   const message = response?.data?.message;
+  // One signed-in device per user: say which device holds the session
+  if (response?.status === 409 && response.data?.code === 'SESSION_ACTIVE') {
+    const device = response.data.device;
+    return t(
+      'This user is already signed in on another device ({device}, last active {time}). Sign out on that device first, or ask a manager to disconnect you (Users page). A device left unused for 15 minutes no longer blocks the sign-in.',
+      {
+        device: describeUserAgent(device?.userAgent ?? null),
+        time: device?.lastSeenAt ? formatDateTime(device.lastSeenAt) : '—',
+      }
+    );
+  }
   if (response?.status === 429 && (typeof message !== 'string' || /^ThrottlerException/.test(message))) {
     return t('Too many attempts. Wait a few minutes and try again.');
   }

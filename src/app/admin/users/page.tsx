@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useQuery } from '@tanstack/react-query';
-import { KeyRound, Pencil, Plus, ShieldCheck } from 'lucide-react';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { KeyRound, LogOut, Pencil, Plus, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge, statusVariant } from '@/components/ui/badge';
@@ -21,6 +21,7 @@ import { memberName, UserFormDialog } from '@/components/admin/user-form-dialog'
 import { UserPasswordDialog } from '@/components/admin/user-password-dialog';
 import { getErrorMessage } from '@/lib/api/client';
 import { Member, usersApi } from '@/lib/api/users';
+import { sessionsApi } from '@/lib/api/sessions';
 import { branchesApi } from '@/lib/api/settings';
 import { formatDateTime } from '@/lib/format';
 import { useAuthStore } from '@/stores/auth-store';
@@ -59,6 +60,38 @@ export default function UsersPage() {
   // Only owners can change or reset another owner
   const canManage = (member: Member) => member.role !== 'owner' || currentUser?.role === 'owner';
 
+  // A user is signed in on one device at a time: sign them out of it (lost device,
+  // browser closed without signing out) so they can sign in elsewhere
+  const [notice, setNotice] = useState<string | null>(null);
+  const disconnect = useMutation({
+    mutationFn: (member: Member) => sessionsApi.revokeMember(member.id),
+    onSuccess: ({ revoked }, member) =>
+      setNotice(
+        revoked > 0
+          ? t('{name} is disconnected and can sign in again on any device.', { name: memberName(member) })
+          : t('{name} was not signed in.', { name: memberName(member) })
+      ),
+  });
+  const askDisconnect = (member: Member) => {
+    setNotice(null);
+    if (window.confirm(t('Disconnect {name} from every device? Unsaved work on that device is lost.', { name: memberName(member) }))) {
+      disconnect.mutate(member);
+    }
+  };
+  const disconnectButton = (member: Member) => (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="h-8 w-8"
+      onClick={() => askDisconnect(member)}
+      disabled={disconnect.isPending}
+      title={t('Disconnect {name}', { name: member.email })}
+      aria-label={t('Disconnect {name}', { name: member.email })}
+    >
+      <LogOut className="h-4 w-4" />
+    </Button>
+  );
+
   return (
     <div className="mx-auto max-w-6xl space-y-4">
       <PageHeader
@@ -71,6 +104,9 @@ export default function UsersPage() {
           </Button>
         }
       />
+
+      {notice && <p className="rounded-md bg-green-50 p-3 text-sm text-green-700">{notice}</p>}
+      {disconnect.error && <ErrorMessage>{getErrorMessage(disconnect.error, 'Could not disconnect this user')}</ErrorMessage>}
 
       <Card className="bg-white">
         {error && (
@@ -152,15 +188,18 @@ export default function UsersPage() {
                           </Link>
                         </Button>
                       ) : (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => setResetting(member)}
-                          aria-label={t('Reset password for {name}', { name: member.email })}
-                        >
-                          <KeyRound className="h-4 w-4" />
-                        </Button>
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => setResetting(member)}
+                            aria-label={t('Reset password for {name}', { name: member.email })}
+                          >
+                            <KeyRound className="h-4 w-4" />
+                          </Button>
+                          {disconnectButton(member)}
+                        </>
                       )}
                     </DataCardActions>
                   )}
@@ -221,7 +260,7 @@ export default function UsersPage() {
                       )}
                     </Td>
                     <Td>{member.lastLoginAt ? formatDateTime(member.lastLoginAt) : t('Never')}</Td>
-                    <Td>
+                    <Td className="whitespace-nowrap">
                       {canManage(member) && (
                         <div className="flex justify-end gap-1">
                           <Button
@@ -245,15 +284,18 @@ export default function UsersPage() {
                               </Link>
                             </Button>
                           ) : (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => setResetting(member)}
-                              aria-label={t('Reset password for {name}', { name: member.email })}
-                            >
-                              <KeyRound className="h-4 w-4" />
-                            </Button>
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => setResetting(member)}
+                                aria-label={t('Reset password for {name}', { name: member.email })}
+                              >
+                                <KeyRound className="h-4 w-4" />
+                              </Button>
+                              {disconnectButton(member)}
+                            </>
                           )}
                         </div>
                       )}
