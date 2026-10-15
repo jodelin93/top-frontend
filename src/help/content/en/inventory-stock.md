@@ -11,6 +11,8 @@ All stock tasks are done in **Admin** > **Inventory**. The tabs are **Stock**, *
 
 The **Stock** tab shows, for each product and each location, the **On hand**, **Reserved**, **Available** and **In transit** quantities, with the **Last counted** and **Last received** dates.
 
+> **Tip:** products sold without stock (services such as printing) are not listed here: untick **Track stock** on the product to leave it out of stock, counts and low-stock alerts.
+
 ![The Stock tab](shot:inventory-stock)
 
 1. Type a name, SKU or barcode in the search.

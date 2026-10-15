@@ -12,8 +12,11 @@ La página **Productos** (menú **Catálogo**) muestra todo su catálogo: SKU, c
 ![La lista de productos](shot:admin-products)
 
 1. Escriba un nombre, un SKU o un código de barras en **Buscar por nombre, SKU o código de barras...**.
-2. Si hace falta, filtre por estado (**Activo**, **Inactivo**, **Descontinuado**), por **Etiquetas** o por **Sucursal**.
-3. Para exportar el catálogo, haga clic en **Exportar CSV** o **Exportar Excel**.
+2. Si hace falta, filtre por **Categoría** (una categoría incluye sus subcategorías), **Tipo**, estado (**Activo**, **Inactivo**, **Descontinuado**), **Etiquetas** o **Sucursal**.
+3. Elija el orden en **Ordenar por**: **Más recientes primero** o **Más antiguos primero** (fecha de creación), nombre, precio, existencias, categoría, SKU o **Modificados recientemente**. La elección se guarda en esta computadora.
+4. Para exportar el catálogo, haga clic en **Exportar CSV** o **Exportar Excel**.
+
+Un producto vendido sin existencias (un servicio, por ejemplo) muestra **—** en la columna Existencias y no aparece en el **Inventario**.
 
 Cada fila tiene íconos a la derecha:
 

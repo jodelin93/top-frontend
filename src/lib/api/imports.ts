@@ -66,9 +66,9 @@ const csvForm = (file: File, extra: Record<string, string> = {}) => {
 };
 
 export const importsApi = {
-  // CSV template with the header and example rows
-  template: async (): Promise<Blob> => {
-    const { data } = await apiClient.get('/imports/products/template', { responseType: 'blob' });
+  // Template with the header and example rows, as CSV or Excel
+  template: async (format: 'csv' | 'xlsx' = 'csv'): Promise<Blob> => {
+    const { data } = await apiClient.get('/imports/products/template', { params: { format }, responseType: 'blob' });
     return data;
   },
   // Dry run: validates every row, saves nothing

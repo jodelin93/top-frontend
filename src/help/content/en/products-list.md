@@ -12,8 +12,11 @@ The **Products** page (**Catalog** menu) shows your whole catalog: SKU, barcode,
 ![The product list](shot:admin-products)
 
 1. Type a name, SKU or barcode in **Search by name, SKU or barcode...**.
-2. If needed, filter by status (**Active**, **Inactive**, **Discontinued**), by **Tags** or by **Branch**.
-3. To export the catalog, click **Export CSV** or **Export Excel**.
+2. If needed, filter by **Category** (a category includes its sub-categories), **Type**, status (**Active**, **Inactive**, **Discontinued**), **Tags** or **Branch**.
+3. Choose the order in **Sort by**: **Newest first** or **Oldest first** (creation date), name, price, stock, category, SKU or **Recently updated**. The choice is kept on this computer.
+4. To export the catalog, click **Export CSV** or **Export Excel**.
+
+A product sold without stock (a service, for example) shows **—** in the Stock column and does not appear in **Inventory**.
 
 Each row has icons on the right:
 

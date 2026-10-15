@@ -1,22 +1,22 @@
 ---
 id: products-import
-title: Enpòte pwodui (CSV)
+title: Enpòte pwodui (Excel oswa CSV)
 category: Katalòg
 order: 806
 routes: [/admin/import]
 keywords: [enpòte, enpote, enpòtasyon, CSV, fichye, tablo, modèl, model, mizajou an mas, kolòn, kolon, import, importer, fichier, tableur, modèle, mise à jour en masse, colonnes]
 related: [products-list, categories]
 ---
-Enpòtasyon an kreye oswa mete ajou anpil pwodui apati yon fichye CSV. Ou toujou wè chanjman yo anvan yo anrejistre. Ou bezwen pèmisyon **Enpòte pwodui apati yon CSV**.
+Enpòtasyon an kreye oswa mete ajou anpil pwodui apati yon fichye Excel (.xlsx) oswa yon fichye CSV. Ou toujou wè chanjman yo anvan yo anrejistre. Ou bezwen pèmisyon **Enpòte pwodui apati yon CSV**.
 
 ![Paj Enpòte pwodui a](shot:admin-import)
 
 1. Nan meni an, klike sou **Enpòte**.
-2. Klike sou **Telechaje modèl la** pou jwenn yon fichye ak bon kolòn yo.
-3. Ranpli fichye a nan yon tablo (tableur), epi anrejistre l an CSV UTF-8 (5 000 liy ak 2 Mo pou pi plis).
+2. Klike sou **Modèl Excel** (oswa **Modèl CSV**) pou jwenn yon fichye ak bon kolòn yo.
+3. Ranpli fichye a epi anrejistre l: an klasè Excel (.xlsx, se premye fèy la sèlman ki li) oswa an CSV UTF-8. 5 000 liy ak 2 Mo pou pi plis.
 4. Chwazi sa ki pral rive **Pwodui ki egziste (menm SKU)** yo: **Mete enfòmasyon yo ajou** oswa **Kite yo jan yo ye**.
 5. Koche **Ranplase pri ak pri revyen yo tou** sèlman si fichye a gen nouvo pri yo.
-6. Klike sou **Chwazi fichye** epi chwazi CSV ou a.
+6. Klike sou **Chwazi fichye** epi chwazi fichye Excel oswa CSV ou a.
 7. Verifye rezime a: **Nouvo pwodui**, **Mizajou**, **Pa gen chanjman** ak **Liy ki gen erè**.
 8. Korije liy ki gen erè yo si sa nesesè, epi klike sou **Enpòte N pwodui**.
 
@@ -30,5 +30,7 @@ Kolòn prensipal yo:
 - **status**: active, inactive oswa discontinued.
 
 > **Konsèy:** yon selil ki vid kite valè ki la deja a jan l ye.
+
+> **Konsèy:** ansyen fòma Excel la (.xls) pa li: nan Excel, sèvi ak **Anrejistre sou › Klasè Excel (.xlsx)**. Nan modèl Excel la, tout selil yo se tèks: kòd yo kenbe zewo ki devan yo.
 
 > **Atansyon:** aplikasyon an pa pran kolòn allow_backorder la an kont: li pa janm otorize vann lè stòk la anba zewo.

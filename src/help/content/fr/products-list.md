@@ -12,8 +12,11 @@ La page **Produits** (menu **Catalogue**) affiche tout votre catalogue : SKU, co
 ![La liste des produits](shot:admin-products)
 
 1. Tapez un nom, un SKU ou un code-barres dans **Rechercher par nom, SKU ou code-barres...**.
-2. Filtrez si besoin par statut (**Actif**, **Inactif**, **Abandonné**), par **Mots-clés** ou par **Succursale**.
-3. Pour exporter le catalogue, cliquez sur **Exporter en CSV** ou **Exporter en Excel**.
+2. Si besoin, filtrez par **Catégorie** (une catégorie inclut ses sous-catégories), **Type**, statut (**Actif**, **Inactif**, **Abandonné**), **Étiquettes** ou **Succursale**.
+3. Choisissez l'ordre dans **Trier par** : **Plus récents d'abord** ou **Plus anciens d'abord** (date de création), nom, prix, stock, catégorie, SKU ou **Modifiés récemment**. Le choix est gardé sur cet ordinateur.
+4. Pour exporter le catalogue, cliquez sur **Exporter en CSV** ou **Exporter en Excel**.
+
+Un produit vendu sans stock (un service, par exemple) affiche **—** dans la colonne Stock et n'apparaît pas dans l'**Inventaire**.
 
 Chaque ligne a des icônes à droite :
 

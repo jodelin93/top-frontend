@@ -11,6 +11,8 @@ Tout travay sou stòk fèt nan **Administrasyon** > **Envantè**. Onglè yo se *
 
 Onglè **Stòk** la afiche, pou chak pwodui ak chak anplasman, kantite **Disponib nan stòk**, **Rezève**, **Disponib** ak **Sou wout**, ak dat **Dènye konte** ak **Dènye resepsyon**.
 
+> **Konsèy:** pwodui ki vann san stòk (sèvis tankou enpresyon) pa parèt isit la: retire swivi stòk la sou pwodui a pou l pa parèt nan stòk, konte ak alèt stòk ki ba.
+
 ![Onglè Stòk la](shot:inventory-stock)
 
 1. Tape yon non, yon SKU oswa yon kòd ba nan rechèch la.

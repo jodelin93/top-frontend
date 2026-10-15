@@ -68,8 +68,8 @@ export default function ImportPage() {
   };
 
   const template = useMutation({
-    mutationFn: () => importsApi.template(),
-    onSuccess: (blob) => downloadBlob(blob, 'products-import-template.csv'),
+    mutationFn: (format: 'csv' | 'xlsx') => importsApi.template(format),
+    onSuccess: (blob, format) => downloadBlob(blob, `products-import-template.${format}`),
     onError: (err) => setError(getErrorMessage(err, 'Could not download the template')),
   });
 
@@ -119,12 +119,18 @@ export default function ImportPage() {
     <div className="mx-auto max-w-6xl space-y-4">
       <PageHeader
         title={t('Import products')}
-        description={t("Create or update products from a CSV file. You'll see what will change before anything is saved.")}
+        description={t("Create or update products from a CSV or Excel file. You'll see what will change before anything is saved.")}
         actions={
-          <Button variant="outline" onClick={() => template.mutate()} disabled={template.isPending}>
-            <Download className="h-4 w-4" />
-            {t('Download template')}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" onClick={() => template.mutate('xlsx')} disabled={template.isPending}>
+              <Download className="h-4 w-4" />
+              {t('Excel template')}
+            </Button>
+            <Button variant="outline" onClick={() => template.mutate('csv')} disabled={template.isPending}>
+              <Download className="h-4 w-4" />
+              {t('CSV template')}
+            </Button>
+          </div>
         }
       />
 
@@ -136,9 +142,9 @@ export default function ImportPage() {
       <Card className="space-y-4 bg-white p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="font-semibold">{t('1. Choose a CSV file')}</h2>
+            <h2 className="font-semibold">{t('1. Choose a CSV or Excel file')}</h2>
             <p className="text-sm text-gray-500">
-              {t('UTF-8 CSV with a header row, up to {rows} rows and {size} MB.', {
+              {t('Excel workbook (.xlsx, first sheet) or UTF-8 CSV, with a header row, up to {rows} rows and {size} MB.', {
                 rows: MAX_IMPORT_ROWS.toLocaleString(),
                 size: MAX_IMPORT_MB,
               })}{' '}
@@ -149,7 +155,7 @@ export default function ImportPage() {
             <input
               ref={inputRef}
               type="file"
-              accept=".csv,text/csv"
+              accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
               className="hidden"
               onChange={(e) => pick(e.target.files?.[0])}
             />

@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Download, ImageIcon, Layers, Pencil, Plus, Printer, Ruler, Search, SlidersHorizontal, Tag, Trash2 } from 'lucide-react';
+import { ArrowUpDown, Download, ImageIcon, Layers, Pencil, Plus, Printer, Ruler, Search, SlidersHorizontal, Tag, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -22,6 +22,8 @@ import { ProductUnitsDialog } from '@/components/admin/product-units-dialog';
 import { getErrorMessage } from '@/lib/api/client';
 import { normalizeTags, Product, ProductStatus, ProductType, productsApi } from '@/lib/api/products';
 import { branchesApi } from '@/lib/api/settings';
+import { categoriesApi } from '@/lib/api/categories';
+import { DEFAULT_PRODUCT_SORT, isProductSort, sortProducts, type ProductSort } from '@/lib/product-sort';
 import { hasAnyPermission, hasPermission, useAuthStore } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
 import { text } from '@/lib/api/crud';
@@ -40,6 +42,43 @@ function priceLabel(product: Product, currency: string): string {
   return min === max
     ? formatMoney(min, currency)
     : `${formatMoney(min, currency)} – ${formatMoney(max, currency)}`;
+}
+
+// The chosen order is remembered in this browser
+const SORT_KEY = 'pos_products_sort';
+const savedSort = (): ProductSort => {
+  try {
+    const value = localStorage.getItem(SORT_KEY);
+    return isProductSort(value) ? value : DEFAULT_PRODUCT_SORT;
+  } catch {
+    return DEFAULT_PRODUCT_SORT;
+  }
+};
+
+const sortLabels: Record<ProductSort, string> = {
+  newest: 'Newest first',
+  oldest: 'Oldest first',
+  'name-asc': 'Name (A to Z)',
+  'name-desc': 'Name (Z to A)',
+  'price-asc': 'Price (lowest first)',
+  'price-desc': 'Price (highest first)',
+  'stock-asc': 'Stock (lowest first)',
+  'stock-desc': 'Stock (highest first)',
+  'category-asc': 'Category (A to Z)',
+  'sku-asc': 'SKU (A to Z)',
+  'updated-desc': 'Recently updated',
+};
+
+// Stock in the list; products sold without stock (services) have none to show
+function stockCell(product: Product) {
+  if (product.isStockTracked === false) {
+    return (
+      <span className="text-gray-400" title={t('Stock not tracked')}>
+        —
+      </span>
+    );
+  }
+  return product.variants.reduce((sum, v) => sum + v.stockQuantity, 0);
 }
 
 const statusStyles: Record<ProductStatus, string> = {
@@ -74,11 +113,28 @@ export default function ProductsPage() {
   const [labelsOpen, setLabelsOpen] = useState(false);
   const [tagFilter, setTagFilter] = useState('');
   const [branchId, setBranchId] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [productType, setProductType] = useState<ProductType | ''>('');
+  const [sort, setSort] = useState<ProductSort>(DEFAULT_PRODUCT_SORT);
+  // localStorage is read after mount (the server render has no access to it)
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSort(savedSort());
+  }, []);
+  const changeSort = (next: ProductSort) => {
+    setSort(next);
+    try {
+      localStorage.setItem(SORT_KEY, next);
+    } catch {
+      /* not remembered: still applied */
+    }
+  };
   const [exporting, setExporting] = useState<'csv' | 'xlsx' | null>(null);
   const canExport = useAuthStore((s) => hasPermission(s.user, 'catalog.import'));
   const canManage = useAuthStore((s) => hasPermission(s.user, 'catalog.manage'));
   const canPrintLabels = useAuthStore((s) => hasAnyPermission(s.user, 'catalog.manage', 'inventory.receive'));
   const { data: branches = [] } = useQuery({ queryKey: ['branches'], queryFn: () => branchesApi.list() });
+  const { data: categories = [] } = useQuery({ queryKey: ['categories'], queryFn: () => categoriesApi.list() });
   const tags = normalizeTags(tagFilter).join(',');
   const currency = useCurrency();
   const variantsProduct = products.find((p) => p.id === variantsProductId) ?? null;
@@ -94,6 +150,8 @@ export default function ProductsPage() {
         // Products with any of these tags
         tags: tags || undefined,
         branchId: branchId || undefined,
+        categoryId: categoryId || undefined,
+        productType: productType || undefined,
       });
       setProducts(data);
     } catch (err) {
@@ -101,7 +159,10 @@ export default function ProductsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [search, status, tags, branchId]);
+  }, [search, status, tags, branchId, categoryId, productType]);
+
+  const shown = useMemo(() => sortProducts(products, sort), [products, sort]);
+  const filtered = !!(search || status || tags || branchId || categoryId || productType);
 
   // Debounce search typing
   useEffect(() => {
@@ -218,6 +279,34 @@ export default function ProductsPage() {
               aria-label={t('Filter by tags')}
             />
           </div>
+          {categories.length > 0 && (
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              className="h-9 rounded-md border border-input bg-transparent px-3 text-sm shadow-sm sm:w-48"
+              aria-label={t('Filter by category')}
+            >
+              <option value="">{t('All categories')}</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {text(category.name)}
+                </option>
+              ))}
+            </select>
+          )}
+          <select
+            value={productType}
+            onChange={(e) => setProductType(e.target.value as ProductType | '')}
+            className="h-9 rounded-md border border-input bg-transparent px-3 text-sm shadow-sm sm:w-44"
+            aria-label={t('Filter by type')}
+          >
+            <option value="">{t('All types')}</option>
+            {(Object.keys(typeLabels) as ProductType[]).map((type) => (
+              <option key={type} value={type}>
+                {t(typeLabels[type])}
+              </option>
+            ))}
+          </select>
           {branches.length > 1 && (
             <select
               value={branchId}
@@ -233,6 +322,23 @@ export default function ProductsPage() {
               ))}
             </select>
           )}
+          <label className="flex items-center gap-2 text-sm text-gray-600 sm:ml-auto">
+            <ArrowUpDown className="h-4 w-4 shrink-0 text-gray-400" />
+            <span className="sr-only">{t('Sort by')}</span>
+            <select
+              value={sort}
+              onChange={(e) => changeSort(e.target.value as ProductSort)}
+              className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm text-gray-900 shadow-sm sm:w-52"
+              aria-label={t('Sort by')}
+              data-testid="product-sort"
+            >
+              {(Object.keys(sortLabels) as ProductSort[]).map((key) => (
+                <option key={key} value={key}>
+                  {t(sortLabels[key])}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
 
         {error && (
@@ -242,12 +348,12 @@ export default function ProductsPage() {
         {smallScreen ? (
           // Phones: one card per product instead of a table that scrolls sideways
           <DataCards
-            items={products}
+            items={shown}
             getKey={(product) => product.id}
             loading={isLoading && products.length === 0}
             loadingText={t('Loading products...')}
             emptyText={
-              search || status || tags || branchId
+              filtered
                 ? t('No products match your filters.')
                 : t('No products yet. Create your first one.')
             }
@@ -302,7 +408,7 @@ export default function ProductsPage() {
                 <DataCardFields>
                   <DataCardField label={t('Price')}>{priceLabel(product, currency)}</DataCardField>
                   <DataCardField label={t('Stock')}>
-                    {product.variants.reduce((sum, v) => sum + v.stockQuantity, 0)}
+                    {stockCell(product)}
                   </DataCardField>
                   <DataCardField label={t('Category')}>
                     {product.category ? text(product.category.name) : '—'}
@@ -378,13 +484,13 @@ export default function ProductsPage() {
               ) : products.length === 0 ? (
                 <tr>
                   <td colSpan={10} className="px-4 py-10 text-center text-gray-400">
-                    {search || status || tags || branchId
+                    {filtered
                       ? t('No products match your filters.')
                       : t('No products yet. Create your first one.')}
                   </td>
                 </tr>
               ) : (
-                products.map((product) => (
+                shown.map((product) => (
                   <tr key={product.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 font-medium">
                       <div className="flex items-center gap-3">
@@ -429,7 +535,7 @@ export default function ProductsPage() {
                     </td>
                     <td className="px-4 py-3 text-right">{priceLabel(product, currency)}</td>
                     <td className="px-4 py-3 text-right">
-                      {product.variants.reduce((sum, v) => sum + v.stockQuantity, 0)}
+                      {stockCell(product)}
                     </td>
                     <td className="px-4 py-3">{t(typeLabels[product.productType])}</td>
                     <td className="px-4 py-3">
