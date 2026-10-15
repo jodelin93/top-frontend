@@ -25,6 +25,8 @@ Ouvrez la session avant la première vente :
 
 Le bouton de la barre du haut affiche alors le numéro de session, par exemple **SH-000004 · Ouverte**. Cliquez dessus à tout moment pour voir le détail du tiroir.
 
+> **Attention :** par défaut, la caisse refuse d'encaisser une vente tant qu'aucune session n'est ouverte sur elle : le bouton **Encaisser** est grisé avec le message **Aucune session de caisse n'est ouverte sur cette caisse**. Le propriétaire peut changer cela dans **Paramètres › Général** (**Exiger une session de caisse ouverte pour vendre**). Les ventes faites hors ligne passent quand même et sont vérifiées à la synchronisation.
+
 > **Astuce :** la liste des coupures (billets et pièces) se règle dans **Administration** > **Sessions de caisse et espèces**, bloc **Coupures** (voir [Coupures, journée comptable et corrections](topic:shifts-settings)).
 
 > **Astuce :** si le caissier précédent vous a passé la caisse à sa clôture, votre session est déjà ouverte avec ses espèces comptées comme fond de caisse.

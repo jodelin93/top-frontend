@@ -550,6 +550,8 @@ export const adminSales: Record<string, string> = {
   'Uploaded after its shift closed': 'Envoyée après la clôture de sa session de caisse',
   'Sold offline with no shift open': 'Vendue hors ligne sans session de caisse ouverte',
   'Track stock (untick for services and other non-stock items)': 'Suivre le stock (décochez pour les services et autres articles sans stock)',
+  "Require an open cash session to sell": "Exiger une session de caisse ouverte pour vendre",
+  "The till refuses to charge a sale on a register with no open session, so all cash is counted in a session. Sales made offline still go through and are reviewed when they sync.": "La caisse refuse d'encaisser une vente sur une caisse sans session ouverte : tout l'argent est ainsi compté dans une session. Les ventes faites hors ligne passent quand même et sont vérifiées à la synchronisation.",
   'Allow sales with a total of 0.00': 'Autoriser les ventes d\'un total de 0,00',
   'Free replacements and giveaways complete without payment. Needs the "discounts above the store limit" permission or a manager.': 'Les remplacements gratuits et cadeaux se valident sans paiement. Nécessite la permission « remises au-delà de la limite du magasin » ou un responsable.',
   // Reports: branch filter, freshness, exports, saved filters, new reports (spec §14)

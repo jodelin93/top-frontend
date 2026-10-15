@@ -15,7 +15,7 @@ The **Settings** page needs the **Manage store settings** permission (owner, adm
 2. Choose the **Default tax rate**, applied to every sale.
 3. Set the **Low-stock threshold** and the store's default **Language**.
 4. Enter the number of months in **Gift cards expire after (months)**.
-5. Check **Prices include tax** if the displayed prices already include tax, and **Allow sales with a total of 0.00** if needed.
+5. Check **Prices include tax** if the displayed prices already include tax, and **Allow sales with a total of 0.00** if needed. **Require an open cash session to sell** (on by default) stops the till from charging on a register with no open shift.
 6. Click **Save settings**.
 
 Further down in the same tab:

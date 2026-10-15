@@ -15,7 +15,7 @@ La page **Paramètres** demande le droit **Gérer les paramètres du magasin** (
 2. Choisissez le **Taux de taxe par défaut**, appliqué à chaque vente.
 3. Réglez le **Seuil de stock bas** et la **Langue** par défaut du magasin.
 4. Indiquez après combien de mois **Les cartes cadeaux expirent**.
-5. Cochez **Prix TTC** si les prix affichés incluent déjà la taxe, et **Autoriser les ventes d'un total de 0,00** si besoin.
+5. Cochez **Prix TTC** si les prix affichés incluent déjà la taxe, et **Autoriser les ventes d'un total de 0,00** si besoin. **Exiger une session de caisse ouverte pour vendre** (activé par défaut) empêche d'encaisser sur une caisse sans session ouverte.
 6. Cliquez sur **Enregistrer les paramètres**.
 
 Plus bas dans le même onglet :

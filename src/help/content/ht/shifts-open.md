@@ -25,6 +25,8 @@ Louvri sesyon an anvan premye vant lan:
 
 Bouton ki nan ba anlè a montre nimewo sesyon an, pa egzanp **SH-000004 · Louvri**. Klike sou li nenpòt lè pou wè detay tiwa a.
 
+> **Atansyon:** pa defo, kès la refize ankese yon vant toutotan pa gen sesyon ki louvri sou li: bouton **Touche** la gri ak mesaj **Pa gen okenn sesyon kès ki louvri sou kès sa a**. Pwopriyetè a ka chanje sa nan **Paramèt › Jeneral** (**Mande yon sesyon kès ki louvri pou vann**). Vant ki fèt san entènèt pase kanmenm epi yo verifye yo lè yo senkronize.
+
 > **Konsèy:** lis biyè ak pyès yo regle nan **Administrasyon** > **Sesyon kès ak lajan kach**, blòk **Biyè ak pyès** (gade [Biyè ak pyès, jounen kontab ak koreksyon](topic:shifts-settings)).
 
 > **Konsèy:** si kesye anvan w lan te pase w kès la lè l t ap fèmen, sesyon w lan deja louvri ak lajan kach li te konte a kòm fon kès.

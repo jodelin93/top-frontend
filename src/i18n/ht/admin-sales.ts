@@ -548,6 +548,8 @@ export const adminSales: Record<string, string> = {
   'Uploaded after its shift closed': 'Voye apre sesyon kès li a te fèmen',
   'Sold offline with no shift open': 'Vann san entènèt san sesyon kès louvri',
   'Track stock (untick for services and other non-stock items)': 'Swiv stòk la (retire tchèk la pou sèvis ak lòt atik ki pa gen stòk)',
+  "Require an open cash session to sell": "Mande yon sesyon kès ki louvri pou vann",
+  "The till refuses to charge a sale on a register with no open session, so all cash is counted in a session. Sales made offline still go through and are reviewed when they sync.": "Kès la refize ankese yon vant sou yon kès ki pa gen sesyon louvri: konsa tout lajan konte nan yon sesyon. Vant ki fèt san entènèt pase kanmenm epi yo verifye yo lè yo senkronize.",
   'Allow sales with a total of 0.00': 'Pèmèt vant ki gen yon total 0.00',
   'Free replacements and giveaways complete without payment. Needs the "discounts above the store limit" permission or a manager.': 'Ranplasman gratis ak kado fini san peman. Sa bezwen otorizasyon « rabè ki depase limit magazen an » oswa yon manadjè.',
   'Detailed reports for any period, with CSV, Excel and PDF export, plus a reconciliation check.': 'Rapò detaye pou nenpòt peryòd, ak ekspòtasyon CSV, Excel ak PDF, epi yon verifikasyon rapwochman.',

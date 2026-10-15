@@ -15,7 +15,7 @@ La página **Configuración** requiere el permiso **Administrar la configuració
 2. Elija la **Tasa de impuesto predeterminada**, que se aplica a cada venta.
 3. Configure el **Umbral de existencias bajas** y el **Idioma** predeterminado de la tienda.
 4. Indique después de cuántos meses **Las tarjetas de regalo vencen**.
-5. Marque **Los precios incluyen impuestos** si los precios mostrados ya incluyen el impuesto, y **Permitir ventas con un total de 0.00** si lo necesita.
+5. Marque **Los precios incluyen impuestos** si los precios mostrados ya incluyen el impuesto, y **Permitir ventas con un total de 0.00** si lo necesita. **Exigir una sesión de caja abierta para vender** (activado por defecto) impide cobrar en una caja sin turno abierto.
 6. Haga clic en **Guardar configuración**.
 
 Más abajo en la misma pestaña:

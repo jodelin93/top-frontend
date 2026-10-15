@@ -617,6 +617,8 @@ export const adminSales: Record<string, string> = {
   'Sold offline with no shift open': 'Vendida sin conexión sin turno abierto',
   'Track stock (untick for services and other non-stock items)':
     'Controlar existencias (desmarque para servicios y otros artículos sin existencias)',
+  "Require an open cash session to sell": "Exigir una sesión de caja abierta para vender",
+  "The till refuses to charge a sale on a register with no open session, so all cash is counted in a session. Sales made offline still go through and are reviewed when they sync.": "La caja se niega a cobrar una venta en una caja sin sesión abierta: así todo el efectivo se cuenta en una sesión. Las ventas hechas sin conexión pasan igualmente y se revisan al sincronizar.",
   'Allow sales with a total of 0.00': 'Permitir ventas con un total de 0.00',
   'Free replacements and giveaways complete without payment. Needs the "discounts above the store limit" permission or a manager.':
     'Los reemplazos gratuitos y obsequios se completan sin pago. Necesita el permiso “descuentos por encima del límite de la tienda” o un gerente.',

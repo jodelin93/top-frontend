@@ -29,6 +29,7 @@ const generalSchema = z.object({
   defaultTaxRateId: z.string(),
   lowStockThreshold: z.string().regex(/^\d+$/, 'Must be a whole number'),
   allowZeroValueSales: z.boolean(),
+  requireOpenShift: z.boolean(),
   language: z.enum(['en', 'fr']),
   // Months until a gift card sold expires (0 = never)
   giftCardExpiryMonths: z
@@ -47,6 +48,7 @@ function toFormData(settings?: StoreSettings): GeneralFormData {
     defaultTaxRateId: settings?.defaultTaxRateId ?? '',
     lowStockThreshold: String(settings?.lowStockThreshold ?? 5),
     allowZeroValueSales: settings?.allowZeroValueSales ?? false,
+    requireOpenShift: settings?.requireOpenShift ?? true,
     language: settings?.language === 'fr' ? 'fr' : 'en',
     giftCardExpiryMonths: String(settings?.giftCardExpiryMonths ?? 0),
   };
@@ -87,6 +89,7 @@ export function SettingsGeneral() {
           defaultTaxRateId: data.defaultTaxRateId || null,
           lowStockThreshold: Number(data.lowStockThreshold),
           allowZeroValueSales: data.allowZeroValueSales,
+          requireOpenShift: data.requireOpenShift,
           language: data.language,
           giftCardExpiryMonths: Number(data.giftCardExpiryMonths),
         },
@@ -187,6 +190,15 @@ export function SettingsGeneral() {
                   'Free replacements and giveaways complete without payment. Needs the "discounts above the store limit" permission or a manager.'
                 )}
                 {...register('allowZeroValueSales')}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <CheckboxField
+                label={t('Require an open cash session to sell')}
+                hint={t(
+                  'The till refuses to charge a sale on a register with no open session, so all cash is counted in a session. Sales made offline still go through and are reviewed when they sync.'
+                )}
+                {...register('requireOpenShift')}
               />
             </div>
           </div>

@@ -184,6 +184,7 @@ export const pos: Record<string, string> = {
   'Could not record the cash movement': 'Pa t kapab anrejistre mouvman lajan kach la',
   'Number of {value}': 'Kantite {value}',
   'Counted total': 'Total ki konte',
+  "No cash session is open on this register. Click “Open shift” at the top before selling.": "Pa gen okenn sesyon kès ki louvri sou kès sa a. Klike sou « Louvri sesyon kès » anlè a anvan ou vann.",
   'Open shift': 'Louvri sesyon kès',
   '{register}: count the cash in the drawer before the first sale.': '{register} : konte lajan kach ki nan tiwa a anvan premye vant lan.',
   'Count the cash in the drawer before the first sale.': 'Konte lajan kach ki nan tiwa a anvan premye vant lan.',

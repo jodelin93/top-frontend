@@ -44,6 +44,7 @@ import { PaymentDialog, TenderedPayment } from '@/components/pos/payment-dialog'
 import { GiftCardDialog } from '@/components/pos/gift-card-dialog';
 import { NewReturnDialog } from '@/components/admin/returns-new-dialog';
 import { storedValueApi } from '@/lib/api/stored-value';
+import { shiftsApi } from '@/lib/api/shifts';
 import { amountDueIn, buyRatesOf, exchangeRate, foreignChange, toSaleCurrency } from '@/lib/pos/currency-math';
 import { ReceiptDialog } from '@/components/pos/receipt-dialog';
 import { useScannerInput } from '@/lib/hardware/scanner';
@@ -192,6 +193,19 @@ function POSScreen() {
   // Default to the first register; forget a register that no longer exists
   const registers = context?.registers ?? [];
   const register = registers.find((r) => r.id === registerId) ?? registers[0] ?? null;
+  // Store rule "an open cash session is required to sell": checked here so the cashier
+  // learns it before filling a cart (the server refuses the sale anyway). Offline,
+  // sales go through and are reviewed when they sync.
+  const requireShift = !!context?.settings.requireOpenShift;
+  const { data: currentShift, isSuccess: shiftKnown } = useQuery({
+    queryKey: ['shifts', 'current', register?.id],
+    queryFn: () => shiftsApi.current(register!.id),
+    enabled: !!register?.id && online && requireShift,
+    retry: false,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
+  });
+  const shiftMissing = requireShift && online && shiftKnown && !currentShift?.shift;
   useEffect(() => {
     if (register && register.id !== registerId) setRegister(register.id);
   }, [register, registerId, setRegister]);
@@ -532,6 +546,10 @@ function POSScreen() {
   const startCheckout = async (options: { continuing?: boolean } = {}) => {
     if (!register || !hasLines || dialog || repricing) return;
     setCheckoutError(null);
+    if (shiftMissing) {
+      setNotice(t('No cash session is open on this register. Click “Open shift” at the top before selling.'));
+      return;
+    }
     if (giftCards.length > 0 && !online) {
       setNotice(t('Gift cards can only be sold online. Remove them to sell offline.'));
       return;
@@ -1857,10 +1875,15 @@ function POSScreen() {
                 })}
               </div>
 
+              {shiftMissing && (
+                <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700" role="alert" data-testid="shift-required">
+                  {t('No cash session is open on this register. Click “Open shift” at the top before selling.')}
+                </p>
+              )}
               <Button
                 size="lg"
                 className="h-14 w-full text-lg"
-                disabled={!hasLines}
+                disabled={!hasLines || shiftMissing}
                 onClick={() => startCheckout()}
                 title={t('Charge (F12)')}
               >

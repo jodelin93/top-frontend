@@ -184,6 +184,7 @@ export const pos: Record<string, string> = {
   'Could not record the cash movement': 'Impossible d\'enregistrer le mouvement d\'espèces',
   'Number of {value}': 'Nombre de {value}',
   'Counted total': 'Total compté',
+  "No cash session is open on this register. Click “Open shift” at the top before selling.": "Aucune session de caisse n'est ouverte sur cette caisse. Cliquez sur « Ouvrir la session » en haut avant de vendre.",
   'Open shift': 'Ouvrir la session',
   '{register}: count the cash in the drawer before the first sale.': '{register} : comptez les espèces du tiroir avant la première vente.',
   'Count the cash in the drawer before the first sale.': 'Comptez les espèces du tiroir avant la première vente.',

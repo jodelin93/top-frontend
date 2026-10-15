@@ -25,6 +25,8 @@ Abra el turno antes de la primera venta:
 
 El botón de la barra superior muestra entonces el número de turno, por ejemplo **SH-000004 · Abierto**. Haga clic en él en cualquier momento para ver el detalle del cajón.
 
+> **Atención:** por defecto, la caja se niega a cobrar una venta mientras no haya un turno abierto en ella: el botón **Cobrar** aparece en gris con el mensaje **No hay ninguna sesión de caja abierta en esta caja**. El propietario puede cambiarlo en **Configuración › General** (**Exigir una sesión de caja abierta para vender**). Las ventas hechas sin conexión pasan igualmente y se revisan al sincronizar.
+
 > **Consejo:** la lista de denominaciones (billetes y monedas) se configura en **Administración** > **Turnos de caja y efectivo**, bloque **Denominaciones de efectivo** (vea [Denominaciones, día comercial y correcciones](topic:shifts-settings)).
 
 > **Consejo:** si el cajero anterior le entregó la caja al cerrar, su turno ya está abierto con el efectivo que él contó como fondo de caja.

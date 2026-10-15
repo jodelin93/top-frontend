@@ -209,6 +209,7 @@ export const pos: Record<string, string> = {
   'Could not record the cash movement': 'No se pudo registrar el movimiento de efectivo',
   'Number of {value}': 'Cantidad de {value}',
   'Counted total': 'Total contado',
+  "No cash session is open on this register. Click “Open shift” at the top before selling.": "No hay ninguna sesión de caja abierta en esta caja. Haga clic en «Abrir turno» arriba antes de vender.",
   'Open shift': 'Abrir turno',
   '{register}: count the cash in the drawer before the first sale.':
     '{register}: cuente el efectivo del cajón antes de la primera venta.',

@@ -15,7 +15,7 @@ Paj **Paramèt** la mande dwa **Jere paramèt magazen an** (pwopriyetè, adminis
 2. Chwazi **To taks default** la, ki aplike sou chak vant.
 3. Regle **Limit stòk ba** a ak **Lang** default magazen an.
 4. Mete apre konbyen mwa **Kat kado yo ekspire**.
-5. Koche **Pri yo gen taks ladan** si pri ki parèt yo gen taks la ladan deja, ak **Pèmèt vant ki gen yon total 0.00** si sa nesesè.
+5. Koche **Pri yo gen taks ladan** si pri ki parèt yo gen taks la ladan deja, ak **Pèmèt vant ki gen yon total 0.00** si sa nesesè. **Mande yon sesyon kès ki louvri pou vann** (aktive pa defo) anpeche ankese sou yon kès ki pa gen sesyon louvri.
 6. Klike sou **Anrejistre paramèt yo**.
 
 Pi ba nan menm onglè a:

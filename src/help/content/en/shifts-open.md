@@ -25,6 +25,8 @@ Open the shift before the first sale:
 
 The top-bar button then shows the shift number, for example **SH-000004 · Open**. Click it at any time to see the drawer details.
 
+> **Warning:** by default the till refuses to charge a sale while no shift is open on its register: the **Charge** button is greyed out with the message **No cash session is open on this register**. The owner can change this in **Settings › General** (**Require an open cash session to sell**). Sales made offline still go through and are reviewed when they sync.
+
 > **Tip:** the list of denominations (bills and coins) is set in **Admin** > **Shifts & cash**, **Cash denominations** block (see [Denominations, business day and corrections](topic:shifts-settings)).
 
 > **Tip:** if the previous cashier handed the register over to you when closing, your shift is already open, with their counted cash as the opening float.
