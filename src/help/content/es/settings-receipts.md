@@ -18,7 +18,7 @@ related: [settings-business, hardware, pos-receipt]
 
 ![La pestaña Recibos e impresión](shot:settings-receipts)
 
-> **Consejo:** cuando el logotipo ya muestra el nombre de la empresa, elija **Nombre de la sucursal** en **Nombre bajo el logotipo**: cada recibo muestra entonces la sucursal donde se hizo la venta (por ejemplo «TOP Printing»). Las cotizaciones y facturas proforma siguen la misma elección. El nombre de la sucursal se define en **Configuración › Sucursales y cajas**.
+> **Consejo:** cuando el logotipo ya muestra el nombre de la empresa, elija **Nombre de la sucursal** en **Nombre bajo el logotipo**: cada recibo muestra entonces la sucursal donde se hizo la venta (por ejemplo «TOP Printing»). Las cotizaciones, facturas proforma y notas de crédito siguen la misma elección y también muestran el logotipo. El nombre de la sucursal se define en **Configuración › Sucursales y cajas**.
 
 > **Consejo:** marque **Imprimir automáticamente al completar una venta** para ahorrar tiempo. **Imprimir recibo de prueba** permite revisar el resultado en papel.
 

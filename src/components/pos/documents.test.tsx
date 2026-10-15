@@ -92,6 +92,19 @@ describe('credit note', () => {
     expect(screen.queryByTestId('receipt-copy')).not.toBeInTheDocument();
   });
 
+  it('shows the logo and, when chosen, the branch name like the receipts', () => {
+    const withLogo = { ...settings, receiptFormat: '80mm', businessLogoUrl: 'https://cdn.example/logo.png' } as StoreSettings;
+    const branchReturn = { ...saleReturn, originalSale: { ...sale(), branch: { name: 'TOP Printing' } } } as unknown as SaleReturn;
+    const { rerender } = render(<ReturnReceipt saleReturn={branchReturn} settings={withLogo} />);
+    expect(screen.getByTestId('credit-note-logo')).toHaveAttribute('src', 'https://cdn.example/logo.png');
+    expect(screen.getByText('Corner Shop')).toBeInTheDocument();
+    rerender(<ReturnReceipt saleReturn={branchReturn} settings={{ ...withLogo, receiptNameSource: 'branch' }} />);
+    expect(screen.getByText('TOP Printing')).toBeInTheDocument();
+    // The receipt option "Logo" off: no logo on the credit note either
+    rerender(<ReturnReceipt saleReturn={branchReturn} settings={{ ...withLogo, receiptShowLogo: false }} />);
+    expect(screen.queryByTestId('credit-note-logo')).toBeNull();
+  });
+
   it('uses the A4 layout with the buyer for invoice stores, and labels copies', () => {
     const { container } = render(<ReturnReceipt saleReturn={saleReturn} settings={settings} copy={2} />);
     expect(container.querySelector('[data-document="credit_note"]')).toHaveAttribute('data-format', 'a4');

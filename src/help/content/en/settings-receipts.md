@@ -18,7 +18,7 @@ related: [settings-business, hardware, pos-receipt]
 
 ![The Receipts & printing tab](shot:settings-receipts)
 
-> **Tip:** when the logo already shows the company name, set **Name under the logo** to **Branch name**: each receipt then shows the branch where the sale was made (for example "TOP Printing"). Estimates and pro forma invoices follow the same choice. The branch name is set in **Settings › Branches & registers**.
+> **Tip:** when the logo already shows the company name, set **Name under the logo** to **Branch name**: each receipt then shows the branch where the sale was made (for example "TOP Printing"). Estimates, pro forma invoices and credit notes follow the same choice, and show the logo too. The branch name is set in **Settings › Branches & registers**.
 
 > **Tip:** check **Print automatically when a sale is completed** to save time. **Print test receipt** checks the result on paper.
 
