@@ -155,8 +155,8 @@ function StockTab() {
       )}
 
       <Card className="bg-white">
-        <div className="flex flex-col gap-2 border-b p-4 lg:flex-row lg:items-center">
-          <div className="relative flex-1">
+        <div className="flex flex-col gap-2 border-b p-4 lg:flex-row lg:flex-wrap lg:items-center">
+          <div className="relative min-w-[14rem] flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <Input
               placeholder={t('Search by name, SKU or barcode...')}
