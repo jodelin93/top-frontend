@@ -10,7 +10,7 @@ related: [settings-business, hardware, pos-receipt]
 1. Abra la pestaña **Recibos e impresión**.
 2. Elija el **Modelo de recibo**: **Clásico**, **Compacto** o **Moderno**.
 3. Elija el **Papel** (rollo de 80 mm o 58 mm, A4 o Letter) y el **Tamaño del texto**.
-4. Indique las **Copias por venta** (2 para una copia del cliente y una copia de la tienda).
+4. Indique las **Copias por venta** (2 para una copia del cliente y una copia de la tienda). Con JodaPrint, cada copia se corta antes de la siguiente.
 5. Escriba el **Encabezado del recibo** y el **Pie del recibo**.
 6. En **Mostrar en el recibo**, marque lo que debe aparecer: logotipo, cajero, cliente, puntos de lealtad, código de barras, política de devoluciones…
 7. Mire la **Vista previa**: se actualiza con cada cambio.

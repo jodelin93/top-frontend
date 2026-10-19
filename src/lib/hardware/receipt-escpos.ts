@@ -118,3 +118,16 @@ export function testPageEscPos(paper: PaperWidth, storeName: string): Uint8Array
   p.align('center').barcode('TEST-12345').align('left');
   return p.cut().bytes();
 }
+
+/**
+ * Several copies of a receipt in one print job (Settings → Receipts & printing →
+ * copies per sale): each copy ends with its own cut, so the printer prints one,
+ * cuts it, then prints the next.
+ */
+export function repeatReceipt(bytes: Uint8Array, copies: number): Uint8Array {
+  const times = Math.min(Math.max(Math.floor(copies) || 1, 1), 3);
+  if (times === 1) return bytes;
+  const out = new Uint8Array(bytes.length * times);
+  for (let i = 0; i < times; i++) out.set(bytes, i * bytes.length);
+  return out;
+}

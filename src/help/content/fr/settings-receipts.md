@@ -10,7 +10,7 @@ related: [settings-business, hardware, pos-receipt]
 1. Ouvrez l'onglet **Reçus et impression**.
 2. Choisissez le **Modèle de reçu** : **Classique**, **Compact** ou **Moderne**.
 3. Choisissez le **Papier** (rouleau 80 mm ou 58 mm, A4 ou Letter) et la **Taille du texte**.
-4. Indiquez les **Copies par vente** (2 pour une copie client et une copie magasin).
+4. Indiquez les **Copies par vente** (2 pour une copie client et une copie magasin). Avec JodaPrint, chaque copie est coupée avant la suivante.
 5. Écrivez l'**En-tête du reçu** et le **Pied de page du reçu**.
 6. Sous **Afficher sur le reçu**, cochez ce qui doit apparaître : logo, caissier, client, points de fidélité, code-barres, politique de retour…
 7. Regardez l'**Aperçu** : il se met à jour à chaque changement.

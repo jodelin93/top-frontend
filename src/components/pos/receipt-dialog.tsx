@@ -13,7 +13,7 @@ import { getErrorMessage } from '@/lib/api/client';
 import { directPaperWidth } from '@/lib/hardware/direct-print';
 import { loadReceiptLogo, logoRaster, type LogoImage } from '@/lib/hardware/receipt-logo';
 import { printDocument, retryPrint, type PrintOutcome, type PrintRequest } from '@/lib/hardware/print-manager';
-import { receiptToEscPos } from '@/lib/hardware/receipt-escpos';
+import { receiptToEscPos, repeatReceipt } from '@/lib/hardware/receipt-escpos';
 import { hasPermission, useAuthStore } from '@/stores/auth-store';
 import { Receipt, receiptOptions, receiptSettings } from './receipt';
 import { ReceiptShare } from './receipt-share';
@@ -41,6 +41,8 @@ export function useReceiptPrinter() {
   ): PrintRequest => {
     const format = receiptSettings(sale, options.settings)?.receiptFormat ?? '80mm';
     const thermal = format === '58mm' || format === '80mm';
+    // The sale's first print gives every copy per sale (customer + store...), each cut on its own
+    const copies = options.original ? (options.settings?.receiptCopies ?? 1) : 1;
     return {
       // A4 / Letter prints are invoices
       documentType: thermal ? 'receipt' : 'invoice',
@@ -51,12 +53,13 @@ export function useReceiptPrinter() {
       escpos: thermal
         ? (copyNumber) => {
             const paper = directPaperWidth() ?? (format === '58mm' ? 58 : 80);
-            return receiptToEscPos(sale, options.settings, {
+            const receipt = receiptToEscPos(sale, options.settings, {
               paper,
               copyNumber,
               // The store logo as printer dots (the browser receipt shows it as an image)
               logo: logo ? logoRaster(logo.url, logo.image, paper) : null,
             });
+            return repeatReceipt(receipt, copies);
           }
         : null,
       browserPrint: (copyNumber) => {

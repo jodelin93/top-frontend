@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Sale } from '@/lib/api/sales';
 import { CMD, EscPosBuilder, barcodeModuleWidth, columns, encodeCp858, rasterize, toBase64, wrap } from './escpos';
-import { receiptToEscPos } from './receipt-escpos';
+import { receiptToEscPos, repeatReceipt } from './receipt-escpos';
 
 const has = (haystack: Uint8Array, needle: readonly number[]) => {
   outer: for (let i = 0; i + needle.length <= haystack.length; i++) {
@@ -175,3 +175,24 @@ describe('images and barcodes that printers accept', () => {
   });
 });
 
+describe('copies per sale', () => {
+  const cuts = (bytes: Uint8Array) => {
+    let n = 0;
+    for (let i = 0; i + 3 < bytes.length; i++) if (bytes[i] === CMD.cut[0] && bytes[i + 1] === CMD.cut[1] && bytes[i + 2] === CMD.cut[2]) n++;
+    return n;
+  };
+  const one = new EscPosBuilder(80).text('Receipt').cut().bytes();
+
+  it('cuts after each copy: printed, cut, then the next one', () => {
+    const two = repeatReceipt(one, 2);
+    expect(two.length).toBe(one.length * 2);
+    expect(cuts(two)).toBe(2);
+    // The second copy starts right after the first cut
+    expect([...two.subarray(one.length, one.length + 4)]).toEqual([...one.subarray(0, 4)]);
+  });
+
+  it('prints one copy for 1, and never more than 3', () => {
+    expect(repeatReceipt(one, 1)).toBe(one);
+    expect(cuts(repeatReceipt(one, 9))).toBe(3);
+  });
+});

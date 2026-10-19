@@ -10,7 +10,7 @@ related: [settings-business, hardware, pos-receipt]
 1. Open the **Receipts & printing** tab.
 2. Choose the **Receipt model**: **Classic**, **Compact**, or **Modern**.
 3. Choose the **Paper** (80 mm or 58 mm roll, A4 or Letter) and the **Text size**.
-4. Enter the **Copies per sale** (2 for a customer copy and a store copy).
+4. Enter the **Copies per sale** (2 for a customer copy and a store copy). With JodaPrint, each copy is cut before the next one.
 5. Write the **Receipt header** and the **Receipt footer**.
 6. Under **Show on the receipt**, check what should appear: logo, cashier, customer, loyalty points, barcode, return policy…
 7. Look at the **Preview**: it updates with every change.
