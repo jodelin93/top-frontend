@@ -54,11 +54,14 @@ body {
   color: var(--foreground);
 }
 
-/* Receipt printing: only the receipt is printed, sized for 80mm thermal paper */
+/* Receipt printing: only the receipt is printed. The page is the printer's own paper
+   (size: auto): thermal drivers print 64 to 72 mm of an 80 mm roll, and a page forced
+   to 80 mm is cut off on the right instead of shrunk. The receipt fills what the
+   printer can print, at most 72 mm, so every line fits or wraps. */
 @media print {
   @page {
-    size: 80mm auto;
-    margin: 4mm;
+    size: auto;
+    margin: 2mm;
   }
   body * {
     visibility: hidden;
@@ -71,7 +74,8 @@ body {
     position: absolute;
     left: 0;
     top: 0;
-    width: 72mm;
+    width: 100%;
+    max-width: 72mm;
   }
   /* Documents are usually printed from a dialog: undo its centring so the document
      lands at the top-left of the page instead of offset with the dialog. Tailwind
@@ -94,8 +98,8 @@ body {
 /* Receipt formats (store setting receiptFormat). 80mm is the default page above;
    58mm thermal paper and A4 invoices get their own named pages. */
 @page receipt-58mm {
-  size: 58mm auto;
-  margin: 2mm;
+  size: auto;
+  margin: 1mm;
 }
 @page receipt-a4 {
   size: A4;
@@ -116,7 +120,8 @@ body {
     page: receipt-letter;
   }
   .print-receipt.receipt-58mm {
-    width: 54mm;
+    width: 100%;
+    max-width: 54mm;
   }
   .print-receipt.receipt-a4 {
     width: 180mm;
