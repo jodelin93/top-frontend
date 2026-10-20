@@ -11,7 +11,7 @@ El **Panel** resume la actividad de la tienda.
 
 ![El panel](shot:admin-dashboard)
 
-- **Rango de fechas**: **Hoy**, **Ayer**, **Últimos 7 días**, **Últimos 30 días**, **Este mes** o **Rango personalizado**. En el rango personalizado, elija una fecha de inicio y una fecha de fin (la fecha de fin no puede ser anterior a la de inicio).
+- **Rango de fechas** (se abre en **Hoy**): **Hoy**, **Ayer**, **Últimos 7 días**, **Últimos 30 días**, **Este mes** o **Rango personalizado**. En el rango personalizado, elija una fecha de inicio y una fecha de fin (la fecha de fin no puede ser anterior a la de inicio).
 - **Sucursal**: **Todas las sucursales** o una sola.
 - **Tipos de cambio**: la tasa USD/HTG que se usa en la caja. **Actualizar tipo de cambio** la modifica; **Historial** muestra las tasas anteriores (vea [Tipo de cambio](topic:settings-exchange-rate)).
 - **Las cifras clave**: ventas netas y brutas, descuentos otorgados, devoluciones, impuestos netos, número de ventas, ticket promedio, artículos vendidos, total cobrado (con impuestos), margen bruto, ventas anuladas, gastos, diferencia de caja, tarjetas de regalo vendidas, valor del inventario, deuda con proveedores y existencias bajas.

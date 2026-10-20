@@ -11,7 +11,7 @@ related: [reports-overview, settings-exchange-rate, navigation-admin]
 
 ![Tablo de bò a](shot:admin-dashboard)
 
-- **Peryòd**: **Jodi a**, **Yè**, **7 dènye jou**, **30 dènye jou**, **Mwa sa a** oswa **Peryòd pèsonalize**. Pou yon peryòd pèsonalize, chwazi yon dat kòmansman ak yon dat fen (fen an pa ka vin anvan kòmansman an).
+- **Peryòd** (li louvri sou **Jodi a**): **Jodi a**, **Yè**, **7 dènye jou**, **30 dènye jou**, **Mwa sa a** oswa **Peryòd pèsonalize**. Pou yon peryòd pèsonalize, chwazi yon dat kòmansman ak yon dat fen (fen an pa ka vin anvan kòmansman an).
 - **Siksisal**: **Tout siksisal yo** oswa yon sèl.
 - **To echanj**: to USD/HTG kès la itilize. **Mete to a ajou** chanje l; **Istorik** montre ansyen to yo (gade [To echanj](topic:settings-exchange-rate)).
 - **Chif kle yo**: vant nèt ak vant brit, rabè yo bay, retou, taks nèt, kantite vant, panye mwayen, atik ki vann, total ki antre (TTC), maj brit, vant anile, depans, diferans kès, kat kado ki vann, valè stòk la, sa w dwe founisè yo ak stòk ki ba.

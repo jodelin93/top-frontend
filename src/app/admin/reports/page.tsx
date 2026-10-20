@@ -36,7 +36,7 @@ export default function ReportsPage() {
   const user = useAuthStore((state) => state.user);
   const canExport = hasPermission(user, 'reports.export');
   const [selected, setSelected] = useState<string>('sales-by-day');
-  const [range, setRange] = useState<DateRange>(() => presetRange('7d'));
+  const [range, setRange] = useState<DateRange>(() => presetRange('today'));
   const [branchId, setBranchId] = useState('');
   const [parameters, setParameters] = useState<ParameterValues>({});
   const [timezone] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone);

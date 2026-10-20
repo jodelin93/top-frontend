@@ -11,7 +11,7 @@ The **Dashboard** summarizes the store's activity.
 
 ![The dashboard](shot:admin-dashboard)
 
-- **Date range**: **Today**, **Yesterday**, **Last 7 days**, **Last 30 days**, **This month** or **Custom range**. For a custom range, choose a start date and an end date (the end cannot be before the start).
+- **Date range** (opens on **Today**): **Today**, **Yesterday**, **Last 7 days**, **Last 30 days**, **This month** or **Custom range**. For a custom range, choose a start date and an end date (the end cannot be before the start).
 - **Branch**: **All branches** or a single one.
 - **Exchange rates**: the USD/HTG rate used at the till. **Update rate** changes it; **History** shows past rates (see [Exchange rate](topic:settings-exchange-rate)).
 - **Key figures**: net and gross sales, discounts given, returns, net taxes, number of sales, average basket, items sold, total collected (tax included), gross margin, voided sales, expenses, cash variance, gift cards sold, inventory value, owed to suppliers and low stock.

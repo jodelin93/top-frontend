@@ -11,7 +11,7 @@ Le **Tableau de bord** résume l'activité du magasin.
 
 ![Le tableau de bord](shot:admin-dashboard)
 
-- **Période** : **Aujourd'hui**, **Hier**, **7 derniers jours**, **30 derniers jours**, **Ce mois-ci** ou **Période personnalisée**. En période personnalisée, choisissez une date de début et une date de fin (la fin ne peut pas précéder le début).
+- **Période** (s’ouvre sur **Aujourd'hui**) : **Aujourd'hui**, **Hier**, **7 derniers jours**, **30 derniers jours**, **Ce mois-ci** ou **Période personnalisée**. En période personnalisée, choisissez une date de début et une date de fin (la fin ne peut pas précéder le début).
 - **Succursale** : **Toutes les succursales** ou une seule.
 - **Taux de change** : le taux USD/HTG utilisé à la caisse. **Mettre à jour le taux** le modifie ; **Historique** montre les anciens taux (voir [Taux de change](topic:settings-exchange-rate)).
 - **Les chiffres clés** : ventes nettes et brutes, remises accordées, retours, taxes nettes, nombre de ventes, panier moyen, articles vendus, total encaissé (TTC), marge brute, ventes annulées, dépenses, écart de caisse, cartes cadeaux vendues, valeur du stock, dû aux fournisseurs et stock bas.

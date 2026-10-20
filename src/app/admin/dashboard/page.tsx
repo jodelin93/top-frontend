@@ -39,7 +39,7 @@ const formatPercent = (value: number) =>
 
 export default function DashboardPage() {
   const currency = useCurrency();
-  const [range, setRange] = useState<DateRange>(() => presetRange('7d'));
+  const [range, setRange] = useState<DateRange>(() => presetRange('today'));
   const [branchId, setBranchId] = useState('');
   const smallScreen = useSmallScreen();
 
