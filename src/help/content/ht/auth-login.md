@@ -6,7 +6,7 @@ order: 101
 public: true
 routes: [/auth/login, /]
 keywords: [konekte, koneksyon, idantifyan, modpas, imèl, kont, bloke, idantifyan pa valab, connexion, se connecter, identifiant, mot de passe, e-mail, compte, verrouillé, identifiants invalides]
-related: [auth-mfa, faq-account, language, getting-started-roles]
+related: [auth-mfa, auth-forgot-password, faq-account, language, getting-started-roles]
 ---
 Chak anplwaye gen pwòp kont pa l: yon adrès imèl ak yon modpas. Pa janm pataje kont ou: chak vant, chak rabè ak chak fwa yo louvri tiwa a anrejistre sou non ou.
 
@@ -17,6 +17,8 @@ Chak anplwaye gen pwòp kont pa l: yon adrès imèl ak yon modpas. Pa janm pataj
 3. Tape adrès ou nan chan **Imèl** la.
 4. Tape modpas ou nan chan **Modpas** la.
 5. Klike sou **Konekte**.
+
+Ou bliye modpas ou? Klike sou **Ou bliye modpas ou?** bò kote **Modpas** (gade [Ou bliye modpas ou](topic:auth-forgot-password)).
 
 Si otantifikasyon de faktè aktive sou kont ou, aplikasyon an ap mande w yon kòd 6 chif apre sa (gade [Tape kòd otantifikasyon de faktè a](topic:auth-mfa)).
 

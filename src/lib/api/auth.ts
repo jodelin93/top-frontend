@@ -93,6 +93,16 @@ export const authApi = {
   },
 
   // Change one's own password (the current one is required); signs out every other session.
+  // Forgot password: the server e-mails a link (same answer whether the account exists or not)
+  forgotPassword: async (input: { email: string; language: string }): Promise<void> => {
+    await apiClient.post('/auth/password/forgot', input);
+  },
+
+  // New password from the e-mailed link (works once); every session of the account is signed out
+  resetPassword: async (input: { token: string; newPassword: string }): Promise<void> => {
+    await apiClient.post('/auth/password/reset', input);
+  },
+
   // A wrong current password is a 401: handled here so the API client doesn't take it for an
   // expired session and sign the user out.
   changePassword: async (input: { currentPassword: string; newPassword: string }): Promise<void> => {

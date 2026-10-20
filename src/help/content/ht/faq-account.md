@@ -6,7 +6,7 @@ order: 1603
 public: true
 routes: [/auth/login]
 keywords: [kont bloke, bloke, modpas bliye, twòp tantativ, twop tantativ, pa ka konekte, envite, sispann, wòl, wol, aksè, akse, verrouillé, bloqué, mot de passe oublié, trop de tentatives, invité, suspendu, rôle, accès]
-related: [auth-login, users-manage, account-invitations]
+related: [auth-login, auth-forgot-password, users-manage, account-invitations]
 ---
 ## Kont mwen bloke
 
@@ -20,7 +20,7 @@ Apre 5 modpas (oswa kòd 2FA) ki pa bon youn dèyè lòt, kont lan bloke pou 15 
 
 ## Mwen bliye modpas mwen
 
-Mande pwopriyetè a oswa yon administratè: li klike sou ikòn kle a sou liy ou nan **Itilizatè** epi li ba ou yon nouvo modpas (gade [Reyinisyalize modpas la](topic:users-manage)). Apre sa, chanje l ou menm nan **Sekirite kont**.
+Sou paj koneksyon an, klike sou **Ou bliye modpas ou?**: w ap resevwa yon imèl ak yon lyen pou chwazi yon nouvo modpas (gade [Ou bliye modpas ou](topic:auth-forgot-password)). Pa gen imèl? Pwopriyetè a oswa yon administratè ka klike sou ikòn kle a sou liy ou nan **Itilizatè** epi ba ou yon nouvo modpas (gade [Reyinisyalize modpas la](topic:users-manage)); apre sa, chanje l ou menm nan **Sekirite kont**.
 
 ## Yon nouvo anplwaye pa ka konekte
 

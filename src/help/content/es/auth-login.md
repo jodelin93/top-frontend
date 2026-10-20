@@ -6,7 +6,7 @@ order: 101
 public: true
 routes: [/auth/login, /]
 keywords: [inicio de sesión, iniciar sesión, entrar, ingresar, login, usuario, contraseña, clave, correo electrónico, cuenta, bloqueada, credenciales no válidas]
-related: [auth-mfa, faq-account, language, getting-started-roles]
+related: [auth-mfa, auth-forgot-password, faq-account, language, getting-started-roles]
 ---
 Cada empleado tiene su propia cuenta: un correo electrónico y una contraseña. Nunca comparta su cuenta: cada venta, cada descuento y cada apertura de cajón queda registrada a su nombre.
 
@@ -17,6 +17,8 @@ Cada empleado tiene su propia cuenta: un correo electrónico y una contraseña. 
 3. Escriba su dirección en el campo **Correo electrónico**.
 4. Escriba su contraseña en el campo **Contraseña**.
 5. Haga clic en **Iniciar sesión**.
+
+¿Olvidó su contraseña? Haga clic en **¿Olvidó su contraseña?** junto a **Contraseña** (vea [Olvidó su contraseña](topic:auth-forgot-password)).
 
 Si la autenticación de dos factores está activada en su cuenta, la aplicación le pide después un código de 6 dígitos (vea [Ingresar el código de autenticación de dos factores](topic:auth-mfa)).
 

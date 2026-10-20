@@ -229,6 +229,7 @@ export const errors: Record<string, string> = {
   // Account security: password change, invitations, lockout
   "Too many failed attempts. This account is locked for a few minutes.": "Twòp tantativ ki echwe. Kont sa a bloke pou kèk minit.",
   "Your current password is incorrect": "Modpas ou genyen kounye a pa kòrèk",
+  "This link is invalid or has expired. Ask for a new one.": "Lyen sa a pa valab oswa li ekspire. Mande yon lòt.",
   "Choose a password different from the current one": "Chwazi yon modpas ki diferan de sa ou genyen an",
   "Change your own password from your account settings": "Chanje pwòp modpas ou nan paramèt kont ou",
   "This person has not accepted the invitation yet": "Moun sa a poko aksepte envitasyon an",

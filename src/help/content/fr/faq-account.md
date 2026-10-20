@@ -6,7 +6,7 @@ order: 1603
 public: true
 routes: [/auth/login]
 keywords: [verrouillé, bloqué, mot de passe oublié, trop de tentatives, ne peut pas se connecter, invité, suspendu, rôle, accès]
-related: [auth-login, users-manage, account-invitations]
+related: [auth-login, auth-forgot-password, users-manage, account-invitations]
 ---
 ## Mon compte est verrouillé
 
@@ -20,7 +20,7 @@ Après 5 mots de passe (ou codes 2FA) faux à la suite, le compte est verrouill�
 
 ## J'ai oublié mon mot de passe
 
-Demandez au propriétaire ou à un administrateur : il clique sur l'icône de clé de votre ligne dans **Utilisateurs** et vous donne un nouveau mot de passe (voir [Réinitialiser le mot de passe](topic:users-manage)). Changez-le ensuite vous-même dans **Sécurité du compte**.
+Sur la page de connexion, cliquez sur **Mot de passe oublié ?** : vous recevez un e-mail avec un lien pour choisir un nouveau mot de passe (voir [Mot de passe oublié](topic:auth-forgot-password)). Pas d’e-mail ? Le propriétaire ou un administrateur peut cliquer sur l'icône de clé de votre ligne dans **Utilisateurs** et vous donner un nouveau mot de passe (voir [Réinitialiser le mot de passe](topic:users-manage)) ; changez-le ensuite vous-même dans **Sécurité du compte**.
 
 ## Un nouvel employé ne peut pas se connecter
 

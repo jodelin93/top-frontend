@@ -6,7 +6,7 @@ order: 1603
 public: true
 routes: [/auth/login]
 keywords: [locked, locked out, blocked, forgot password, forgotten password, reset password, too many attempts, can't sign in, cannot log in, invited, suspended, role, access, permission]
-related: [auth-login, users-manage, account-invitations]
+related: [auth-login, auth-forgot-password, users-manage, account-invitations]
 ---
 ## My account is locked
 
@@ -20,7 +20,7 @@ After 5 wrong passwords (or 2FA codes) in a row, the account is locked for 15 mi
 
 ## I forgot my password
 
-Ask the owner or an administrator: they click the key icon on your row in **Users** and give you a new password (see [Reset the password](topic:users-manage)). Then change it yourself in **Account security**.
+On the sign-in page, click **Forgot password?**: you receive an email with a link to choose a new password (see [Forgot your password](topic:auth-forgot-password)). No email? The owner or an administrator can click the key icon on your row in **Users** and give you a new password (see [Reset the password](topic:users-manage)); then change it yourself in **Account security**.
 
 ## A new employee cannot sign in
 

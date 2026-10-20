@@ -6,7 +6,7 @@ order: 1603
 public: true
 routes: [/auth/login]
 keywords: [bloqueada, bloqueado, contraseña olvidada, olvidé mi contraseña, demasiados intentos, no puedo iniciar sesión, no puede entrar, invitado, suspendido, rol, acceso, permisos]
-related: [auth-login, users-manage, account-invitations]
+related: [auth-login, auth-forgot-password, users-manage, account-invitations]
 ---
 ## Mi cuenta está bloqueada
 
@@ -20,7 +20,7 @@ Después de 5 contraseñas (o códigos 2FA) incorrectos seguidos, la cuenta se b
 
 ## Olvidé mi contraseña
 
-Pídaselo al propietario o a un administrador: hace clic en el ícono de llave de su fila en **Usuarios** y le da una nueva contraseña (vea [Restablecer la contraseña](topic:users-manage)). Luego cámbiela usted mismo en **Seguridad de la cuenta**.
+En la página de inicio de sesión, haga clic en **¿Olvidó su contraseña?**: recibirá un correo con un enlace para elegir una nueva contraseña (vea [Olvidó su contraseña](topic:auth-forgot-password)). ¿Ningún correo? El propietario o un administrador puede hacer clic en el ícono de llave de su fila en **Usuarios** y darle una nueva contraseña (vea [Restablecer la contraseña](topic:users-manage)); luego cámbiela usted mismo en **Seguridad de la cuenta**.
 
 ## Un empleado nuevo no puede iniciar sesión
 

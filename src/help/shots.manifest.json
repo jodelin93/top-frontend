@@ -1673,6 +1673,40 @@
         }
       ],
       "capture": "dialog"
+    },
+    "auth-forgot-password": {
+      "signedOut": true,
+      "steps": [
+        {
+          "goto": "/auth/forgot-password"
+        },
+        {
+          "wait": 800
+        }
+      ]
+    },
+    "auth-reset-password": {
+      "signedOut": true,
+      "steps": [
+        {
+          "goto": "/auth/reset-password?token=Ab3dEf6hIj9kLm2nOp5qRs8tUv1wXy4zAb7dEf0hIj3"
+        },
+        {
+          "wait": 800
+        },
+        {
+          "fill": {
+            "label": "New password"
+          },
+          "value": "MyNewPass2026"
+        },
+        {
+          "fill": {
+            "label": "Confirm the new password"
+          },
+          "value": "MyNewPass2026"
+        }
+      ]
     }
   }
 }

@@ -6,7 +6,7 @@ order: 101
 public: true
 routes: [/auth/login, /]
 keywords: [sign in, log in, login, username, password, email, account, locked, locked out, invalid credentials]
-related: [auth-mfa, faq-account, language, getting-started-roles]
+related: [auth-mfa, auth-forgot-password, faq-account, language, getting-started-roles]
 ---
 Each employee has their own account: an email address and a password. Never share your account: every sale, every discount and every drawer opening is recorded under your name.
 
@@ -17,6 +17,8 @@ Each employee has their own account: an email address and a password. Never shar
 3. Enter your address in the **Email** field.
 4. Enter your password in the **Password** field.
 5. Click **Sign in**.
+
+Forgot your password? Click **Forgot password?** next to **Password** (see [Forgot your password](topic:auth-forgot-password)).
 
 If two-factor authentication is turned on for your account, the app then asks for a 6-digit code (see [Enter the two-factor authentication code](topic:auth-mfa)).
 

@@ -6,7 +6,7 @@ order: 101
 public: true
 routes: [/auth/login, /]
 keywords: [connexion, se connecter, identifiant, mot de passe, e-mail, compte, verrouillé, identifiants invalides]
-related: [auth-mfa, faq-account, language, getting-started-roles]
+related: [auth-mfa, auth-forgot-password, faq-account, language, getting-started-roles]
 ---
 Chaque employé possède son propre compte : une adresse e-mail et un mot de passe. Ne partagez jamais votre compte : chaque vente, chaque remise et chaque ouverture de tiroir est enregistrée à votre nom.
 
@@ -17,6 +17,8 @@ Chaque employé possède son propre compte : une adresse e-mail et un mot de pas
 3. Saisissez votre adresse dans le champ **E-mail**.
 4. Saisissez votre mot de passe dans le champ **Mot de passe**.
 5. Cliquez sur **Se connecter**.
+
+Mot de passe oublié ? Cliquez sur **Mot de passe oublié ?** à côté de **Mot de passe** (voir [Mot de passe oublié](topic:auth-forgot-password)).
 
 Si la double authentification est activée sur votre compte, l'application demande ensuite un code à 6 chiffres (voir [Saisir le code de double authentification](topic:auth-mfa)).
 

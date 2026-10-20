@@ -81,6 +81,21 @@ export const common: Record<string, string> = {
 
   // Sign in
   'Sign in to Modern POS': 'Connexion à Modern POS',
+  "Forgot password?": "Mot de passe oublié ?",
+  "Forgot your password?": "Mot de passe oublié ?",
+  "Enter the email of your account. We will send you a link to choose a new password.": "Saisissez l’e-mail de votre compte. Nous vous enverrons un lien pour choisir un nouveau mot de passe.",
+  "If an account exists for {email}, a link to choose a new password is on its way. Check your inbox and your spam folder. The link expires in 30 minutes.": "Si un compte existe pour {email}, un lien pour choisir un nouveau mot de passe est en route. Regardez votre boîte de réception et vos courriers indésirables. Le lien expire dans 30 minutes.",
+  "No email after a few minutes? Check the address, or ask a manager to set a new password for you (Users page).": "Pas d’e-mail après quelques minutes ? Vérifiez l’adresse, ou demandez à un responsable de vous définir un nouveau mot de passe (page Utilisateurs).",
+  "Send the link": "Envoyer le lien",
+  "Could not send the link. Try again in a moment.": "Impossible d’envoyer le lien. Réessayez dans un instant.",
+  "Choose a new password": "Choisir un nouveau mot de passe",
+  "At least 8 characters. Once it is saved, every device signed in to your account is signed out.": "Au moins 8 caractères. Une fois enregistré, tous les appareils connectés à votre compte sont déconnectés.",
+  "Your password has been changed. Sign in with your new password.": "Votre mot de passe a été changé. Connectez-vous avec votre nouveau mot de passe.",
+  "This link is invalid or has expired. Ask for a new one.": "Ce lien n’est pas valide ou a expiré. Demandez-en un nouveau.",
+  "Ask for a new link": "Demander un nouveau lien",
+  "Confirm the new password": "Confirmer le nouveau mot de passe",
+  "Save the new password": "Enregistrer le nouveau mot de passe",
+  "The two passwords are different": "Les deux mots de passe sont différents",
   'Enter your email and password to access your account':
     'Saisissez votre e-mail et votre mot de passe pour accéder à votre compte',
   'Invalid email address': 'Adresse e-mail invalide',

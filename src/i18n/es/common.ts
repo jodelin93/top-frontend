@@ -81,6 +81,21 @@ export const common: Record<string, string> = {
 
   // Sign in
   'Sign in to Modern POS': 'Iniciar sesión en Modern POS',
+  "Forgot password?": "¿Olvidó su contraseña?",
+  "Forgot your password?": "¿Olvidó su contraseña?",
+  "Enter the email of your account. We will send you a link to choose a new password.": "Escriba el correo de su cuenta. Le enviaremos un enlace para elegir una nueva contraseña.",
+  "If an account exists for {email}, a link to choose a new password is on its way. Check your inbox and your spam folder. The link expires in 30 minutes.": "Si existe una cuenta para {email}, le llegará un enlace para elegir una nueva contraseña. Revise su bandeja de entrada y la carpeta de spam. El enlace caduca en 30 minutos.",
+  "No email after a few minutes? Check the address, or ask a manager to set a new password for you (Users page).": "¿Ningún correo después de unos minutos? Revise la dirección o pida a un responsable que le asigne una nueva contraseña (página Usuarios).",
+  "Send the link": "Enviar el enlace",
+  "Could not send the link. Try again in a moment.": "No se pudo enviar el enlace. Inténtelo de nuevo en un momento.",
+  "Choose a new password": "Elegir una nueva contraseña",
+  "At least 8 characters. Once it is saved, every device signed in to your account is signed out.": "Al menos 8 caracteres. Una vez guardada, se cierra la sesión en todos los dispositivos conectados a su cuenta.",
+  "Your password has been changed. Sign in with your new password.": "Su contraseña ha sido cambiada. Inicie sesión con su nueva contraseña.",
+  "This link is invalid or has expired. Ask for a new one.": "Este enlace no es válido o ha caducado. Pida uno nuevo.",
+  "Ask for a new link": "Pedir un nuevo enlace",
+  "Confirm the new password": "Confirmar la nueva contraseña",
+  "Save the new password": "Guardar la nueva contraseña",
+  "The two passwords are different": "Las dos contraseñas son diferentes",
   'Enter your email and password to access your account':
     'Ingrese su correo electrónico y su contraseña para acceder a su cuenta',
   'Invalid email address': 'Correo electrónico no válido',

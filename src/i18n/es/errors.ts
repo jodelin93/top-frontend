@@ -229,6 +229,7 @@ export const errors: Record<string, string> = {
   // Account security: password change, invitations, lockout
   "Too many failed attempts. This account is locked for a few minutes.": "Demasiados intentos fallidos. Esta cuenta está bloqueada durante unos minutos.",
   "Your current password is incorrect": "Su contraseña actual es incorrecta",
+  "This link is invalid or has expired. Ask for a new one.": "Este enlace no es válido o ha caducado. Pida uno nuevo.",
   "Choose a password different from the current one": "Elija una contraseña distinta de la actual",
   "Change your own password from your account settings": "Cambie su propia contraseña desde la configuración de su cuenta",
   "This person has not accepted the invitation yet": "Esta persona aún no ha aceptado la invitación",
