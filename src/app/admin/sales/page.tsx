@@ -41,7 +41,7 @@ export default function SalesPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [status, setStatus] = useState<SaleStatus | ''>('');
   const [cashierId, setCashierId] = useState('');
-  const [range, setRange] = useState<DateRange>(() => presetRange('all'));
+  const [range, setRange] = useState<DateRange>(() => presetRange('today'));
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const smallScreen = useSmallScreen();

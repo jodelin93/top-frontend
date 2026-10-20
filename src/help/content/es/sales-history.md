@@ -15,7 +15,7 @@ La página **Ventas** lista todas las ventas con el número, la fecha, el client
 2. Escriba un número de venta en la búsqueda. Las ventas hechas sin conexión también tienen un número OFFLINE-… que puede buscar.
 3. Filtre por estado: **Completada**, **Anulada**, **Pago pendiente**, **En espera**…
    Para ver las ventas de una sola persona, elíjala en **Todos los cajeros** (por ejemplo, para revisar el día de un cajero).
-4. Elija un período: **Hoy**, **Ayer**, **Últimos 7 días**, **Últimos 30 días**, **Este mes** o **Rango personalizado** (desde ≤ hasta).
+4. Elija un período. La página se abre en **Hoy**; elija **Todo el tiempo**, **Ayer**, **Últimos 7 días**, **Últimos 30 días**, **Este mes** o **Rango personalizado** (desde ≤ hasta). Para encontrar una venta más antigua por su número, elija primero **Todo el tiempo**.
 5. Use **Anterior** y **Siguiente** para cambiar de página.
 
 > **Consejo:** una venta también puede quedar **Reembolsada** o **Reembolsada parcialmente** después de una devolución. El nombre del vendedor aparece debajo del cajero cuando es distinto.

@@ -29,3 +29,5 @@ A product is low on stock when its quantity reaches or falls below its **Min sto
 2. Order these products (see [Reorder](topic:purchasing-reorder)).
 
 > **Tip:** the app checks stock regularly and sends an alert to the bell for each location with low stock. The alert disappears when the stock is replenished.
+
+> **Tip:** opened from a **Low stock** notification, the list shows only that product, with a **Product: …** label above it. Click the **×** on that label to see every product again.

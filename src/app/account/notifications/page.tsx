@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { ErrorMessage } from '@/components/admin/page-header';
 import {
+  canOpenNotificationLink,
   notificationLink,
   notificationTypeLabel,
   severityLabel,
@@ -106,7 +107,7 @@ function NotificationList() {
         ) : (
           <ul className="divide-y rounded-md border">
             {rows.map((n) => {
-              const href = notificationLink(n.type);
+              const href = notificationLink(n);
               return (
                 <li key={n.id} className={n.readAt ? 'bg-gray-50 p-3' : 'p-3'}>
                   <div className="flex items-start justify-between gap-3">
@@ -126,7 +127,7 @@ function NotificationList() {
                       </p>
                     </div>
                     <div className="flex shrink-0 flex-col items-end gap-1">
-                      {href && canOpen(href) && (
+                      {href && canOpenNotificationLink(href, useAuthStore.getState().user) && (
                         <Link href={href} className="text-xs font-medium text-blue-600 hover:underline">
                           {t('Open')}
                         </Link>
@@ -166,9 +167,6 @@ function NotificationList() {
 }
 
 // Admin links only make sense for people who can open the admin area
-function canOpen(href: string) {
-  return href.startsWith('/admin') ? canUseAdmin(useAuthStore.getState().user) : true;
-}
 
 function PreferencesCard() {
   const queryClient = useQueryClient();

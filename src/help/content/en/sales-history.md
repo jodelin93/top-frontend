@@ -15,7 +15,7 @@ The **Sales** page lists all sales with the number, date, customer, cashier, tot
 2. Type a sale number in the search. Sales made offline also have an OFFLINE-… number you can search for.
 3. Filter by status: **Completed**, **Voided**, **Payment pending**, **Held**…
    To see one person's sales, choose them in **All cashiers** (for example, to check a cashier's day).
-4. Choose a period: **Today**, **Yesterday**, **Last 7 days**, **Last 30 days**, **This month** or **Custom range** (from ≤ to).
+4. Choose a period. The page opens on **Today**; choose **All time**, **Yesterday**, **Last 7 days**, **Last 30 days**, **This month** or **Custom range** (from ≤ to). To find an older sale by its number, choose **All time** first.
 5. Use **Previous** and **Next** to change pages.
 
 > **Tip:** a sale can also be **Refunded** or **Partially refunded** after a return. The salesperson's name appears under the cashier when it is different.

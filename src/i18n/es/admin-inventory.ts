@@ -13,6 +13,9 @@ export const adminInventory: Record<string, string> = {
   'Filter by location': 'Filtrar por ubicación',
   'All locations': 'Todas las ubicaciones',
   'Low stock only': 'Solo existencias bajas',
+  "Product: {name}": "Producto: {name}",
+  "One product": "Un producto",
+  "Show all products": "Mostrar todos los productos",
   'Create a stock location in Settings first':
     'Primero cree una ubicación de inventario en Configuración',
   'Count / adjust': 'Contar / ajustar',

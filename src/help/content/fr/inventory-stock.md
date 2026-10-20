@@ -29,3 +29,5 @@ Un produit est en stock bas quand sa quantité atteint ou passe sous son **Stock
 2. Commandez ces produits (voir [Réapprovisionnement](topic:purchasing-reorder)).
 
 > **Astuce :** l'application vérifie le stock régulièrement et envoie une alerte dans la cloche pour chaque emplacement en stock bas. L'alerte disparaît quand le stock est reconstitué.
+
+> **Astuce :** ouverte depuis une notification **Stock bas**, la liste ne montre que ce produit, avec l’étiquette **Produit : …** au-dessus. Cliquez sur la **×** de cette étiquette pour revoir tous les produits.

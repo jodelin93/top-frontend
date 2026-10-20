@@ -513,6 +513,8 @@ export const inventoryApi = {
   stock: async (params: {
     search?: string;
     locationId?: string;
+    // One product variant (opened from a low-stock notification)
+    variantId?: string;
     lowStock?: boolean;
     sellableOnly?: boolean;
   }): Promise<StockRow[]> => {

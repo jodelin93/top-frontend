@@ -15,7 +15,7 @@ Paj **Vant** la montre tout vant yo ak nimewo a, dat la, kliyan an, kesye a, tot
 2. Tape yon nimewo vant nan rechèch la. Vant ki fèt san entènèt yo gen yon nimewo OFFLINE-… tou ou ka chèche.
 3. Filtre pa estati: **Fini**, **Anile**, **Peman ann atant**, **Ann atant**…
    Pou wè vant yon sèl moun, chwazi l nan **Tout kesye yo** (pa egzanp pou verifye jounen yon kesye).
-4. Chwazi yon peryòd: **Jodi a**, **Yè**, **7 dènye jou**, **30 dènye jou**, **Mwa sa a** oswa **Peryòd pèsonalize** (soti ≤ rive).
+4. Chwazi yon peryòd. Paj la louvri sou **Jodi a**; chwazi **Depi kòmansman**, **Yè**, **7 dènye jou**, **30 dènye jou**, **Mwa sa a** oswa **Peryòd pèsonalize** (soti ≤ rive). Pou jwenn yon vant ki pi ansyen ak nimewo l, chwazi **Depi kòmansman** anvan.
 5. Sèvi ak **Anvan** ak **Swivan** pou chanje paj.
 
 > **Konsèy:** yon vant ka **ranbouse** oswa **ranbouse an pati** tou apre yon retou. Non vandè a parèt anba kesye a lè se pa menm moun nan.

@@ -11,8 +11,9 @@ La campana señala los eventos importantes: existencias bajas, órdenes de compr
 
 1. Haga clic en la campana (en la parte superior de la caja o del menú de la administración).
 2. Lea la lista de las últimas alertas. El tipo aparece en color, por ejemplo **EXISTENCIAS BAJAS**.
-3. Haga clic en **Cerrar** junto a una alerta para marcarla como leída, o en **Marcar todas como leídas**.
-4. Haga clic en **Todas las notificaciones y preferencias** para abrir la página completa.
+3. Haga clic en una alerta para abrir lo que concierne y marcarla como leída: una alerta de **Existencias bajas** de un producto abre el **Inventario** en ese producto y su ubicación; un resumen de existencias bajas de una ubicación abre esa ubicación con **Solo existencias bajas**; los conteos por aprobar abren la pestaña **Conteos**; las demás alertas abren su página (gastos, compras, turnos, pagos, dispositivos, sistema).
+4. Haga clic en **Cerrar** junto a una alerta para marcarla como leída sin abrirla, o en **Marcar todas como leídas**.
+5. Haga clic en **Todas las notificaciones y preferencias** para abrir la página completa.
 
 ![La página Notificaciones y las preferencias](shot:notifications-page)
 

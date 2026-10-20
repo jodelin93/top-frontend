@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { CheckCircle2, ClipboardList, DatabaseZap, PackagePlus, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -53,8 +54,40 @@ const INVENTORY_TAB_HELP: Record<Tab, string> = {
   valuation: 'inventory-valuation',
 };
 
+const TABS: Tab[] = ['stock', 'movements', 'counts', 'transfers', 'aging', 'valuation'];
+
+/** Filters given in the address (?tab=counts, ?variant=…&location=…&lowStock=1), e.g. by a notification */
+interface StockLink {
+  variantId: string;
+  locationId: string;
+  lowStock: boolean;
+}
+
 export default function InventoryPage() {
-  const [tab, setTab] = useState<Tab>('stock');
+  // useSearchParams needs a Suspense boundary
+  return (
+    <Suspense fallback={null}>
+      <InventoryTabs />
+    </Suspense>
+  );
+}
+
+function InventoryTabs() {
+  const params = useSearchParams();
+  const linkedTab = params.get('tab') as Tab | null;
+  const [tab, setTab] = useState<Tab>(linkedTab && TABS.includes(linkedTab) ? linkedTab : 'stock');
+  const link: StockLink = {
+    variantId: params.get('variant') ?? '',
+    locationId: params.get('location') ?? '',
+    lowStock: params.get('lowStock') === '1',
+  };
+  // A new link while the page is open (another notification): show its tab
+  const linkKey = params.toString();
+  const [shownKey, setShownKey] = useState(linkKey);
+  if (shownKey !== linkKey) {
+    setShownKey(linkKey);
+    setTab(linkedTab && TABS.includes(linkedTab) ? linkedTab : 'stock');
+  }
   useHelpContext(INVENTORY_TAB_HELP[tab]);
   const user = useAuthStore((s) => s.user);
   // Valuation needs to see costs, and to adjust stock (revaluations) or manage settings (costing method)
@@ -93,7 +126,7 @@ export default function InventoryPage() {
         ))}
       </div>
 
-      {tab === 'stock' && <StockTab />}
+      {tab === 'stock' && <StockTab key={linkKey} link={link} />}
       {tab === 'movements' && <MovementsTab />}
       {tab === 'counts' && <CountsTab />}
       {tab === 'transfers' && <TransfersTab />}
@@ -105,12 +138,14 @@ export default function InventoryPage() {
 
 // ---- Stock ----
 
-function StockTab() {
+function StockTab({ link }: { link: StockLink }) {
   const { data: settings } = useStoreSettings();
   const { options: locations, labelFor } = useStockLocationOptions();
   const [search, setSearch] = useState('');
-  const [locationId, setLocationId] = useState('');
-  const [lowStock, setLowStock] = useState(false);
+  const [locationId, setLocationId] = useState(link.locationId);
+  const [lowStock, setLowStock] = useState(link.lowStock);
+  // One product only (low-stock notification), until the filter is removed
+  const [variantId, setVariantId] = useState(link.variantId);
   const [sellableOnly, setSellableOnly] = useState(false);
   const [dialog, setDialog] = useState<'receive' | 'adjust' | null>(null);
   const [result, setResult] = useState<InventoryResult | null>(null);
@@ -119,11 +154,12 @@ function StockTab() {
   const smallScreen = useSmallScreen();
 
   const { data: rows = [], isLoading, error } = useQuery({
-    queryKey: ['inventory', 'stock', debouncedSearch, locationId, lowStock, sellableOnly],
+    queryKey: ['inventory', 'stock', debouncedSearch, locationId, lowStock, sellableOnly, variantId],
     queryFn: () =>
       inventoryApi.stock({
         search: debouncedSearch || undefined,
         locationId: locationId || undefined,
+        variantId: variantId || undefined,
         lowStock: lowStock || undefined,
         sellableOnly: sellableOnly || undefined,
       }),
@@ -156,6 +192,25 @@ function StockTab() {
 
       <Card className="bg-white">
         <div className="flex flex-col gap-2 border-b p-4 lg:flex-row lg:flex-wrap lg:items-center">
+          {variantId && (
+            <span
+              className="inline-flex max-w-full items-center gap-1 self-start rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-800 lg:self-auto"
+              data-testid="inventory-variant-filter"
+            >
+              <span className="truncate">
+                {rows[0] ? t('Product: {name}', { name: `${text(rows[0].productName)} (${rows[0].sku})` }) : t('One product')}
+              </span>
+              <button
+                type="button"
+                onClick={() => setVariantId('')}
+                aria-label={t('Show all products')}
+                title={t('Show all products')}
+                className="rounded-full p-0.5 hover:bg-blue-100"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </span>
+          )}
           <div className="relative min-w-[14rem] flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <Input
@@ -234,7 +289,7 @@ function StockTab() {
             emptyText={
               locations.length === 0
                 ? t('No stock locations yet. Create one under Settings → Warehouses & locations.')
-                : search || locationId || lowStock || sellableOnly
+                : search || locationId || lowStock || sellableOnly || variantId
                   ? t('No stock matches your filters.')
                   : t('No products yet.')
             }
@@ -321,7 +376,7 @@ function StockTab() {
               <EmptyRow colSpan={10}>
                 {locations.length === 0
                   ? t('No stock locations yet. Create one under Settings → Warehouses & locations.')
-                  : search || locationId || lowStock || sellableOnly
+                  : search || locationId || lowStock || sellableOnly || variantId
                     ? t('No stock matches your filters.')
                     : t('No products yet.')}
               </EmptyRow>

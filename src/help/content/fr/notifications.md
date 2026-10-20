@@ -11,8 +11,9 @@ La cloche signale les événements importants : stock bas, bons de commande et d
 
 1. Cliquez sur la cloche (en haut de la caisse ou du menu de l'administration).
 2. Lisez la liste des dernières alertes. Le type apparaît en couleur, par exemple **STOCK BAS**.
-3. Cliquez sur **Fermer** à côté d'une alerte pour la marquer comme lue, ou sur **Tout marquer comme lu**.
-4. Cliquez sur **Toutes les notifications et préférences** pour ouvrir la page complète.
+3. Cliquez sur une alerte pour ouvrir ce qu’elle concerne, et la marquer comme lue : une alerte **Stock bas** pour un produit ouvre l’**Inventaire** sur ce produit et son emplacement ; un résumé de stock bas pour un emplacement ouvre cet emplacement avec **Stock bas uniquement** ; les inventaires à approuver ouvrent l’onglet **Comptages** ; les autres alertes ouvrent leur page (dépenses, achats, sessions de caisse, paiements, appareils, système).
+4. Cliquez sur **Fermer** à côté d'une alerte pour la marquer comme lue sans l’ouvrir, ou sur **Tout marquer comme lu**.
+5. Cliquez sur **Toutes les notifications et préférences** pour ouvrir la page complète.
 
 ![La page Notifications et les préférences](shot:notifications-page)
 

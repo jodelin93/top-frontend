@@ -11,8 +11,9 @@ Klòch la siyale bagay enpòtan ki rive: stòk ki ba, bon kòmand ak depans pou 
 
 1. Klike sou klòch la (anwo kès la oswa nan meni administrasyon an).
 2. Li lis dènye alèt yo. Kalite a parèt an koulè, pa egzanp **STÒK KI BA**.
-3. Klike sou **Fèmen** bò kote yon alèt pou make l kòm li, oswa sou **Make tout kòm li**.
-4. Klike sou **Tout notifikasyon ak preferans** pou louvri paj konplè a.
+3. Klike sou yon alèt pou louvri sa li konsène epi make l kòm li: yon alèt **Stòk ki ba** pou yon pwodui louvri **Envantè** a sou pwodui sa a ak kote li ye a; yon rezime stòk ki ba pou yon kote louvri kote sa a ak **Stòk ki ba sèlman**; envantè pou apwouve yo louvri onglè **Konte stòk** la; lòt alèt yo louvri paj pa yo (depans, acha, sesyon kès, peman, aparèy, sistèm).
+4. Klike sou **Fèmen** bò kote yon alèt pou make l kòm li san ou pa louvri l, oswa sou **Make tout kòm li**.
+5. Klike sou **Tout notifikasyon ak preferans** pou louvri paj konplè a.
 
 ![Paj Notifikasyon an ak preferans yo](shot:notifications-page)
 

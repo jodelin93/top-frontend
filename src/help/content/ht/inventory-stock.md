@@ -29,3 +29,5 @@ Yon pwodui gen stòk ki ba lè kantite l rive oswa desann anba **Stòk minimòm*
 2. Kòmande pwodui sa yo (gade [Reapwovizyonman](topic:purchasing-reorder)).
 
 > **Konsèy:** aplikasyon an verifye stòk la regilyèman epi li voye yon alèt nan klòch la pou chak anplasman ki gen stòk ki ba. Alèt la disparèt lè stòk la ranpli ankò.
+
+> **Konsèy:** lè ou louvri l depi yon notifikasyon **Stòk ki ba**, lis la montre pwodui sa a sèlman, ak etikèt **Pwodui: …** anlè l. Klike sou **×** etikèt la pou wè tout pwodui yo ankò.

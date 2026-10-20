@@ -29,3 +29,5 @@ Un producto tiene existencias bajas cuando su cantidad llega a su **Existencia m
 2. Pida esos productos (vea [Reabastecimiento](topic:purchasing-reorder)).
 
 > **Consejo:** la aplicación revisa las existencias con regularidad y envía una alerta a la campana por cada ubicación con existencias bajas. La alerta desaparece cuando se reponen las existencias.
+
+> **Consejo:** abierta desde una notificación de **Existencias bajas**, la lista muestra solo ese producto, con la etiqueta **Producto: …** encima. Haga clic en la **×** de esa etiqueta para ver de nuevo todos los productos.

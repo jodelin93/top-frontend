@@ -10,6 +10,8 @@ export interface AppNotification {
   body: string | null;
   entityType: string | null;
   entityId: string | null;
+  // The stock location the alert is about (low stock)
+  locationId?: string | null;
   occurrences: number;
   lastOccurredAt: string;
   readAt: string | null;

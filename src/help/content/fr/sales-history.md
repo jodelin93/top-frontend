@@ -15,7 +15,7 @@ La page **Ventes** liste toutes les ventes avec le numéro, la date, le client, 
 2. Tapez un numéro de vente dans la recherche. Les ventes faites hors ligne ont aussi un numéro OFFLINE-… que vous pouvez chercher.
 3. Filtrez par statut : **Terminée**, **Annulée**, **Paiement en attente**, **En attente**…
    Pour voir les ventes d'une seule personne, choisissez-la dans **Tous les caissiers** (par exemple pour vérifier la journée d'un caissier).
-4. Choisissez une période : **Aujourd'hui**, **Hier**, **7 derniers jours**, **30 derniers jours**, **Ce mois-ci** ou **Période personnalisée** (du ≤ au).
+4. Choisissez une période. La page s’ouvre sur **Aujourd'hui** ; choisissez **Depuis le début**, **Hier**, **7 derniers jours**, **30 derniers jours**, **Ce mois-ci** ou **Période personnalisée** (du ≤ au). Pour retrouver une vente plus ancienne par son numéro, choisissez d’abord **Depuis le début**.
 5. Utilisez **Précédent** et **Suivant** pour changer de page.
 
 > **Astuce :** une vente peut aussi être **Remboursée** ou **Partiellement remboursée** après un retour. Le nom du vendeur apparaît sous le caissier quand il est différent.

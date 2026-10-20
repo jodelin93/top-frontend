@@ -11,7 +11,11 @@ import { formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { t } from "@/i18n";
-import { notificationTypeLabel } from "./notification-labels";
+import {
+  canOpenNotificationLink,
+  notificationLink,
+  notificationTypeLabel,
+} from "./notification-labels";
 import { translateNotificationText } from "@/lib/server-texts";
 
 // The count is refreshed this often while the page is open
@@ -208,40 +212,61 @@ export function NotificationBell({
                   {t("No unread notifications.")}
                 </li>
               ) : (
-                latest.data.map((n) => (
-                  <li key={n.id} className="px-3 py-2">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <div
-                          className={cn(
-                            "text-xs font-semibold uppercase tracking-wide",
-                            n.severity === "critical"
-                              ? "text-red-600"
-                              : n.severity === "warning"
-                                ? "text-amber-600"
-                                : "text-blue-600",
-                          )}
-                        >
-                          {notificationTypeLabel(n.type)}
-                        </div>
-                        <div className="text-sm text-gray-800">
-                          {translateNotificationText(n.title)}
-                        </div>
-                        <div className="text-xs text-gray-400">
-                          {formatDateTime(n.lastOccurredAt)}
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        className="shrink-0 text-xs text-gray-500 hover:text-gray-800"
-                        onClick={() => markRead.mutate(n.id)}
-                        title={t("Mark as read")}
+                latest.data.map((n) => {
+                  const href = notificationLink(n);
+                  const content = (
+                    <>
+                      <div
+                        className={cn(
+                          "text-xs font-semibold uppercase tracking-wide",
+                          n.severity === "critical"
+                            ? "text-red-600"
+                            : n.severity === "warning"
+                              ? "text-amber-600"
+                              : "text-blue-600",
+                        )}
                       >
-                        {t("Dismiss")}
-                      </button>
-                    </div>
-                  </li>
-                ))
+                        {notificationTypeLabel(n.type)}
+                      </div>
+                      <div className="text-sm text-gray-800">
+                        {translateNotificationText(n.title)}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {formatDateTime(n.lastOccurredAt)}
+                      </div>
+                    </>
+                  );
+                  return (
+                    <li key={n.id} className="px-3 py-2 hover:bg-gray-50">
+                      <div className="flex items-start justify-between gap-2">
+                        {href && canOpenNotificationLink(href, user) ? (
+                          // Opens what the alert is about (e.g. the low product) and marks it read
+                          <Link
+                            href={href}
+                            className="min-w-0 flex-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                            onClick={() => {
+                              setOpen(false);
+                              markRead.mutate(n.id);
+                            }}
+                            data-testid="notification-link"
+                          >
+                            {content}
+                          </Link>
+                        ) : (
+                          <div className="min-w-0 flex-1">{content}</div>
+                        )}
+                        <button
+                          type="button"
+                          className="shrink-0 text-xs text-gray-500 hover:text-gray-800"
+                          onClick={() => markRead.mutate(n.id)}
+                          title={t("Mark as read")}
+                        >
+                          {t("Dismiss")}
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })
               )}
             </ul>
             <div className="border-t px-3 py-2 text-right">
