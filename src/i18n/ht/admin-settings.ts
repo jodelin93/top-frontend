@@ -538,4 +538,10 @@ export const adminSettings: Record<string, string> = {
   "Invited — waiting for acceptance": "Envite — ap tann li aksepte",
   "Invited — waiting for acceptance. They get access once they accept the invitation after signing in.": "Envite — ap tann li aksepte. Moun nan ap gen aksè lè li aksepte envitasyon an apre li konekte.",
   "Only needed when this email has no account yet. If the person already has an account, they receive an invitation to accept after signing in, and this password is not used.": "Sèlman nesesè si imèl sa a poko gen kont. Si moun nan gen yon kont deja, li resevwa yon envitasyon pou l aksepte apre li konekte, epi modpas sa a pa itilize.",
+  "The person receives an e-mail with a link to choose their password: it confirms their e-mail address. If they already have an account, they get an invitation to accept after signing in.": "Moun nan resevwa yon imèl ak yon lyen pou chwazi modpas li : sa konfime adrès imèl li. Si li gen yon kont deja, li resevwa yon envitasyon pou l aksepte apre li konekte.",
+  "A new link to choose a password was sent to {email}.": "Yo voye yon nouvo lyen pou chwazi yon modpas bay {email}.",
+  "Send the link to choose a password again": "Voye lyen pou chwazi modpas la ankò",
+  "Send the link to choose a password again to {name}": "Voye lyen pou chwazi modpas la ankò bay {name}",
+  "The link to choose a password was e-mailed; it confirms the address.": "Yo voye lyen pou chwazi modpas la pa imèl ; li konfime adrès la.",
+  "Waiting for the password (e-mail not confirmed)": "Ap tann modpas la (imèl pa konfime)",
 };

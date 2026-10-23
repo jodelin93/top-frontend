@@ -641,4 +641,10 @@ export const adminSettings: Record<string, string> = {
   "Invited — waiting for acceptance": "Invitado — esperando aceptación",
   "Invited — waiting for acceptance. They get access once they accept the invitation after signing in.": "Invitado — esperando aceptación. Tendrá acceso cuando acepte la invitación después de iniciar sesión.",
   "Only needed when this email has no account yet. If the person already has an account, they receive an invitation to accept after signing in, and this password is not used.": "Solo es necesaria si este correo aún no tiene cuenta. Si la persona ya tiene una cuenta, recibe una invitación para aceptar después de iniciar sesión y esta contraseña no se usa.",
+  "The person receives an e-mail with a link to choose their password: it confirms their e-mail address. If they already have an account, they get an invitation to accept after signing in.": "La persona recibe un correo con un enlace para elegir su contraseña: así confirma su dirección de correo. Si ya tiene una cuenta, recibe una invitación para aceptar después de iniciar sesión.",
+  "A new link to choose a password was sent to {email}.": "Se envió un nuevo enlace para elegir una contraseña a {email}.",
+  "Send the link to choose a password again": "Enviar de nuevo el enlace para elegir la contraseña",
+  "Send the link to choose a password again to {name}": "Enviar de nuevo a {name} el enlace para elegir la contraseña",
+  "The link to choose a password was e-mailed; it confirms the address.": "El enlace para elegir la contraseña se envió por correo; confirma la dirección.",
+  "Waiting for the password (e-mail not confirmed)": "Esperando la contraseña (correo no confirmado)",
 };

@@ -237,4 +237,9 @@ export const errors: Record<string, string> = {
   "This account uses two-factor authentication. Enter a current code from your authenticator app.": "Kont sa a itilize otantifikasyon de faktè. Antre yon kòd aktyèl aplikasyon otantifikasyon ou a.",
   "Invitation not found": "Nou pa jwenn envitasyon an",
   "Two-factor authentication is already on. Turn it off first to set up a new device.": "Otantifikasyon de faktè deja aktive. Dezaktive l anvan pou konfigire yon nouvo aparèy.",
+  "E-mail sending is not set up, so no link can be sent": "Voye imèl pa konfigire : yo pa ka voye okenn lyen",
+  "Several links were sent in the last hour. Try again later.": "Yo voye plizyè lyen nan dènye èdtan an. Eseye ankò pita.",
+  "The e-mail could not be sent. Check the address, then send the link again.": "Yo pa t ka voye imèl la. Verifye adrès la, epi voye lyen an ankò.",
+  "This person has already chosen their password": "Moun sa a deja chwazi modpas li",
+  "This person has not chosen a password yet: send them the link again": "Moun sa a poko chwazi yon modpas : voye lyen an ba li ankò",
 };

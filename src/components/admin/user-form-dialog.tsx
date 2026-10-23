@@ -22,7 +22,7 @@ import { Member, usersApi } from '@/lib/api/users';
 import { hasAllBranches, useAuthStore } from '@/stores/auth-store';
 import { rolesApi } from '@/lib/api/roles';
 import { branchesApi } from '@/lib/api/settings';
-import { t } from '@/i18n';
+import { t, currentLang } from '@/i18n';
 import { roleLabel } from '@/lib/server-texts';
 
 export const memberName = (m: Pick<Member, 'firstName' | 'lastName' | 'email'>) =>
@@ -35,7 +35,6 @@ const userSchema = z.object({
   role: z.string().min(1, 'Choose a role'),
   // invited: only its invitee answers it (never sent)
   status: z.enum(['active', 'suspended', 'invited']),
-  password: z.union([z.literal(''), z.string().min(8, 'At least 8 characters').max(128)]),
   // Branch access: every branch, or the listed ones
   allBranches: z.boolean(),
   branchIds: z.array(z.string()),
@@ -54,7 +53,6 @@ function toFormData(member: Member | null, myBranchIds: string[] | null): UserFo
     lastName: member?.lastName ?? '',
     role: member?.role ?? 'cashier',
     status: member?.status ?? 'active',
-    password: '',
   };
 }
 
@@ -142,7 +140,8 @@ export function UserFormDialog({ open, onOpenChange, member }: UserFormDialogPro
         role: data.role,
         ...(data.firstName.trim() && { firstName: data.firstName.trim() }),
         ...(data.lastName.trim() && { lastName: data.lastName.trim() }),
-        ...(data.password && { password: data.password }),
+        // The person chooses their password from a link e-mailed to them
+        language: currentLang(),
         ...branchIdsInput(data),
       });
     },
@@ -308,15 +307,9 @@ export function UserFormDialog({ open, onOpenChange, member }: UserFormDialogPro
             )}
 
             {!isEdit && (
-              <Field
-                label={t('Password')}
-                htmlFor="password"
-                error={errorText(errors.password?.message)}
-                hint={t('Only needed when this email has no account yet. If the person already has an account, they receive an invitation to accept after signing in, and this password is not used.')}
-                className="sm:col-span-2"
-              >
-                <Input id="password" type="password" autoComplete="new-password" {...register('password')} />
-              </Field>
+              <p className="rounded-md bg-blue-50 px-3 py-2 text-sm text-blue-900 sm:col-span-2" data-testid="setup-link-note">
+                {t('The person receives an e-mail with a link to choose their password: it confirms their e-mail address. If they already have an account, they get an invitation to accept after signing in.')}
+              </p>
             )}
           </div>
 

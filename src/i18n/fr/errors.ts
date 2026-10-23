@@ -237,4 +237,9 @@ export const errors: Record<string, string> = {
   "This account uses two-factor authentication. Enter a current code from your authenticator app.": "Ce compte utilise l'authentification à deux facteurs. Saisissez un code actuel de votre application d'authentification.",
   "Invitation not found": "Invitation introuvable",
   "Two-factor authentication is already on. Turn it off first to set up a new device.": "L'authentification à deux facteurs est déjà activée. Désactivez-la d'abord pour configurer un nouvel appareil.",
+  "E-mail sending is not set up, so no link can be sent": "L'envoi d'e-mails n'est pas configuré : aucun lien ne peut être envoyé",
+  "Several links were sent in the last hour. Try again later.": "Plusieurs liens ont été envoyés dans la dernière heure. Réessayez plus tard.",
+  "The e-mail could not be sent. Check the address, then send the link again.": "L'e-mail n'a pas pu être envoyé. Vérifiez l'adresse, puis renvoyez le lien.",
+  "This person has already chosen their password": "Cette personne a déjà choisi son mot de passe",
+  "This person has not chosen a password yet: send them the link again": "Cette personne n'a pas encore choisi de mot de passe : renvoyez-lui le lien",
 };

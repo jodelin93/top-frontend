@@ -38,6 +38,8 @@ Travay ki poko anrejistre sou lòt aparèy la ap pèdi. Ou pa ka dekonekte tèt 
 
 ## Reyinisyalize modpas yon manm
 
+Toutotan yon moun poko chwazi modpas li (estati « Ap tann modpas la »), ou pa ka fè l pou li : voye lyen an ba li ankò ak ikòn voye a sou liy li. Se konsa chak adrès imèl konfime.
+
 1. Klike sou ikòn kle ki sou liy lan.
 2. Tape **Nouvo modpas** la, apre sa tape l ankò nan **Konfime modpas la**.
 3. Klike sou **Reyinisyalize modpas** epi ba li modpas la yon fason ki an sekirite.

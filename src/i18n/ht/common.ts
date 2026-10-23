@@ -216,4 +216,8 @@ export const common: Record<string, string> = {
   'Date of birth': 'Dat nesans',
   'Group': 'Gwoup',
   'Credit limit': 'Limit kredi',
+  "Choose your password": "Chwazi modpas ou",
+  "At least 8 characters. Saving it confirms your e-mail address; then sign in with it.": "Omwen 8 karaktè. Lè ou anrejistre l, sa konfime adrès imèl ou ; apre sa, konekte avè l.",
+  "Your e-mail address is confirmed and your password is saved. Sign in with it.": "Adrès imèl ou konfime epi modpas ou anrejistre. Konekte avè l.",
+  "Save my password": "Anrejistre modpas mwen",
 };

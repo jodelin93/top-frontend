@@ -247,4 +247,8 @@ export const common: Record<string, string> = {
   'Date of birth': 'Date de naissance',
   Group: 'Groupe',
   'Credit limit': 'Limite de crédit',
+  "Choose your password": "Choisissez votre mot de passe",
+  "At least 8 characters. Saving it confirms your e-mail address; then sign in with it.": "Au moins 8 caractères. L'enregistrer confirme votre adresse e-mail ; connectez-vous ensuite avec.",
+  "Your e-mail address is confirmed and your password is saved. Sign in with it.": "Votre adresse e-mail est confirmée et votre mot de passe enregistré. Connectez-vous avec.",
+  "Save my password": "Enregistrer mon mot de passe",
 };

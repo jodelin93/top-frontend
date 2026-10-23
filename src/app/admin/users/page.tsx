@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { KeyRound, LogOut, Pencil, Plus, ShieldCheck } from 'lucide-react';
+import { KeyRound, LogOut, MailCheck, Pencil, Plus, Send, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge, statusVariant } from '@/components/ui/badge';
@@ -25,7 +25,7 @@ import { sessionsApi } from '@/lib/api/sessions';
 import { branchesApi } from '@/lib/api/settings';
 import { formatDateTime } from '@/lib/format';
 import { useAuthStore } from '@/stores/auth-store';
-import { t } from '@/i18n';
+import { currentLang, t } from '@/i18n';
 import { roleLabel } from '@/lib/server-texts';
 
 export default function UsersPage() {
@@ -78,6 +78,52 @@ export default function UsersPage() {
       disconnect.mutate(member);
     }
   };
+  // Someone added who has not chosen their password yet: the e-mailed link again
+  const resend = useMutation({
+    mutationFn: (member: Member) => usersApi.resendSetupLink(member.id, currentLang()),
+    onSuccess: (_, member) => setNotice(t('A new link to choose a password was sent to {email}.', { email: member.email })),
+    onError: (err) => setNotice(getErrorMessage(err)),
+  });
+  // Password action: resend the link (not confirmed yet) or reset it
+  const passwordButton = (member: Member) =>
+    member.passwordSetupPending ? (
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8"
+        onClick={() => {
+          setNotice(null);
+          resend.mutate(member);
+        }}
+        disabled={resend.isPending}
+        title={t('Send the link to choose a password again')}
+        aria-label={t('Send the link to choose a password again to {name}', { name: member.email })}
+        data-testid="resend-setup-link"
+      >
+        <Send className="h-4 w-4" />
+      </Button>
+    ) : (
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8"
+        onClick={() => setResetting(member)}
+        aria-label={t('Reset password for {name}', { name: member.email })}
+      >
+        <KeyRound className="h-4 w-4" />
+      </Button>
+    );
+  const statusBadge = (member: Member) =>
+    member.status === 'invited' ? (
+      <Badge variant="warning">{t('Invited — waiting for acceptance')}</Badge>
+    ) : member.passwordSetupPending ? (
+      <Badge variant="warning" title={t('The link to choose a password was e-mailed; it confirms the address.')}>
+        <MailCheck className="mr-1 inline h-3 w-3" />
+        {t('Waiting for the password (e-mail not confirmed)')}
+      </Badge>
+    ) : (
+      <Badge variant={statusVariant(member.status)}>{t(member.status)}</Badge>
+    );
   const disconnectButton = (member: Member) => (
     <Button
       variant="ghost"
@@ -141,11 +187,7 @@ export default function UsersPage() {
                         <Badge variant={member.role === 'owner' ? 'info' : 'default'}>
                           {roleLabel(member.roleName)}
                         </Badge>
-                        {member.status === 'invited' ? (
-                          <Badge variant="warning">{t('Invited — waiting for acceptance')}</Badge>
-                        ) : (
-                          <Badge variant={statusVariant(member.status)}>{t(member.status)}</Badge>
-                        )}
+                        {statusBadge(member)}
                       </>
                     }
                   />
@@ -189,15 +231,7 @@ export default function UsersPage() {
                         </Button>
                       ) : (
                         <>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => setResetting(member)}
-                            aria-label={t('Reset password for {name}', { name: member.email })}
-                          >
-                            <KeyRound className="h-4 w-4" />
-                          </Button>
+                          {passwordButton(member)}
                           {disconnectButton(member)}
                         </>
                       )}
@@ -243,11 +277,7 @@ export default function UsersPage() {
                     </Td>
                     <Td className="text-sm text-gray-600">{branchAccess(member)}</Td>
                     <Td>
-                      {member.status === 'invited' ? (
-                        <Badge variant="warning">{t('Invited — waiting for acceptance')}</Badge>
-                      ) : (
-                        <Badge variant={statusVariant(member.status)}>{t(member.status)}</Badge>
-                      )}
+                      {statusBadge(member)}
                     </Td>
                     <Td>
                       {member.mfaEnabled ? (
@@ -285,15 +315,7 @@ export default function UsersPage() {
                             </Button>
                           ) : (
                             <>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() => setResetting(member)}
-                                aria-label={t('Reset password for {name}', { name: member.email })}
-                              >
-                                <KeyRound className="h-4 w-4" />
-                              </Button>
+                              {passwordButton(member)}
                               {disconnectButton(member)}
                             </>
                           )}

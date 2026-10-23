@@ -38,6 +38,8 @@ Work not yet saved on the other device is lost. You cannot disconnect yourself h
 
 ## Reset a member's password
 
+As long as a person has not chosen their password (status "Waiting for the password"), you cannot set it for them: send them the link again with the send icon on their row. That is how every e-mail address gets confirmed.
+
 1. Click the key icon on the row.
 2. Type the **New password**, then type it again in **Confirm password**.
 3. Click **Reset password** and share it securely.

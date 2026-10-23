@@ -5,6 +5,10 @@ export interface Member {
   email: string;
   firstName: string | null;
   lastName: string | null;
+  // Added by the store and has not opened the "choose your password" link yet
+  passwordSetupPending: boolean;
+  // Opened a link from their mailbox (setup or password reset)
+  emailVerified: boolean;
   mfaEnabled: boolean;
   lastLoginAt: string | null;
   // Role key (built-in or custom) and its display name
@@ -28,9 +32,10 @@ export const usersApi = {
     email: string;
     firstName?: string;
     lastName?: string;
-    password?: string;
     role: string;
     branchIds?: string[] | null;
+    // Language of the "choose your password" e-mail
+    language?: string;
   }): Promise<Member> => {
     const { data } = await apiClient.post('/users', input);
     return data;
@@ -49,6 +54,10 @@ export const usersApi = {
   ): Promise<Member> => {
     const { data } = await apiClient.patch(`/users/${userId}`, input);
     return data;
+  },
+  // The "choose your password" link again (for someone who has not used it)
+  resendSetupLink: async (userId: string, language: string): Promise<void> => {
+    await apiClient.post(`/users/${userId}/setup-link`, { language });
   },
   resetPassword: async (userId: string, password: string): Promise<void> => {
     await apiClient.post(`/users/${userId}/password`, { password });

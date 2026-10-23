@@ -38,6 +38,8 @@ Le travail pas encore enregistré sur l'autre appareil est perdu. Vous ne pouvez
 
 ## Réinitialiser le mot de passe d'un membre
 
+Tant qu'une personne n'a pas choisi son mot de passe (statut « En attente du mot de passe »), vous ne pouvez pas le faire à sa place : renvoyez-lui le lien avec l'icône d'envoi de sa ligne. C'est ainsi que chaque adresse e-mail est confirmée.
+
 1. Cliquez sur l'icône de clé de la ligne.
 2. Tapez le **Nouveau mot de passe**, puis retapez-le dans **Confirmer le mot de passe**.
 3. Cliquez sur **Réinitialiser le mot de passe** et communiquez-le de façon sûre.

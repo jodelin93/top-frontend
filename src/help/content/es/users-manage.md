@@ -38,6 +38,8 @@ El trabajo aún no guardado en el otro dispositivo se pierde. No puede desconect
 
 ## Restablecer la contraseña de un miembro
 
+Mientras una persona no haya elegido su contraseña (estado «Esperando la contraseña»), no puede elegirla usted por ella: envíele de nuevo el enlace con el icono de envío de su fila. Así se confirma cada dirección de correo.
+
 1. Haga clic en el ícono de llave de la fila.
 2. Escriba la **Nueva contraseña** y vuelva a escribirla en **Confirmar contraseña**.
 3. Haga clic en **Restablecer contraseña** y comuníquela de forma segura.

@@ -15,18 +15,17 @@ Paj **Itilizatè** a mande dwa **Jere kont anplwaye** (pwopriyetè ak administra
 2. Tape **Imèl** la, epi **Prenon** an ak **Non fanmi** an.
 3. Chwazi **Wòl** la, pa egzanp **Kesye**.
 4. Anba **Aksè siksisal**, chwazi **Tout siksisal yo** oswa **Kèk siksisal sèlman** epi koche yo.
-5. Tape yon **Modpas** pou kòmanse.
-6. Klike sou **Ajoute yon itilizatè**.
+5. Klike sou **Ajoute yon itilizatè**. Ou pa tape okenn modpas : moun nan chwazi pa l.
 
 ![Fòmilè Ajoute yon itilizatè a](shot:user-form)
 
 | Ka | Sa k ap pase |
 | --- | --- |
-| Imèl la poko gen kont | Kont lan kreye ak modpas ou tape a. Moun nan ka konekte touswit. |
-| Imèl la deja gen yon kont (nan yon lòt magazen) | Modpas ou tape a pa itilize. Moun nan resevwa yon **envitasyon**; estati li se « Envite — ap tann li aksepte ». |
+| Imèl la poko gen kont | Moun nan resevwa yon imèl **Chwazi modpas mwen** (lyen an bon pou 72 èdtan). Lè li chwazi modpas li, li konfime adrès imèl li ; apre sa li ka konekte. Pandan tan sa a, estati li se « Ap tann modpas la (imèl pa konfime) ». |
+| Imèl la deja gen yon kont (nan yon lòt magazen) | Moun nan resevwa yon **envitasyon**; estati li se « Envite — ap tann li aksepte ». |
 
 Yon moun ki envite gen aksè nan magazen an sèlman apre li aksepte envitasyon an, nan **Sekirite kont** oswa sou tablo bò a (gade [Envitasyon ak chanje magazen](topic:account-invitations)).
 
 > **Atansyon:** pèsonn pa ka bay plis dwa pase sa li genyen li menm. Se sèl yon pwopriyetè ki ka nonmen yon lòt pwopriyetè.
 
-> **Konsèy:** bay moun nan modpas depa a de vive vwa epi mande l chanje l premye fwa li konekte ([Sekirite kont](topic:account-security)).
+> **Konsèy:** imèl la pa rive? Verifye adrès la ak dosye spam yo, epi klike sou ikòn voye a sou liy li (**Voye lyen pou chwazi modpas la ankò**). Yon nouvo lyen ranplase ansyen an.

@@ -15,18 +15,17 @@ La página **Usuarios** requiere el permiso **Administrar cuentas del personal**
 2. Escriba el **Correo electrónico**, luego el **Nombre** y el **Apellido**.
 3. Elija el **Rol**, por ejemplo **Cajero**.
 4. En **Acceso a sucursales**, elija **Todas las sucursales** o **Solo algunas sucursales** y márquelas.
-5. Escriba una **Contraseña** inicial.
-6. Haga clic en **Agregar usuario**.
+5. Haga clic en **Agregar usuario**. No escribe ninguna contraseña: la persona elige la suya.
 
 ![El formulario Agregar usuario](shot:user-form)
 
 | Caso | Qué sucede |
 | --- | --- |
-| El correo electrónico todavía no tiene cuenta | La cuenta se crea con la contraseña escrita. La persona puede iniciar sesión de inmediato. |
-| El correo electrónico ya tiene una cuenta (en otra tienda) | La contraseña escrita no se usa. La persona recibe una **invitación**; su estado es «Invitado — esperando aceptación». |
+| El correo electrónico todavía no tiene cuenta | La persona recibe un correo **Elegir mi contraseña** (el enlace vale 72 horas). Al elegir su contraseña confirma su dirección de correo; luego puede iniciar sesión. Mientras tanto su estado es «Esperando la contraseña (correo no confirmado)». |
+| El correo electrónico ya tiene una cuenta (en otra tienda) | La persona recibe una **invitación**; su estado es «Invitado — esperando aceptación». |
 
 Una persona invitada solo tiene acceso a la tienda después de aceptar la invitación, en **Seguridad de la cuenta** o en el panel (vea [Invitaciones y cambio de tienda](topic:account-invitations)).
 
 > **Atención:** nadie puede dar más permisos de los que tiene. Solo un propietario puede nombrar a otro propietario.
 
-> **Consejo:** comunique la contraseña inicial de palabra y pida a la persona que la cambie en su primer inicio de sesión ([Seguridad de la cuenta](topic:account-security)).
+> **Consejo:** ¿no llegó el correo? Revise la dirección y la carpeta de correo no deseado, luego haga clic en el icono de envío de su fila (**Enviar de nuevo el enlace para elegir la contraseña**). Un nuevo enlace reemplaza al anterior.

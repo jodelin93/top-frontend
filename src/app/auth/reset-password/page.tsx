@@ -41,6 +41,8 @@ export default function ResetPasswordPage() {
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const [token] = useState(() => searchParams.get('token') ?? '');
+  // A new account's link (sent when the store added the person): first password
+  const [setup] = useState(() => searchParams.get('setup') === '1');
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const {
@@ -71,10 +73,12 @@ function ResetPasswordForm() {
       <LanguageSwitcher compact className="absolute right-4 top-4 bg-white" />
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-center text-2xl font-bold">{t('Choose a new password')}</CardTitle>
+          <CardTitle className="text-center text-2xl font-bold">{setup ? t('Choose your password') : t('Choose a new password')}</CardTitle>
           {!done && validLink && (
             <CardDescription className="text-center">
-              {t('At least 8 characters. Once it is saved, every device signed in to your account is signed out.')}
+              {setup
+                ? t('At least 8 characters. Saving it confirms your e-mail address; then sign in with it.')
+                : t('At least 8 characters. Once it is saved, every device signed in to your account is signed out.')}
             </CardDescription>
           )}
         </CardHeader>
@@ -83,7 +87,7 @@ function ResetPasswordForm() {
             <div className="space-y-4" data-testid="reset-done">
               <div className="flex gap-3 rounded-md bg-green-50 p-3 text-sm text-green-800">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
-                <p>{t('Your password has been changed. Sign in with your new password.')}</p>
+                <p>{setup ? t('Your e-mail address is confirmed and your password is saved. Sign in with it.') : t('Your password has been changed. Sign in with your new password.')}</p>
               </div>
               <Button asChild className="w-full">
                 <Link href="/auth/login">{t('Sign in')}</Link>
@@ -131,7 +135,7 @@ function ResetPasswordForm() {
                 {errors.confirm && <p className="text-sm text-red-600">{t(errors.confirm.message ?? '')}</p>}
               </div>
               <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? t('Saving...') : t('Save the new password')}
+                {isSubmitting ? t('Saving...') : setup ? t('Save my password') : t('Save the new password')}
               </Button>
             </form>
           )}
