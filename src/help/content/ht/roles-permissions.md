@@ -22,6 +22,8 @@ Chanjman yo aplike pwochen fwa chak moun chaje yon paj.
 
 > **Atansyon:** ou pa ka modifye yon wòl ki gen dwa ou pa genyen, ni ajoute yon dwa ou pa genyen. Wòl **Pwopriyetè** a toujou gen tout dwa yo.
 
+> **Konsèy :** **Wè vant yo (pa li yo)** montre moun nan vant li touche yo ; ajoute **Wè tout vant (tout kesye)** pou li wè pa tout moun. Wòl **Kesye** a gen premye a sèlman.
+
 ## Kreye yon wòl pèsonalize
 
 1. Klike sou **Nouvo wòl**.

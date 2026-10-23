@@ -22,6 +22,8 @@ Changes apply the next time each person loads a page.
 
 > **Warning:** you cannot edit a role that has permissions you don't have, or add a permission you don't have. The **Owner** role always has every permission.
 
+> **Tip:** **View sales (their own)** shows the person the sales they rang up; add **View every sale (all cashiers)** for them to see everyone's. The **Cashier** role has only the first one.
+
 ## Create a custom role
 
 1. Click **New role**.

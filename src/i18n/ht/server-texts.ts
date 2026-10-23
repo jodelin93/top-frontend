@@ -152,6 +152,8 @@ export const serverTexts: Record<string, string> = {
   "Exchange credit refunded (return {number})": "Kredi echanj ranbouse (retou {number})",
   "Invoice due {date}": "Fakti ki dwe peye {date}",
   "View sales": "Wè vant yo",
+  "View sales (their own)": "Wè vant yo (pa li yo)",
+  "View every sale (all cashiers), not only their own": "Wè tout vant (tout kesye), pa sèlman pa li yo",
   "Reprint receipts (marked COPY), e-mail or share them": "Re-enprime resi yo (make KOPI), voye yo pa e-mail oswa pataje yo",
   "Refund to another payment method than the sale was paid with": "Ranbouse sou yon lòt mwayen peman pase sa ki te sèvi pou vant lan",
   "Give goodwill refunds (money back without goods)": "Bay ranbousman jès bòn volonte (lajan tounen san machandiz)",

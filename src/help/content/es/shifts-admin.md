@@ -9,6 +9,8 @@ related: [shifts-settings, shifts-close, reports-overview]
 ---
 El gerente, el administrador y el propietario supervisan todos los turnos desde **Administración** > **Turnos de caja y efectivo**.
 
+Un cajero solo ve **sus propios turnos** (los que abrió o cerró), y un turno de cajón compartido mientras está abierto.
+
 ![La lista de turnos de caja](shot:admin-shifts)
 
 1. Filtre por estado (**Abierto**, **Conteo en curso**, **Cerrado**), por caja o por fechas (**Desde** y **Hasta**: la fecha de inicio debe ser anterior a la fecha de fin).

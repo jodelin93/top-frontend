@@ -30,6 +30,7 @@ import { customerName } from '@/lib/api/customers';
 import { Sale, SaleStatus, salesApi } from '@/lib/api/sales';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { t } from '@/i18n';
+import { hasPermission, useAuthStore } from '@/stores/auth-store';
 
 const PAGE_SIZE = 25;
 
@@ -41,6 +42,8 @@ export default function SalesPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [status, setStatus] = useState<SaleStatus | ''>('');
   const [cashierId, setCashierId] = useState('');
+  // Without sales.view.all the server sends only the user's own sales: no cashier to choose
+  const seesAll = hasPermission(useAuthStore((state) => state.user), 'sales.view.all');
   const [range, setRange] = useState<DateRange>(() => presetRange('today'));
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -75,7 +78,7 @@ export default function SalesPage() {
   const sales = data?.data ?? [];
   const meta = data?.meta;
   const hasFilters = !!(debouncedSearch || status || cashierId || range.from || range.to);
-  const { data: cashiers = [] } = useQuery({ queryKey: ['sales', 'cashiers'], queryFn: salesApi.cashiers });
+  const { data: cashiers = [] } = useQuery({ queryKey: ['sales', 'cashiers'], queryFn: salesApi.cashiers, enabled: seesAll });
 
   const handleRange = (next: DateRange) => {
     setRange(next);
@@ -116,22 +119,24 @@ export default function SalesPage() {
             <option value="held">{t('Held')}</option>
             <option value="cancelled">{t('Cancelled')}</option>
           </Select>
-          <Select
-            value={cashierId}
-            onChange={(e) => {
-              setCashierId(e.target.value);
-              setPage(1);
-            }}
-            className="lg:w-48"
-            aria-label={t('Filter by cashier')}
-          >
-            <option value="">{t('All cashiers')}</option>
-            {cashiers.map((cashier) => (
-              <option key={cashier.id} value={cashier.id}>
-                {cashier.name}
-              </option>
-            ))}
-          </Select>
+          {seesAll && (
+            <Select
+              value={cashierId}
+              onChange={(e) => {
+                setCashierId(e.target.value);
+                setPage(1);
+              }}
+              className="lg:w-48"
+              aria-label={t('Filter by cashier')}
+            >
+              <option value="">{t('All cashiers')}</option>
+              {cashiers.map((cashier) => (
+                <option key={cashier.id} value={cashier.id}>
+                  {cashier.name}
+                </option>
+              ))}
+            </Select>
+          )}
           <DateRangeFilter
             value={range}
             onChange={handleRange}

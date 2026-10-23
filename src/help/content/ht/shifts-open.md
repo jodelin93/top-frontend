@@ -9,6 +9,8 @@ related: [shifts-cash-movements, shifts-close, shifts-settings]
 ---
 Nan aplikasyon an, yon peryòd travay rele yon **sesyon**. Yon sesyon fè pati yon kès: li kòmanse ak konte fon kès la epi li fini ak konte tiwa a. Chak kesye louvri epi fèmen pwòp sesyon pa l.
 
+Ak règ **Yon kesye pou chak tiwa** (pa defo, gade [Siksisal ak kès](topic:settings-branches)), chak moun vann nan **pwòp sesyon pa li** : yon dezyèm kesye sou menm kès la pa janm vann nan sesyon yon kolèg ; kès la mande l **Louvri pwòp sesyon kès ou sou kès sa a anvan ou vann**. Ak **Tiwa pataje**, plizyè kesye vann nan menm sesyon an epi chak vant kenbe kesye li.
+
 Louvri sesyon an anvan premye vant lan:
 
 1. Verifye se bon kès la ki chwazi nan lis ki anlè ekran an.

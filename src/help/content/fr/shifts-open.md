@@ -9,6 +9,8 @@ related: [shifts-cash-movements, shifts-close, shifts-settings]
 ---
 Dans l'application, un quart de travail s'appelle une **session**. Une session appartient à une caisse : elle commence par le comptage du fond de caisse et se termine par le comptage du tiroir. Chaque caissier ouvre et clôture sa propre session.
 
+Avec la règle **Un caissier par tiroir** (par défaut, voir [Succursales et caisses](topic:settings-branches)), chacun vend dans **sa propre session** : un deuxième caissier sur la même caisse ne vend jamais dans la session d'un collègue ; la caisse lui demande **Ouvrez votre propre session de caisse sur cette caisse avant de vendre**. Avec **Tiroir partagé**, plusieurs caissiers vendent dans la même session et chaque vente garde son caissier.
+
 Ouvrez la session avant la première vente :
 
 1. Vérifiez que la bonne caisse est choisie dans la liste en haut de l'écran.

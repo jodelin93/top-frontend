@@ -9,6 +9,8 @@ related: [shifts-settings, shifts-close, reports-overview]
 ---
 Le gérant, l'administrateur et le propriétaire suivent toutes les sessions depuis **Administration** > **Sessions de caisse et espèces**.
 
+Un caissier, lui, ne voit que **ses propres sessions** (celles qu'il a ouvertes ou clôturées) et une session de tiroir partagé tant qu'elle est ouverte.
+
 ![La liste des sessions de caisse](shot:admin-shifts)
 
 1. Filtrez par statut (**Ouverte**, **Comptage en cours**, **Clôturée**), par caisse ou par dates (**Du** et **Au** : la date de début doit précéder la date de fin).

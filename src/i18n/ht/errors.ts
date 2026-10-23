@@ -155,6 +155,7 @@ export const errors: Record<string, string> = {
   'This customer is blocked': 'Kliyan sa a bloke',
   'This till has been revoked by an administrator and cannot record sales': 'Yon administratè revoke kès sa a, li pa ka anrejistre vant',
   'Open a shift on this register before selling': 'Louvri yon sesyon kès sou kès sa a anvan ou vann',
+  'Open your own shift on this register before selling': 'Louvri pwòp sesyon kès ou sou kès sa a anvan ou vann',
   'Payment method not found or inactive': 'Nou pa jwenn mwayen peman an oswa li inaktif',
   'Points are always spent in the store currency': 'Pwen yo toujou itilize nan lajan magazen an',
   'Only cash payments can exceed the total': 'Se sèlman peman an lajan kach ki ka depase total la',

@@ -9,6 +9,8 @@ related: [shifts-settings, shifts-close, reports-overview]
 ---
 The manager, administrator, and owner track all shifts from **Admin** > **Shifts & cash**.
 
+A cashier sees only **their own shifts** (the ones they opened or closed), and a shared-drawer shift while it is open.
+
 ![The register shift list](shot:admin-shifts)
 
 1. Filter by status (**Open**, **Counting**, **Closed**), by register, or by dates (**From** and **To**: the start date must be before the end date).

@@ -9,6 +9,8 @@ related: [sales-void, returns-pos, pos-receipt]
 ---
 Paj **Vant** la montre tout vant yo ak nimewo a, dat la, kliyan an, kesye a, total la ak estati a.
 
+Yon kesye wè sèlman **pwòp vant pa li** (sa li touche yo) : dwa **Wè tout vant (tout kesye)** se pou jeran an, administratè a ak pwopriyetè a. San li, filt **Tout kesye** a pa parèt, epi ou pa ka jwenn vant yon lòt kesye, menm ak lyen li oswa yon reyenprime.
+
 ![Istorik vant yo](shot:admin-sales)
 
 1. Nan meni an, klike sou **Vant**.

@@ -9,6 +9,8 @@ related: [sales-void, returns-pos, pos-receipt]
 ---
 La page **Ventes** liste toutes les ventes avec le numéro, la date, le client, le caissier, le total et le statut.
 
+Un caissier ne voit que **ses propres ventes** (celles qu'il a encaissées) : le droit **Voir toutes les ventes (de tous les caissiers)** est réservé au gérant, à l'administrateur et au propriétaire. Sans lui, le filtre **Tous les caissiers** n'apparaît pas, et une vente d'un autre caissier est introuvable, même par son lien ou sa réimpression.
+
 ![L'historique des ventes](shot:admin-sales)
 
 1. Dans le menu, cliquez sur **Ventes**.

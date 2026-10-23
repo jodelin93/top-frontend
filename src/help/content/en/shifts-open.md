@@ -9,6 +9,8 @@ related: [shifts-cash-movements, shifts-close, shifts-settings]
 ---
 In the app, a work shift is called a **shift**. A shift belongs to a register: it starts with counting the opening float and ends with counting the drawer. Each cashier opens and closes their own shift.
 
+With **One cashier per drawer** (the default, see [Branches and registers](topic:settings-branches)), each cashier sells in **their own shift**: a second cashier on the same register never sells in a colleague's shift; the till asks them to **Open your own shift on this register before selling**. With **Shared drawer**, several cashiers sell in the same shift and each sale keeps its cashier.
+
 Open the shift before the first sale:
 
 1. Check that the right register is selected in the list at the top of the screen.

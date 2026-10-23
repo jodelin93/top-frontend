@@ -9,6 +9,8 @@ related: [sales-void, returns-pos, pos-receipt]
 ---
 La página **Ventas** lista todas las ventas con el número, la fecha, el cliente, el cajero, el total y el estado.
 
+Un cajero solo ve **sus propias ventas** (las que cobró): **Ver todas las ventas (de todos los cajeros)** queda para el gerente, el administrador y el propietario. Sin él, el filtro **Todos los cajeros** no aparece, y la venta de otro cajero no se encuentra, ni siquiera por su enlace o una reimpresión.
+
 ![El historial de ventas](shot:admin-sales)
 
 1. En el menú, haga clic en **Ventas**.

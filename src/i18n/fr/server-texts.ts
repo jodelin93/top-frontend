@@ -152,6 +152,8 @@ export const serverTexts: Record<string, string> = {
   "Exchange credit refunded (return {number})": "Crédit d'échange remboursé (retour {number})",
   "Invoice due {date}": "Facture à échéance le {date}",
   "View sales": "Voir les ventes",
+  "View sales (their own)": "Voir les ventes (les siennes)",
+  "View every sale (all cashiers), not only their own": "Voir toutes les ventes (de tous les caissiers), pas seulement les siennes",
   "Reprint receipts (marked COPY), e-mail or share them": "Réimprimer les reçus (marqués COPIE), les envoyer par e-mail ou les partager",
   "Refund to another payment method than the sale was paid with": "Rembourser sur un autre mode de paiement que celui de la vente",
   "Give goodwill refunds (money back without goods)": "Accorder des remboursements commerciaux (argent rendu sans marchandise)",

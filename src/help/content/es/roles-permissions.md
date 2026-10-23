@@ -22,6 +22,8 @@ Los cambios se aplican la próxima vez que cada persona cargue una página.
 
 > **Atención:** no puede modificar un rol que tenga permisos que usted no tiene, ni agregar un permiso que usted no tiene. El rol **Propietario** siempre tiene todos los permisos.
 
+> **Consejo:** **Ver ventas (las suyas)** muestra a la persona las ventas que cobró; añada **Ver todas las ventas (de todos los cajeros)** para que vea las de todos. El rol **Cajero** solo tiene el primero.
+
 ## Crear un rol personalizado
 
 1. Haga clic en **Nuevo rol**.

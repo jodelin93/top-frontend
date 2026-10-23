@@ -9,6 +9,8 @@ related: [shifts-settings, shifts-close, reports-overview]
 ---
 Jeran an, administratè a ak pwopriyetè a swiv tout sesyon yo nan **Administrasyon** > **Sesyon kès ak lajan kach**.
 
+Yon kesye wè sèlman **pwòp sesyon pa li** (sa li louvri oswa fèmen yo), ak yon sesyon tiwa pataje pandan li louvri.
+
 ![Lis sesyon kès yo](shot:admin-shifts)
 
 1. Filtre pa estati (**Louvri**, **Ap konte**, **Fèmen**), pa kès oswa pa dat (**Depi** ak **Jiska**: dat kòmansman an dwe vini anvan dat fen an).

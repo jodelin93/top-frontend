@@ -22,6 +22,8 @@ Les changements s'appliquent au prochain chargement de page de chaque personne.
 
 > **Attention :** vous ne pouvez pas modifier un rôle qui a des droits que vous n'avez pas, ni ajouter un droit que vous n'avez pas. Le rôle **Propriétaire** a toujours tous les droits.
 
+> **Astuce :** **Voir les ventes (les siennes)** montre à la personne les ventes qu'elle a encaissées ; ajoutez **Voir toutes les ventes (de tous les caissiers)** pour qu'elle voie celles de tout le monde. Le rôle **Caissier** n'a que le premier.
+
 ## Créer un rôle personnalisé
 
 1. Cliquez sur **Nouveau rôle**.

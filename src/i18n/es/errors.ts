@@ -155,6 +155,7 @@ export const errors: Record<string, string> = {
   'This customer is blocked': 'Este cliente está bloqueado',
   'This till has been revoked by an administrator and cannot record sales': 'Un administrador revocó esta caja y no puede registrar ventas',
   'Open a shift on this register before selling': 'Abra un turno de caja en esta caja antes de vender',
+  'Open your own shift on this register before selling': 'Abra su propio turno de caja en esta caja antes de vender',
   'Payment method not found or inactive': 'No se encontró el método de pago o está inactivo',
   'Points are always spent in the store currency': 'Los puntos siempre se canjean en la moneda de la tienda',
   'Only cash payments can exceed the total': 'Solo los pagos en efectivo pueden superar el total',

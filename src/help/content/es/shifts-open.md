@@ -9,6 +9,8 @@ related: [shifts-cash-movements, shifts-close, shifts-settings]
 ---
 En la aplicación, un turno de trabajo se llama **turno**. Un turno pertenece a una caja: empieza con el conteo del fondo de caja y termina con el conteo del cajón. Cada cajero abre y cierra su propio turno.
 
+Con **Un cajero por cajón** (por defecto, vea [Sucursales y cajas](topic:settings-branches)), cada cajero vende en **su propio turno**: un segundo cajero en la misma caja nunca vende en el turno de un colega; la caja le pide **Abra su propio turno de caja en esta caja antes de vender**. Con **Cajón compartido**, varios cajeros venden en el mismo turno y cada venta conserva su cajero.
+
 Abra el turno antes de la primera venta:
 
 1. Verifique que esté elegida la caja correcta en la lista de la parte superior de la pantalla.

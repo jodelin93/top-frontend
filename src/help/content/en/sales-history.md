@@ -9,6 +9,8 @@ related: [sales-void, returns-pos, pos-receipt]
 ---
 The **Sales** page lists all sales with the number, date, customer, cashier, total and status.
 
+A cashier sees only **their own sales** (the ones they rang up): **View every sale (all cashiers)** is kept for the manager, the admin and the owner. Without it, the **All cashiers** filter is not shown, and another cashier's sale cannot be found, not even through its link or a reprint.
+
 ![The sales history](shot:admin-sales)
 
 1. In the menu, click **Sales**.
