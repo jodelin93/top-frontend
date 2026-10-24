@@ -11,7 +11,7 @@ Yon devi montre yon kliyan pri yo anvan li achte. Li pa rezève stòk. Paj **Dev
 
 ![Lis devi yo](shot:admin-estimates)
 
-> **Nòt :** yon devi pou yon siksisal gen sèlman pwodwi ki vann nan siksisal sa a : rechèch pwodwi a pwopoze yo sèlman, epi yo refize yon pwodwi yon lòt siksisal lè w anrejistre. Se sèlman moun ki gen aksè nan siksisal sa a ki wè devi a.
+> **Nòt :** yon devi pou yon siksisal gen sèlman pwodwi ki vann nan siksisal sa a : rechèch pwodwi a pwopoze yo sèlman, epi yo refize yon pwodwi yon lòt siksisal lè w anrejistre. Se sèlman moun ki gen aksè nan siksisal sa a ki wè devi a. Chak devi gen yon siksisal : pou yon anplwaye ki nan yon sèl siksisal, se pa l la, li chwazi otomatikman.
 
 ## Kreye yon devi
 

@@ -245,4 +245,5 @@ export const errors: Record<string, string> = {
   "Only an owner can reset two-factor authentication": "Se sèlman yon pwopriyetè ki ka reyinisyalize otantifikasyon de faktè",
   "Turn off your own two-factor authentication from your account settings": "Dezaktive pwòp otantifikasyon de faktè ou nan paramèt kont ou",
   "This account is also used in another store. The user must turn off two-factor themselves.": "Kont sa a itilize nan yon lòt magazen tou. Se moun nan menm ki dwe dezaktive otantifikasyon de faktè a.",
+  "Choose the branch of the estimate": "Chwazi siksisal devi a",
 };

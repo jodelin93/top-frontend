@@ -11,7 +11,7 @@ Una cotización presenta precios a un cliente antes de la compra. No reserva exi
 
 ![La lista de cotizaciones](shot:admin-estimates)
 
-> **Nota:** un presupuesto para una sucursal solo contiene productos que se venden en esa sucursal: la búsqueda de productos solo los propone, y un producto de otra sucursal se rechaza al guardar. Solo las personas con acceso a esa sucursal ven el presupuesto.
+> **Nota:** un presupuesto para una sucursal solo contiene productos que se venden en esa sucursal: la búsqueda de productos solo los propone, y un producto de otra sucursal se rechaza al guardar. Solo las personas con acceso a esa sucursal ven el presupuesto. Cada presupuesto tiene una sucursal: para un empleado de una sola sucursal, es la suya, elegida automáticamente.
 
 ## Crear una cotización
 

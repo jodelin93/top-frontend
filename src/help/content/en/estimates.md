@@ -11,7 +11,7 @@ An estimate shows prices to a customer before they buy. It does not reserve stoc
 
 ![The estimate list](shot:admin-estimates)
 
-> **Note:** an estimate for a branch only holds products sold at that branch: the product search offers only them, and a product of another branch is refused when saving. Only the people with access to that branch see the estimate.
+> **Note:** an estimate for a branch only holds products sold at that branch: the product search offers only them, and a product of another branch is refused when saving. Only the people with access to that branch see the estimate. Every estimate has a branch: for an employee of a single branch, it is theirs, chosen automatically.
 
 ## Create an estimate
 

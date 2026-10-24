@@ -26,6 +26,7 @@ import { formatMoney, todayLocalIso } from '@/lib/format';
 import { useCurrency } from '@/hooks/use-store-settings';
 import { branchesApi } from '@/lib/api/settings';
 import { t } from '@/i18n';
+import { hasAllBranches, useAuthStore } from '@/stores/auth-store';
 
 interface Line {
   variantId: string;
@@ -100,7 +101,10 @@ export function EstimateFormDialog({
   // The branch making the estimate: its name heads the document when the store
   // chose branch names (Settings › Receipts & printing)
   const [branchId, setBranchId] = useState<string | null>(null);
-  const { data: branches = [] } = useQuery({ queryKey: ['branches'], queryFn: () => branchesApi.list() });
+  const { data: allBranches = [] } = useQuery({ queryKey: ['branches'], queryFn: () => branchesApi.list() });
+  // Someone limited to some branches makes estimates for those only
+  const me = useAuthStore((state) => state.user);
+  const branches = hasAllBranches(me) ? allBranches : allBranches.filter((b) => me?.branchIds?.includes(b.id));
   const [error, setError] = useState<string | null>(null);
   // A new validity date can't already be over (an unchanged one is kept as is)
   const validUntilError =

@@ -11,7 +11,7 @@ Un devis présente des prix à un client avant l'achat. Il ne réserve pas de st
 
 ![La liste des devis](shot:admin-estimates)
 
-> **Note :** un devis fait pour une succursale ne contient que des produits vendus dans cette succursale : la recherche de produits ne propose qu'eux, et un produit d'une autre succursale est refusé à l'enregistrement. Seules les personnes qui ont accès à cette succursale voient le devis.
+> **Note :** un devis fait pour une succursale ne contient que des produits vendus dans cette succursale : la recherche de produits ne propose qu'eux, et un produit d'une autre succursale est refusé à l'enregistrement. Seules les personnes qui ont accès à cette succursale voient le devis. Chaque devis a une succursale : pour un employé d'une seule succursale, c'est la sienne, choisie automatiquement.
 
 ## Créer un devis
 

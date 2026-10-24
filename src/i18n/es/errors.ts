@@ -245,4 +245,5 @@ export const errors: Record<string, string> = {
   "Only an owner can reset two-factor authentication": "Solo un propietario puede restablecer la autenticación en dos pasos",
   "Turn off your own two-factor authentication from your account settings": "Desactive su propia autenticación en dos pasos desde la configuración de su cuenta",
   "This account is also used in another store. The user must turn off two-factor themselves.": "Esta cuenta también se usa en otra tienda. La persona debe desactivar ella misma la autenticación en dos pasos.",
+  "Choose the branch of the estimate": "Elija la sucursal del presupuesto",
 };
