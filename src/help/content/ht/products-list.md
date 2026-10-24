@@ -11,6 +11,8 @@ Paj **Pwodui** a (meni **Katalòg**) montre tout katalòg ou: SKU, kòd ba, kate
 
 ![Lis pwodui yo](shot:admin-products)
 
+> **Nòt :** yon moun ki limite nan kèk siksisal (pa egzanp yon kesye nan yon sèl boutik) wè sèlman pwodwi ki vann nan siksisal li yo, ak pwodwi ki vann toupatou. Pwopriyetè a, administratè a ak yon jeran tout antrepriz la (tout siksisal) wè tout katalòg la. Siksisal yon pwodwi chwazi nan fich li, nan pati siksisal yo (si okenn pa koche : li vann toupatou).
+
 1. Tape yon non, yon SKU oswa yon kòd ba nan **Chèche pa non, SKU oswa kòd ba...**.
 2. Si sa nesesè, filtre pa **Kategori** (yon kategori gen ladan l tout ti kategori ki anba l), **Tip**, estati (**Aktif**, **Inaktif**, **Abandone**), **Etikèt** oswa **Siksisal**.
 3. Chwazi lòd la nan **Klase pa**: **Pi nouvo yo anvan** oswa **Pi ansyen yo anvan** (dat kreyasyon), non, pri, stòk, kategori, SKU oswa **Modifye resamman**. Chwa a rete sou òdinatè sa a.

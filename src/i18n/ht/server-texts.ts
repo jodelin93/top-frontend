@@ -39,6 +39,7 @@ export const serverTexts: Record<string, string> = {
   "Quantity can have at most {count} decimal(s) ({unit})": "Kantite a ka gen {count} desimal pi plis ({unit})",
   "Quantity can have at most {count} decimal(s)": "Kantite a ka gen {count} desimal pi plis",
   "{name} is not available for sale": "{name} pa disponib pou vann",
+  "{name} is not sold at {branch}": "{name} pa vann nan {branch}",
   "Give a reason for the discount on line {line} (above {max}%)": "Bay yon rezon pou rabè sou liy {line} la (plis pase {max}%)",
   "Give a reason for the discount on the sale (above {max}%)": "Bay yon rezon pou rabè sou vant lan (plis pase {max}%)",
   "Payments ({paid}) do not cover the total ({total})": "Peman yo ({paid}) pa kouvri total la ({total})",

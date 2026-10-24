@@ -426,6 +426,8 @@ export function EstimateFormDialog({
             <div className="rounded-md border p-3">
               <div className="mb-2 text-sm font-medium">{t('Add products')}</div>
               <VariantPicker
+                // Only what the estimate's branch sells (the server checks it too)
+                branchId={branches.some((b) => b.id === branchId) ? branchId : (branches[0]?.id ?? null)}
                 renderAction={(product, variant) => (
                   <Button
                     size="sm"

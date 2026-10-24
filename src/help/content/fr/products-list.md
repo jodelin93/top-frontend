@@ -11,6 +11,8 @@ La page **Produits** (menu **Catalogue**) affiche tout votre catalogue : SKU, co
 
 ![La liste des produits](shot:admin-products)
 
+> **Note :** une personne limitée à certaines succursales (par exemple un caissier d'une seule boutique) ne voit que les produits vendus dans ses succursales, et les produits vendus partout. Le propriétaire, l'administrateur et un gérant de toute l'entreprise (toutes les succursales) voient tout le catalogue. Les succursales d'un produit se choisissent dans sa fiche, dans la partie des succursales (aucune cochée : vendu partout).
+
 1. Tapez un nom, un SKU ou un code-barres dans **Rechercher par nom, SKU ou code-barres...**.
 2. Si besoin, filtrez par **Catégorie** (une catégorie inclut ses sous-catégories), **Type**, statut (**Actif**, **Inactif**, **Abandonné**), **Étiquettes** ou **Succursale**.
 3. Choisissez l'ordre dans **Trier par** : **Plus récents d'abord** ou **Plus anciens d'abord** (date de création), nom, prix, stock, catégorie, SKU ou **Modifiés récemment**. Le choix est gardé sur cet ordinateur.

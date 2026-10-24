@@ -66,18 +66,21 @@ export function VariantPicker({
   renderAction,
   excludeIds,
   autoFocus,
+  branchId,
 }: {
   renderAction: (product: Product, variant: ProductVariant) => ReactNode;
   excludeIds?: Set<string>;
   autoFocus?: boolean;
+  // Only the products sold at this branch (an estimate for that branch)
+  branchId?: string | null;
 }) {
   const currency = useCurrency();
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search.trim());
 
   const { data: products = [], isFetching, error } = useQuery({
-    queryKey: ['products', 'picker', debouncedSearch],
-    queryFn: () => productsApi.list({ search: debouncedSearch || undefined, status: 'active' }),
+    queryKey: ['products', 'picker', debouncedSearch, branchId ?? null],
+    queryFn: () => productsApi.list({ search: debouncedSearch || undefined, status: 'active', ...(branchId ? { branchId } : {}) }),
   });
 
   const rows = products.slice(0, MAX_PRODUCTS).flatMap((product) =>

@@ -39,6 +39,7 @@ export const serverTexts: Record<string, string> = {
   "Quantity can have at most {count} decimal(s) ({unit})": "La cantidad puede tener como máximo {count} decimal(es) ({unit})",
   "Quantity can have at most {count} decimal(s)": "La cantidad puede tener como máximo {count} decimal(es)",
   "{name} is not available for sale": "{name} no está disponible para la venta",
+  "{name} is not sold at {branch}": "{name} no se vende en {branch}",
   "Give a reason for the discount on line {line} (above {max}%)": "Indique un motivo para el descuento en la línea {line} (más del {max}%)",
   "Give a reason for the discount on the sale (above {max}%)": "Indique un motivo para el descuento en la venta (más del {max}%)",
   "Payments ({paid}) do not cover the total ({total})": "Los pagos ({paid}) no cubren el total ({total})",

@@ -11,6 +11,8 @@ The **Products** page (**Catalog** menu) shows your whole catalog: SKU, barcode,
 
 ![The product list](shot:admin-products)
 
+> **Note:** someone limited to some branches (for example a cashier of one shop) only sees the products sold at their branches, and the products sold everywhere. The owner, the administrator and a manager of the whole company (all branches) see the whole catalog. A product's branches are chosen in its form, in the branches part (none ticked: sold everywhere).
+
 1. Type a name, SKU or barcode in **Search by name, SKU or barcode...**.
 2. If needed, filter by **Category** (a category includes its sub-categories), **Type**, status (**Active**, **Inactive**, **Discontinued**), **Tags** or **Branch**.
 3. Choose the order in **Sort by**: **Newest first** or **Oldest first** (creation date), name, price, stock, category, SKU or **Recently updated**. The choice is kept on this computer.

@@ -199,6 +199,7 @@ const errorRules = (): Rule[] => [
   [/^Quantity can have at most (\d+) decimals?$/, (m) => t('Quantity can have at most {count} decimal(s)', { count: m[1] })],
   // Sales
   [/^(.+) is not available for sale$/, (m) => t('{name} is not available for sale', { name: m[1] })],
+  [/^(.+) is not sold at (.+)$/, (m) => t('{name} is not sold at {branch}', { name: m[1], branch: m[2] })],
   [/^Give a reason for the discount on line (\d+) \(above (.+)%\)$/, (m) => t('Give a reason for the discount on line {line} (above {max}%)', { line: m[1], max: m[2] })],
   [/^Give a reason for the discount on the sale \(above (.+)%\)$/, (m) => t('Give a reason for the discount on the sale (above {max}%)', { max: m[1] })],
   [/^Payments \((.+)\) do not cover the total \((.+)\)$/, (m) => t('Payments ({paid}) do not cover the total ({total})', { paid: m[1], total: m[2] })],
