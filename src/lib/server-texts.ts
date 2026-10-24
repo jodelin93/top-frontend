@@ -108,6 +108,12 @@ export function statusText(status: string): string {
       return t('partially received|state');
     case 'issued':
       return t('issued|state');
+    case 'in preparation':
+      return t('in preparation|state');
+    case 'ready':
+      return t('ready|state');
+    case 'picked up':
+      return t('picked up|state');
     case 'suspended':
       return t('suspended|state');
     case 'invited':
@@ -211,6 +217,24 @@ const errorRules = (): Rule[] => [
   [/^This cart is already (.+)$/, (m) => t('This cart is already {status}', { status: statusText(m[1]) })],
   [/^This customer has already used this discount (\d+) times$/, (m) => t('This customer has already used this discount {count} times', { count: m[1] })],
   [/^Discount code (.+) not found$/, (m) => t('Discount code {code} not found', { code: m[1] })],
+  // Orders with a deposit
+  [/^Order (\S+) is (in preparation|ready|picked up|cancelled)$/, (m) => t('Order {number} is {status}', { number: m[1], status: statusText(m[2]) })],
+  [/^Order (.+) is for another customer$/, (m) => t('Order {number} is for another customer', { number: m[1] })],
+  [/^Order (.+) is picked up at its own branch$/, (m) => t('Order {number} is picked up at its own branch', { number: m[1] })],
+  [
+    /^(.+) is tracked in stock: orders are for services \(items not tracked in stock\)\. Sell it in a normal sale\.$/,
+    (m) => t('{name} is tracked in stock: orders are for services (items not tracked in stock). Sell it in a normal sale.', { name: m[1] }),
+  ],
+  [
+    /^The deposits paid on order (\S+) \((.+)\) are more than this sale \((.+)\)$/,
+    (m) => t('The deposits paid on order {number} ({paid}) are more than this sale ({total})', { number: m[1], paid: m[2], total: m[3] }),
+  ],
+  [/^The deposits of order (\S+) changed: take the payment again$/, (m) => t('The deposits of order {number} changed: take the payment again', { number: m[1] })],
+  [/^The deposit can't be more than the balance due \((.+)\)$/, (m) => t("The deposit can't be more than the balance due ({amount})", { amount: m[1] })],
+  [
+    /^(.+) goes through a payment terminal: take deposits in cash or with a manually confirmed payment$/,
+    (m) => t('{method} goes through a payment terminal: take deposits in cash or with a manually confirmed payment', { method: m[1] }),
+  ],
   [/^Estimate (.+) is for another customer$/, (m) => t('Estimate {number} is for another customer', { number: m[1] })],
   [/^Estimate (.+) has expired$/, (m) => t('Estimate {number} has expired', { number: m[1] })],
   [/^Estimate (\S+) is (\w+)$/, (m) => t('Estimate {number} is {status}', { number: m[1], status: statusText(m[2]) })],
@@ -550,6 +574,8 @@ const permissionLabels = (): Record<string, string> => ({
   'sales.review': t('Review and resolve flagged sales (offline oversells, unapproved prices)'),
   'payments.reconcile': t('Reconcile card settlements'),
   'estimates.manage': t('Create and send estimates (quotes)'),
+  'orders.manage': t('Take orders with a deposit, take more deposits, mark them ready'),
+  'orders.cancel': t('Cancel orders and refund or keep their deposits'),
   'shifts.operate': t('Open and close own register shift'),
   'shifts.manage': t('Manage all shifts, paid-in/out, safe drops'),
   'expenses.create': t('Record expenses'),

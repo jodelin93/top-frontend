@@ -280,6 +280,18 @@ function ShiftSummaryView({ shift, currency }: { shift: ShiftDetail; currency: s
               ))}
             </div>
           )}
+          {shift.sales?.orderDeposits && (shift.sales.orderDeposits.received > 0 || shift.sales.orderDeposits.refunded > 0) && (
+            <div className="space-y-1 rounded-md border p-3 text-sm">
+              <div className="mb-1 font-semibold">{t('Order deposits')}</div>
+              {shift.sales.orderDeposits.byPaymentMethod.map((m) => (
+                <Line key={m.paymentMethodId} label={`${m.name} (${m.count})`} value={money(m.amount)} />
+              ))}
+              <Line label={t('Deposits received')} value={money(shift.sales.orderDeposits.received)} />
+              {shift.sales.orderDeposits.refunded > 0 && (
+                <Line label={t('Deposits refunded')} value={`-${money(shift.sales.orderDeposits.refunded)}`} />
+              )}
+            </div>
+          )}
         </div>
       )}
 

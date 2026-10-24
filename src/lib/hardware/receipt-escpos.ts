@@ -2,7 +2,7 @@ import type { Sale } from '@/lib/api/sales';
 import type { StoreSettings } from '@/lib/api/settings';
 import { customerName } from '@/lib/api/customers';
 import { text } from '@/lib/api/crud';
-import { formatDateTime, formatMoney } from '@/lib/format';
+import { formatDate, formatDateTime, formatMoney } from '@/lib/format';
 import { receiptName, receiptOptions, receiptSettings } from '@/components/pos/receipt';
 import { t } from '@/i18n';
 import { EscPosBuilder, type PaperWidth, type RasterImage } from './escpos';
@@ -62,10 +62,13 @@ export function receiptToEscPos(
   p.separator();
   p.row(sale.saleNumber, formatDateTime(sale.saleDate));
   if (sale.offlineNumber) p.text(t('Offline no. {number}', { number: sale.offlineNumber }));
+  if (sale.metadata?.orderNumber) p.text(t('Order {number}', { number: sale.metadata.orderNumber }));
   if (sale.register) p.text(t('Register: {name}', { name: sale.register.name }));
   const cashier = sale.user ? [sale.user.firstName, sale.user.lastName].filter(Boolean).join(' ') || sale.user.email : null;
   if (o.showCashier && cashier) p.text(t('Cashier: {name}', { name: cashier }));
   if (o.showCustomer && sale.customer) p.text(t('Customer: {name}', { name: customerName(sale.customer) }));
+  const order = sale.metadata?.orderTicket;
+  if (order) p.align('center').bold().text(t('*** ORDER — NOT A SALE RECEIPT ***')).bold(false).align('left');
   if (sale.status === 'voided') p.align('center').bold().text(t('*** VOIDED ***')).bold(false).align('left');
   if (sale.status === 'refunded') p.align('center').bold().text(t('*** REFUNDED ***')).bold(false).align('left');
 
@@ -93,6 +96,11 @@ export function receiptToEscPos(
     p.row(label, money(Number(payment.amount)));
   }
   if (Number(sale.changeAmount) > 0) p.row(t('Change|money'), money(sale.changeAmount));
+  if (order) {
+    p.row(t('Deposits paid'), money(order.paid));
+    p.bold().row(t('BALANCE DUE AT PICKUP'), money(order.balance)).bold(false);
+    if (order.readyBy) p.row(t('Ready by'), formatDate(order.readyBy));
+  }
 
   // ---- Footer ----
   p.align('center');

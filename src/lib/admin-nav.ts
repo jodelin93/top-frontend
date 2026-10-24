@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  ClipboardCheck,
   BookOpen,
   Boxes,
   ClipboardList,
@@ -43,6 +44,7 @@ export const adminNav: { section: string; items: AdminNavItem[] }[] = [
       { href: '/admin/reports', label: 'Reports', icon: FileBarChart, permissions: ['reports.view'] },
       { href: '/admin/sales', label: 'Sales', icon: Receipt, permissions: ['sales.view'] },
       { href: '/admin/estimates', label: 'Estimates', icon: FileText, permissions: ['estimates.manage'] },
+      { href: '/admin/orders', label: 'Orders', icon: ClipboardCheck, permissions: ['orders.manage'] },
       { href: '/admin/returns', label: 'Returns', icon: RotateCcw, permissions: ['sales.refund'] },
       { href: '/admin/shifts', label: 'Shifts & cash', icon: Wallet, permissions: ['shifts.manage', 'shifts.operate'] },
       { href: '/admin/expenses', label: 'Expenses', icon: Landmark, permissions: ['expenses.create', 'expenses.approve'] },

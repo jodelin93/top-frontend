@@ -173,6 +173,11 @@ export interface Sale {
     repricing?: { confirmedAt: string; confirmedBy: string; previousTotal: number | null; total: number } | null;
     // Customer group discount given on the sale (part of discountAmount)
     groupDiscount?: GroupDiscountApplied | null;
+    // Pickup of an order: its deposits paid part of the sale ("Deposit paid")
+    orderId?: string | null;
+    orderNumber?: string | null;
+    // Not a sale: the receipt of an order (its deposits, the balance due at pickup)
+    orderTicket?: { readyBy: string | null; paid: number; balance: number; status: string } | null;
   } | null;
   // Staff member credited with the sale (the cashier is `user`)
   salespersonId?: string | null;
@@ -231,6 +236,8 @@ export interface QuoteInput {
   registerId: string;
   // Selling an estimate at its quoted prices
   estimateId?: string;
+  // Picking up an order: its prices; its deposits (added by the server) pay part of it
+  orderId?: string;
   customerId?: string;
   priceListId?: string;
   discountCode?: string;

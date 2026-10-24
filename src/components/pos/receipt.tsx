@@ -5,7 +5,7 @@ import type { StoreSettings } from '@/lib/api/settings';
 import { customerName } from '@/lib/api/customers';
 import { text } from '@/lib/api/crud';
 import { loyaltyMath } from '@/lib/api/loyalty';
-import { formatDateTime, formatMoney } from '@/lib/format';
+import { formatDate, formatDateTime, formatMoney } from '@/lib/format';
 import { amountDueIn } from '@/lib/pos/currency-math';
 import { givenRateName, quoteRateShort } from '@/lib/pos/rate-quote';
 import { formatQuantity, lineQuantityText, lineUnit } from '@/lib/pos/quantity';
@@ -211,6 +211,7 @@ function CopyBanner({ copy }: { copy?: number | null }) {
 }
 
 function StatusBanner({ sale }: { sale: Sale }) {
+  if (sale.metadata?.orderTicket) return <div className="mt-1 text-center font-bold">{t('*** ORDER — NOT A SALE RECEIPT ***')}</div>;
   if (sale.status === 'voided') return <div className="mt-1 text-center font-bold">{t('*** VOIDED ***')}</div>;
   if (sale.status === 'refunded') return <div className="mt-1 text-center font-bold">{t('*** REFUNDED ***')}</div>;
   if (sale.status === 'payment_pending') return <div className="mt-1 text-center font-bold">{t('*** PAYMENT PENDING ***')}</div>;
@@ -301,6 +302,7 @@ function ThermalReceipt({
         <span>{formatDateTime(sale.saleDate)}</span>
       </div>
       {sale.offlineNumber && <div>{t('Offline no. {number}', { number: sale.offlineNumber })}</div>}
+      {sale.metadata?.orderNumber && <div>{t('Order {number}', { number: sale.metadata.orderNumber })}</div>}
       {!compact && sale.register && <div>{t('Register: {name}', { name: sale.register.name })}</div>}
       {options.showCashier && cashier && <div>{t('Cashier: {name}', { name: cashier })}</div>}
       {salesperson && <div>{t('Salesperson: {name}', { name: salesperson })}</div>}
@@ -371,6 +373,7 @@ function ThermalReceipt({
 
       <Separator template={options.template} />
       <PaymentRows sale={sale} money={money} />
+      <OrderRows sale={sale} money={money} />
 
       {loyalty && (
         <>
@@ -460,6 +463,7 @@ function InvoiceReceipt({
           <div className="text-2xl font-bold uppercase tracking-wide">{t('Invoice')}</div>
           <div>{t('No. {number}', { number: sale.saleNumber })}</div>
           {sale.offlineNumber && <div>{t('Offline no. {number}', { number: sale.offlineNumber })}</div>}
+          {sale.metadata?.orderNumber && <div>{t('Order {number}', { number: sale.metadata.orderNumber })}</div>}
           <div>{formatDateTime(sale.saleDate)}</div>
           {sale.register && <div>{t('Register: {name}', { name: sale.register.name })}</div>}
           {options.showCashier && cashier && <div>{t('Cashier: {name}', { name: cashier })}</div>}
@@ -556,6 +560,7 @@ function InvoiceReceipt({
             <Row label={t('TOTAL')} value={money(sale.total)} bold />
           </div>
           <PaymentRows sale={sale} money={money} />
+          <OrderRows sale={sale} money={money} />
           {loyalty && (
             <>
               {loyalty.earned > 0 && <Row label={t('Points earned')} value={`+${loyalty.earned}`} />}
@@ -591,6 +596,19 @@ function Row({ label, value, bold }: { label: string; value: string; bold?: bool
       <span>{label}</span>
       <span>{value}</span>
     </div>
+  );
+}
+
+/** An order's receipt: what was paid so far, what is due at pickup and when it is ready */
+function OrderRows({ sale, money }: { sale: Sale; money: (value: number) => string }) {
+  const order = sale.metadata?.orderTicket;
+  if (!order) return null;
+  return (
+    <>
+      <Row label={t('Deposits paid')} value={money(order.paid)} />
+      <Row label={t('BALANCE DUE AT PICKUP')} value={money(order.balance)} bold />
+      {order.readyBy && <Row label={t('Ready by')} value={formatDate(order.readyBy)} />}
+    </>
   );
 }
 

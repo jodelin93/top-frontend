@@ -156,6 +156,19 @@ export function ShiftPanel({
               </p>
             )}
 
+            {/* Deposits taken on orders in this session: cash ones are in "Paid in" */}
+            {!!shift.sales?.orderDeposits?.received && (
+              <div className="space-y-1 rounded-md border p-3 text-sm">
+                <div className="font-medium">{t('Order deposits')}</div>
+                {shift.sales.orderDeposits.byPaymentMethod.map((m) => (
+                  <Line key={m.paymentMethodId} label={`${m.name} (${m.count})`} value={money(m.amount)} />
+                ))}
+                {shift.sales.orderDeposits.refunded > 0 && (
+                  <Line label={t('Deposits refunded')} value={`−${money(shift.sales.orderDeposits.refunded)}`} />
+                )}
+              </div>
+            )}
+
             {shift.movements.length > 1 && (
               <div className="max-h-40 space-y-1 overflow-y-auto text-xs text-gray-600">
                 {shift.movements

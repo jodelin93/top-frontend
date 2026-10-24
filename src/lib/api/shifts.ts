@@ -75,6 +75,8 @@ export interface ShiftSalesSummary {
   voidedCount: number;
   voidedTotal: number;
   byPaymentMethod: PaymentMethodTotal[];
+  // Deposits taken on orders in the session (not sales: counted at pickup); absent on older reports
+  orderDeposits?: { received: number; refunded: number; byPaymentMethod: PaymentMethodTotal[] };
 }
 
 export interface CashMovement {

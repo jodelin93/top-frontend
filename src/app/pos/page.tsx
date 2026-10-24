@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AlertTriangle,
+  ClipboardList,
   CloudUpload,
   CreditCard,
   Keyboard,
@@ -42,6 +43,10 @@ import { LanguageSwitcher } from '@/components/language-switcher';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { PaymentDialog, TenderedPayment } from '@/components/pos/payment-dialog';
 import { GiftCardDialog } from '@/components/pos/gift-card-dialog';
+import { OrderDialog, type OrderDetails } from '@/components/pos/order-dialog';
+import { OrdersDialog } from '@/components/pos/orders-dialog';
+import { OrderTicketDialog } from '@/components/pos/order-ticket';
+import { Order, orderCustomerName, ordersApi } from '@/lib/api/orders';
 import { NewReturnDialog } from '@/components/admin/returns-new-dialog';
 import { storedValueApi } from '@/lib/api/stored-value';
 import { shiftsApi } from '@/lib/api/shifts';
@@ -99,6 +104,7 @@ import {
   computeTotals,
   groupDiscountPercentOf,
   isPriceOverridden,
+  sellsAtQuotedPrices,
   usePOSStore,
 } from '@/stores/pos-store';
 import { canUseAdmin, hasPermission, useAuthStore } from '@/stores/auth-store';
@@ -131,6 +137,8 @@ const POS_DIALOG_TOPICS: Record<NonNullable<DialogName>, string> = {
   giftcard: 'pos-gift-cards',
   returns: 'returns-pos',
   menu: 'pos-phone',
+  order: 'pos-orders',
+  orders: 'pos-orders',
 };
 
 type DialogName =
@@ -143,6 +151,8 @@ type DialogName =
   | 'giftcard'
   | 'returns'
   | 'menu'
+  | 'order'
+  | 'orders'
   | null;
 
 // A cart priced longer ago than this is repriced before tendering (spec §5)
@@ -275,8 +285,8 @@ function POSScreen() {
       const result = await posApi.prices({ registerId: register.id, customerId: customer?.id, variantIds: ids });
       // The customer changed meanwhile: that choice reprices the cart itself
       if ((usePOSStore.getState().customer?.id ?? null) !== (customer?.id ?? null)) return null;
-      // Group lists apply to what is sold now, not to an estimate's quoted prices
-      if (!usePOSStore.getState().estimate) pos.updatePrices(new Map(Object.entries(result.prices)));
+      // Group lists apply to what is sold now, not to an estimate's (or order's) prices
+      if (!sellsAtQuotedPrices(usePOSStore.getState())) pos.updatePrices(new Map(Object.entries(result.prices)));
       return result.customerGroup;
     } catch {
       // The checkout quote prices the cart anyway
@@ -291,7 +301,7 @@ function POSScreen() {
     // Walk-in again after a customer without group prices: nothing to reprice
     if (!customer && !hadGroupPrices) return;
     if (!online) {
-      if (!customer && hadGroupPrices && !usePOSStore.getState().estimate) {
+      if (!customer && hadGroupPrices && !sellsAtQuotedPrices(usePOSStore.getState())) {
         const cached = new Map((catalog.items ?? []).map((item) => [item.variantId, item.price]));
         pos.updatePrices(cached);
       }
@@ -348,7 +358,7 @@ function POSScreen() {
     setNotice(null);
     pos.addItem(item, quantity ?? 1);
     // The customer's group has its own prices: the catalog item carries the price for everyone
-    if (pos.customer?.group?.priceListId && !pos.estimate) void priceForCustomer(pos.customer, [item.variantId]);
+    if (pos.customer?.group?.priceListId && !sellsAtQuotedPrices(pos)) void priceForCustomer(pos.customer, [item.variantId]);
     addedCount.current += 1;
     setAdded({ product: item.productName, at: addedCount.current });
   };
@@ -438,11 +448,18 @@ function POSScreen() {
   const totals = useMemo(
     () =>
       computeTotals(
-        { cart, discount: pos.discount, cartDiscount: pos.cartDiscount, customer: pos.customer, estimate: pos.estimate },
+        {
+          cart,
+          discount: pos.discount,
+          cartDiscount: pos.cartDiscount,
+          customer: pos.customer,
+          estimate: pos.estimate,
+          order: pos.order,
+        },
         tax
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [cart, pos.discount, pos.cartDiscount, pos.customer, pos.estimate, tax.taxRate, tax.pricesIncludeTax]
+    [cart, pos.discount, pos.cartDiscount, pos.customer, pos.estimate, pos.order, tax.taxRate, tax.pricesIncludeTax]
   );
   // Customer group discount on this cart (shown as its own total row)
   const groupPercent = groupDiscountPercentOf(pos);
@@ -520,6 +537,9 @@ function POSScreen() {
   const [giftCards, setGiftCards] = useState<GiftCardLineInput[]>([]);
   const giftTotal = giftCards.reduce((sum, card) => sum + Math.round(card.amount * 100), 0) / 100;
   const grandTotal = Math.round((totals.total + giftTotal) * 100) / 100;
+  // An order picked up: its deposits are taken off what the customer pays now
+  const depositsPaid = pos.order?.paidAmount ?? 0;
+  const toCharge = Math.max(0, Math.round((grandTotal - depositsPaid) * 100) / 100);
   const hasLines = cart.length > 0 || giftCards.length > 0;
   // Codes of the gift cards the last sale issued (shown once, never stored)
   const [issuedCards, setIssuedCards] = useState<IssuedGiftCard[]>([]);
@@ -539,12 +559,13 @@ function POSScreen() {
     notes: pos.notes || undefined,
     heldSaleId: forOffline ? undefined : (pos.heldSaleId ?? undefined),
     estimateId: forOffline ? undefined : (pos.estimate?.id ?? undefined),
+    orderId: forOffline ? undefined : (pos.order?.id ?? undefined),
     items: cart.map((line) => ({
       variantId: line.variantId,
       quantity: line.quantity,
       discountPercent: line.discountPercent || undefined,
-      // Offline: the price charged. Online: only a price override (or an estimate's quoted price) is sent
-      unitPrice: forOffline || isPriceOverridden(line) || pos.estimate ? line.unitPrice : undefined,
+      // Offline: the price charged. Online: only a price override (or an estimate's / order's price) is sent
+      unitPrice: forOffline || isPriceOverridden(line) || sellsAtQuotedPrices(pos) ? line.unitPrice : undefined,
       discountReason: (line.discountPercent > 0 && line.discountReason?.trim()) || undefined,
       note: line.note?.trim() || undefined,
     })),
@@ -569,6 +590,10 @@ function POSScreen() {
     }
     if (giftCards.length > 0 && !online) {
       setNotice(t('Gift cards can only be sold online. Remove them to sell offline.'));
+      return;
+    }
+    if (pos.order && !online) {
+      setNotice(t('An order is picked up online: its deposits are checked by the server.'));
       return;
     }
 
@@ -633,6 +658,8 @@ function POSScreen() {
         applyQuotedGroup();
         pos.markPriced();
         if (quote) due = quote.total;
+        // The order's deposits pay that much of it (added by the server)
+        if (pos.order) due = Math.max(0, round2(due - pos.order.paidAmount));
       } catch (error) {
         if (!isNetworkError(error)) {
           setNotice(getErrorMessage(error, 'Could not price the sale'));
@@ -642,6 +669,11 @@ function POSScreen() {
       }
     }
 
+    // An order paid in full by its deposits: nothing more to take
+    if (due <= 0 && pos.order) {
+      await completeSale([]);
+      return;
+    }
     // Nothing to pay: completes without payment when the store allows it
     if (due <= 0) {
       if (!context?.settings.allowZeroValueSales) {
@@ -695,6 +727,8 @@ function POSScreen() {
         });
       } catch (error) {
         if (!(error instanceof OfflineError) && !isNetworkError(error)) throw error;
+        // An order's pickup needs the server (its deposits): never queued offline
+        if (input.orderId) throw error;
         sale = await saveOffline(input, payments);
         offline = true;
       }
@@ -1038,8 +1072,8 @@ function POSScreen() {
           line.key,
           item
             ? {
-                // An estimate sells at its quoted prices
-                price: state.estimate ? catalogPriceOf(line) : item.price,
+                // An estimate (or an order) sells at its quoted prices
+                price: sellsAtQuotedPrices(state) ? catalogPriceOf(line) : item.price,
                 taxRate: item.taxRate,
                 available: availableOf(line, context.stock === 'cart' ? 'cart' : 'catalog'),
               }
@@ -1070,6 +1104,7 @@ function POSScreen() {
           : runQuote({
               registerId: register!.id,
               estimateId: state.estimate?.id,
+              orderId: state.order?.id,
               customerId: state.customer?.id,
               discountCode: discount?.code,
               cartDiscount: state.cartDiscount ?? undefined,
@@ -1077,7 +1112,7 @@ function POSScreen() {
                 variantId: line.variantId,
                 quantity: line.quantity,
                 discountPercent: line.discountPercent || undefined,
-                unitPrice: isPriceOverridden(line) || state.estimate ? line.unitPrice : undefined,
+                unitPrice: isPriceOverridden(line) || sellsAtQuotedPrices(state) ? line.unitPrice : undefined,
                 discountReason: (line.discountPercent > 0 && line.discountReason?.trim()) || undefined,
               })),
               giftCards: giftCards.length === 0 ? undefined : giftCards,
@@ -1097,7 +1132,9 @@ function POSScreen() {
 
       if (quote && quote.customerGroup !== undefined) {
         quotedGroup.current = quote.customerGroup;
-        currentGroupDiscountPercent = state.estimate ? 0 : (quote.customerGroup?.discountPercent ?? 0);
+        currentGroupDiscountPercent = sellsAtQuotedPrices(state)
+          ? groupDiscountPercentOf(state)
+          : (quote.customerGroup?.discountPercent ?? 0);
       }
       const current = new Map<string, CurrentLine>();
       const quoted: QuotedTotals | null = quote ? { total: round2(quote.total - giftTotal), lines: new Map() } : null;
@@ -1196,6 +1233,134 @@ function POSScreen() {
     pos.clearCart();
     setSelectedKey(null);
     focusSearch();
+  };
+
+  // ---- Orders: services prepared for the customer, a deposit now, the rest at pickup ----
+  const canOrders = hasPermission(user, 'orders.manage');
+  const [orderBusy, setOrderBusy] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
+  // The order receipt shown (and printed) after an order is taken or a deposit added
+  const [ticket, setTicket] = useState<{ order: Order; title?: string; autoPrint?: boolean } | null>(null);
+  const orderKey = useRef<string | null>(null);
+  // Choosing the customer from the order dialog comes back to it
+  const backToOrder = useRef(false);
+
+  const openOrderDialog = () => {
+    if (!register || cart.length === 0 || dialog) return;
+    if (!online) {
+      setNotice(t('Orders need a connection.'));
+      return;
+    }
+    if (giftCards.length > 0 || pos.discount) {
+      setNotice(t('Gift cards and discount codes are not used on orders: remove them first.'));
+      return;
+    }
+    if (pos.estimate || pos.order || pos.heldSaleId) {
+      setNotice(t('This cart comes from an estimate, an order or a held cart: sell it normally.'));
+      return;
+    }
+    const tracked = cart.find((line) => line.stockTracked !== false);
+    if (tracked) {
+      setNotice(
+        t('{product} is tracked in stock: orders are for services. Sell it in a normal sale.', {
+          product: tracked.productName,
+        })
+      );
+      return;
+    }
+    orderKey.current = randomId();
+    setOrderError(null);
+    setDialog('order');
+  };
+
+  const takeOrder = async (details: OrderDetails) => {
+    if (!register || !pos.customer) return;
+    setOrderBusy(true);
+    setOrderError(null);
+    const input = {
+      registerId: register.id,
+      customerId: pos.customer.id,
+      cartDiscount: pos.cartDiscount ?? undefined,
+      items: cart.map((line) => ({
+        variantId: line.variantId,
+        quantity: line.quantity,
+        discountPercent: line.discountPercent || undefined,
+        unitPrice: isPriceOverridden(line) ? line.unitPrice : undefined,
+        discountReason: (line.discountPercent > 0 && line.discountReason?.trim()) || undefined,
+        note: line.note?.trim() || undefined,
+      })),
+    };
+    try {
+      // Priced (and approved) like a sale first; the order reuses the approvals
+      let tokens: string[] = [];
+      await approvals.run((headers) => ordersApi.quote(input, headers), { onTokens: (list) => (tokens = list) });
+      const order = await approvals.run(
+        (headers) => ordersApi.create({ ...input, ...details, idempotencyKey: orderKey.current! }, headers),
+        { tokens }
+      );
+      setDialogState(null);
+      pos.clearCart();
+      setSelectedKey(null);
+      setMobileView('products');
+      setTicket({ order });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['shifts', 'current'] });
+    } catch (error) {
+      setOrderError(getErrorMessage(error, 'Could not take the order'));
+    } finally {
+      setOrderBusy(false);
+    }
+  };
+
+  // Pickup: the order goes into the cart at its prices; the customer pays the balance
+  const pickUpOrder = async (order: Order) => {
+    const full = order.items ? order : await ordersApi.get(order.id);
+    if (cart.length > 0 && !window.confirm(t('The till has items in its cart. Replace them with this order?'))) {
+      throw new Error(t('The cart was kept.'));
+    }
+    const lines = await Promise.all(
+      (full.items ?? []).map(async (item) => {
+        const [found] = await posApi.catalog({ registerId: register?.id, barcode: item.sku, limit: 1 });
+        if (!found) throw new Error(t('{sku} is no longer for sale', { sku: item.sku }));
+        const price = Number(item.unitPrice);
+        return {
+          variantId: item.variantId,
+          productId: found.productId,
+          categoryId: found.categoryId,
+          productName: item.productName,
+          variantName: item.variantName,
+          sku: item.sku,
+          unitPrice: price,
+          catalogPrice: price,
+          quantity: Number(item.quantity),
+          discountPercent: Number(item.discountPercent),
+          stock: found.stock,
+          stockTracked: found.stockTracked,
+          taxRate: item.taxRate != null ? Number(item.taxRate) : found.taxRate,
+          note: item.note ?? undefined,
+          unit: found.unit ?? null,
+        };
+      })
+    );
+    pos.loadOrder(
+      {
+        id: full.id,
+        number: full.orderNumber,
+        paidAmount: Number(full.paidAmount),
+        groupDiscountPercent: Number(full.groupDiscountPercent ?? 0),
+        cartDiscount: full.cartDiscount,
+        notes: full.notes,
+      },
+      lines,
+      {
+        id: full.customerId,
+        name: orderCustomerName(full),
+        loyaltyPoints: Number(full.customer?.loyaltyPoints ?? 0),
+      }
+    );
+    setGiftCards([]);
+    setSelectedKey(null);
+    setMobileView('cart');
   };
 
   // ---- Keyboard (R048) ----
@@ -1355,6 +1520,19 @@ function POSScreen() {
             >
               <ListRestart className="h-4 w-4" />
               {t('Held carts')}
+            </Button>
+          )}
+          {canOrders && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-9 max-md:hidden"
+              onClick={() => setDialog('orders')}
+              disabled={!online}
+              title={online ? t('Orders waiting for their customer') : t('Orders need a connection.')}
+            >
+              <ClipboardList className="h-4 w-4" />
+              {t('Orders')}
             </Button>
           )}
           <Button
@@ -1569,6 +1747,14 @@ function POSScreen() {
             <SalespersonSelect value={pos.salespersonId} onChange={pos.setSalesperson} />
             {pos.heldSaleId && (
               <p className="mt-2 text-xs text-blue-700">{t('Resumed held cart — completing it closes the hold.')}</p>
+            )}
+            {pos.order && (
+              <p className="mt-2 text-xs text-blue-700" data-testid="order-pickup">
+                {t('Order {number} — pickup: sold at its prices; the deposits paid ({amount}) are taken off.', {
+                  number: pos.order.number,
+                  amount: money(pos.order.paidAmount),
+                })}
+              </p>
             )}
             {pos.estimate && (
               <p className="mt-2 text-xs text-blue-700">
@@ -1844,15 +2030,33 @@ function POSScreen() {
                   {holding ? t('Holding...') : t('Hold')}
                 </Button>
               </div>
-              <Button
-                variant="outline"
-                className="h-11 w-full"
-                onClick={() => setDialog('giftcard')}
-                title={online ? t('Sell or check a gift card') : t('Gift cards need a connection.')}
-              >
-                <Ticket className="h-4 w-4" />
-                {t('Gift card')}
-              </Button>
+              <div className={cn('grid gap-2', canOrders && 'grid-cols-2')}>
+                <Button
+                  variant="outline"
+                  className="h-11 w-full"
+                  onClick={() => setDialog('giftcard')}
+                  title={online ? t('Sell or check a gift card') : t('Gift cards need a connection.')}
+                >
+                  <Ticket className="h-4 w-4" />
+                  {t('Gift card')}
+                </Button>
+                {canOrders && (
+                  <Button
+                    variant="outline"
+                    className="h-11 w-full"
+                    onClick={openOrderDialog}
+                    disabled={cart.length === 0 || !!pos.order}
+                    title={
+                      online
+                        ? t('Take the cart as an order: a deposit now, the rest at pickup')
+                        : t('Orders need a connection.')
+                    }
+                  >
+                    <ClipboardList className="h-4 w-4" />
+                    <span className="truncate">{t('Take as an order')}</span>
+                  </Button>
+                )}
+              </div>
               {!online && cart.length > 0 && canHold && (
                 <p className="text-xs text-gray-500">{t('Offline: holding a cart needs a connection.')}</p>
               )}
@@ -1883,7 +2087,17 @@ function POSScreen() {
                 )}
                 <TotalRow label={taxLabel} value={money(totals.taxAmount)} />
                 {giftTotal > 0 && <TotalRow label={t('Gift cards')} value={money(giftTotal)} />}
-                <TotalRow label={t('Total')} value={money(grandTotal)} className="border-t pt-2 text-xl font-bold" />
+                <TotalRow
+                  label={t('Total')}
+                  value={money(grandTotal)}
+                  className={cn('border-t pt-2', pos.order ? 'font-semibold' : 'text-xl font-bold')}
+                />
+                {pos.order && (
+                  <>
+                    <TotalRow label={t('Deposits paid')} value={`-${money(depositsPaid)}`} className="text-green-700" />
+                    <TotalRow label={t('Balance due')} value={money(toCharge)} className="text-xl font-bold" />
+                  </>
+                )}
                 {Object.keys(context.settings.exchangeRates ?? {}).map((code) => {
                   const rate = exchangeRate(context.settings.exchangeRates, context.settings.currencyCode, currency, code);
                   return rate && code !== currency ? (
@@ -1905,7 +2119,7 @@ function POSScreen() {
                 title={t('Charge (F12)')}
               >
                 <CreditCard className="h-5 w-5" />
-                {t('Charge {amount}', { amount: money(grandTotal) })}
+                {t('Charge {amount}', { amount: money(toCharge) })}
               </Button>
               <Button
                 variant="ghost"
@@ -1957,7 +2171,7 @@ function POSScreen() {
               </span>
               <span className="min-w-0">
                 <span className="block text-xs text-gray-500">{plural(itemCount, '{count} item', '{count} items')}</span>
-                <span className="block truncate font-semibold tabular-nums">{money(grandTotal)}</span>
+                <span className="block truncate font-semibold tabular-nums">{money(toCharge)}</span>
               </span>
             </button>
             <Button className="h-12 shrink-0 px-5 text-base" disabled={!hasLines} onClick={() => startCheckout()}>
@@ -1973,13 +2187,58 @@ function POSScreen() {
 
       <CustomerDialog
         open={dialog === 'customer'}
-        onOpenChange={(open) => setDialog(open ? 'customer' : null)}
+        onOpenChange={(open) => {
+          if (!open && backToOrder.current) {
+            backToOrder.current = false;
+            setDialogState('order');
+            return;
+          }
+          setDialog(open ? 'customer' : null);
+        }}
         current={pos.customer}
         onSelect={(customer) => void chooseCustomer(customer)}
         online={online}
         registerId={register?.id ?? null}
         paymentMethods={context.paymentMethods}
         currency={currency}
+      />
+      <OrderDialog
+        open={dialog === 'order'}
+        onOpenChange={(open) => setDialog(open ? 'order' : null)}
+        total={grandTotal}
+        currency={currency}
+        paymentMethods={context.paymentMethods}
+        customer={pos.customer}
+        onChooseCustomer={() => {
+          backToOrder.current = true;
+          setDialogState('customer');
+        }}
+        onConfirm={(details) => void takeOrder(details)}
+        busy={orderBusy}
+        error={orderError}
+      />
+      <OrdersDialog
+        open={dialog === 'orders'}
+        onOpenChange={(open) => setDialog(open ? 'orders' : null)}
+        branchId={register?.branchId ?? null}
+        registerId={register?.id ?? null}
+        online={online}
+        paymentMethods={context.paymentMethods}
+        onPickUp={pickUpOrder}
+        onPrint={(order, title) => {
+          setDialogState(null);
+          setTicket({ order, title, autoPrint: false });
+        }}
+      />
+      <OrderTicketDialog
+        order={ticket?.order ?? null}
+        title={ticket?.title}
+        autoPrint={ticket?.autoPrint ?? true}
+        settings={context.settings}
+        onClose={() => {
+          setTicket(null);
+          focusSearch();
+        }}
       />
       <GiftCardDialog
         open={dialog === 'giftcard'}
@@ -2083,6 +2342,12 @@ function POSScreen() {
               <Button variant="outline" className={MENU_ITEM} onClick={() => setDialog('held')}>
                 <ListRestart className="h-4 w-4" />
                 {t('Held carts')}
+              </Button>
+            )}
+            {canOrders && (
+              <Button variant="outline" className={MENU_ITEM} onClick={() => setDialog('orders')} disabled={!online}>
+                <ClipboardList className="h-4 w-4" />
+                {online ? t('Orders') : t('Orders need a connection.')}
               </Button>
             )}
             {hasPermission(user, 'sales.refund') && (

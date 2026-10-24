@@ -59,6 +59,18 @@ export function ZReportView({
         ))}
       </Section>
 
+      {report.sales.orderDeposits && (report.sales.orderDeposits.received > 0 || report.sales.orderDeposits.refunded > 0) && (
+        <Section title={t('Order deposits')}>
+          {report.sales.orderDeposits.byPaymentMethod.map((m) => (
+            <Row key={m.paymentMethodId} label={`${m.name} (${m.count})`} value={money(m.amount)} />
+          ))}
+          <Row label={t('Deposits received')} value={money(report.sales.orderDeposits.received)} />
+          {report.sales.orderDeposits.refunded > 0 && (
+            <Row label={t('Deposits refunded')} value={`-${money(report.sales.orderDeposits.refunded)}`} />
+          )}
+        </Section>
+      )}
+
       <Section title={t('Cash drawer')}>
         <Row label={t('Opening float')} value={money(cash.openingFloat)} />
         <Row label={t('+ Cash sales')} value={money(cash.cashSales)} />

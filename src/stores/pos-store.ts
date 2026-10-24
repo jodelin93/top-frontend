@@ -56,9 +56,31 @@ export interface CartCustomer {
   group?: CustomerGroupPricing | null;
 }
 
-/** Group discount (%) the cart gets: the customer's group's, never on an estimate (quoted prices) */
-export const groupDiscountPercentOf = (state: Pick<POSState, 'customer' | 'estimate'>): number =>
-  state.estimate ? 0 : Math.min(Math.max(Number(state.customer?.group?.discountPercent ?? 0), 0), 100);
+/**
+ * Group discount (%) the cart gets: the customer's group's, never on an estimate
+ * (quoted prices); an order keeps the one it was taken with
+ */
+export const groupDiscountPercentOf = (
+  state: Pick<POSState, 'customer' | 'estimate'> & Partial<Pick<POSState, 'order'>>
+): number =>
+  state.order
+    ? Number(state.order.groupDiscountPercent ?? 0)
+    : state.estimate
+      ? 0
+      : Math.min(Math.max(Number(state.customer?.group?.discountPercent ?? 0), 0), 100);
+
+/** An order picked up at the till: sold at its prices, its deposits pay part of it */
+export interface LoadedOrder {
+  id: string;
+  number: string;
+  // Deposits paid (taken off what the customer pays now)
+  paidAmount: number;
+  groupDiscountPercent: number;
+}
+
+/** Sold at the prices of an estimate or an order (no group price list, no repricing to the catalog) */
+export const sellsAtQuotedPrices = (state: Pick<POSState, 'estimate'> & Partial<Pick<POSState, 'order'>>) =>
+  !!state.estimate || !!state.order;
 
 interface POSState {
   registerId: string | null;
@@ -72,6 +94,8 @@ interface POSState {
   heldSaleId: string | null;
   // Estimate loaded into the till: sold at its quoted prices, converted on checkout
   estimate: { id: string; number: string } | null;
+  // Order being picked up: sold at its prices, its deposits pay part of the sale
+  order: LoadedOrder | null;
   // Staff member credited with the sale (the cashier is the signed-in user)
   salespersonId: string | null;
   // When the cart's prices were last checked against the server / catalog
@@ -113,6 +137,12 @@ interface POSState {
     lines: Omit<CartItem, 'key'>[],
     customer: CartCustomer | null
   ) => void;
+  // Load an order for its pickup (replaces the current cart)
+  loadOrder: (
+    order: LoadedOrder & { cartDiscount: CartDiscountInput | null; notes: string | null },
+    lines: Omit<CartItem, 'key'>[],
+    customer: CartCustomer
+  ) => void;
   clearCart: () => void;
 }
 
@@ -127,6 +157,7 @@ export const usePOSStore = create<POSState>()(
       notes: '',
       heldSaleId: null,
       estimate: null,
+      order: null,
       salespersonId: null,
       pricedAt: null,
       needsRevalidation: false,
@@ -259,6 +290,7 @@ export const usePOSStore = create<POSState>()(
       loadCart: (resumed, extra) =>
         set({
           heldSaleId: resumed.heldSaleId,
+          order: null,
           pricedAt: null,
           needsRevalidation: true,
           repricing: null,
@@ -292,6 +324,7 @@ export const usePOSStore = create<POSState>()(
       loadEstimate: (estimate, lines, customer) =>
         set({
           estimate: { id: estimate.id, number: estimate.number },
+          order: null,
           heldSaleId: null,
           pricedAt: null,
           needsRevalidation: true,
@@ -300,6 +333,26 @@ export const usePOSStore = create<POSState>()(
           discount: null,
           cartDiscount: estimate.cartDiscount,
           notes: estimate.notes ?? '',
+          cart: lines.map((line) => ({ ...line, key: randomId() })),
+        }),
+
+      loadOrder: (order, lines, customer) =>
+        set({
+          order: {
+            id: order.id,
+            number: order.number,
+            paidAmount: order.paidAmount,
+            groupDiscountPercent: order.groupDiscountPercent,
+          },
+          estimate: null,
+          heldSaleId: null,
+          pricedAt: null,
+          needsRevalidation: true,
+          repricing: null,
+          customer,
+          discount: null,
+          cartDiscount: order.cartDiscount,
+          notes: order.notes ?? '',
           cart: lines.map((line) => ({ ...line, key: randomId() })),
         }),
 
@@ -312,6 +365,7 @@ export const usePOSStore = create<POSState>()(
           notes: '',
           heldSaleId: null,
           estimate: null,
+          order: null,
           salespersonId: null,
           pricedAt: null,
           needsRevalidation: false,
@@ -326,7 +380,7 @@ export const usePOSStore = create<POSState>()(
  * Cart totals using the same calculation as the server
  */
 export function computeTotals(
-  state: Pick<POSState, 'cart' | 'discount' | 'cartDiscount'> & Partial<Pick<POSState, 'customer' | 'estimate'>>,
+  state: Pick<POSState, 'cart' | 'discount' | 'cartDiscount'> & Partial<Pick<POSState, 'customer' | 'estimate' | 'order'>>,
   tax: { taxRate: number; pricesIncludeTax: boolean }
 ): CalcResult {
   return calculateSale(
@@ -344,7 +398,11 @@ export function computeTotals(
       pricesIncludeTax: tax.pricesIncludeTax,
       discount: state.discount,
       cartDiscount: state.cartDiscount,
-      groupDiscountPercent: groupDiscountPercentOf({ customer: state.customer ?? null, estimate: state.estimate ?? null }),
+      groupDiscountPercent: groupDiscountPercentOf({
+        customer: state.customer ?? null,
+        estimate: state.estimate ?? null,
+        order: state.order ?? null,
+      }),
     }
   );
 }

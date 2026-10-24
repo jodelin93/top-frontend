@@ -12,11 +12,13 @@ import { posAccess } from './pos-access';
 import { documentsHardware } from './documents-hardware';
 import { serverTexts } from './server-texts';
 import { help } from './help';
+import { orders } from './orders';
 
 export const es: Record<string, string> = {
   // First: existing wordings in the other files win over these
   // Texts written by the server (errors, notifications...): any other wording wins
   ...serverTexts,
+  ...orders,
   ...documentsHardware,
   ...common,
   ...pos,
