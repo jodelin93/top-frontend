@@ -4,7 +4,7 @@ title: Modifier, suspendre un utilisateur ou réinitialiser son mot de passe
 category: Personnel
 order: 1204
 routes: [/admin/users]
-keywords: [déconnecter, connecté sur un autre appareil, un seul appareil, session, modifier un utilisateur, suspendre, suspendu, rôle, succursales, réinitialiser le mot de passe, mot de passe oublié, déconnecter]
+keywords: [réinitialiser l'A2F, deux facteurs, compte bloqué, téléphone perdu, déconnecter, connecté sur un autre appareil, un seul appareil, session, modifier un utilisateur, suspendre, suspendu, rôle, succursales, réinitialiser le mot de passe, mot de passe oublié, déconnecter]
 related: [users-invitations, roles-permissions, faq-account]
 ---
 ## Limiter l'accès à certaines succursales
@@ -49,3 +49,13 @@ La personne est aussitôt déconnectée partout et se reconnecte avec le nouveau
 > **Attention :** vous ne pouvez pas réinitialiser votre propre mot de passe ici : changez-le dans [Sécurité du compte](topic:account-security). Si le compte est aussi utilisé dans un autre magasin, la réinitialisation est refusée : la personne doit changer son mot de passe elle-même.
 
 Pour couper l'accès d'une personne partout (téléphone perdu…), suspendez-la ou réinitialisez son mot de passe : toutes ses sessions dans le magasin sont fermées.
+
+## Réinitialiser l'authentification à deux facteurs
+
+Si une personne a perdu son téléphone, ou si ses codes à 6 chiffres sont refusés (son compte se bloque après plusieurs essais), le **propriétaire** clique sur l'icône **bouclier barré** de sa ligne (**Réinitialiser l'authentification à deux facteurs**) et confirme.
+
+- Son authentification à deux facteurs est désactivée et son compte **débloqué** ; elle est déconnectée partout.
+- Elle se connecte avec son mot de passe. Si son rôle l'exige, la caisse lui demande de reconfigurer l'authentification à deux facteurs avec un nouveau code QR.
+- L'action est notée dans le [Journal d'audit](topic:audit-log).
+
+> **Attention :** seul un propriétaire peut le faire, et pas pour son propre compte (voir [Authentification à deux facteurs](topic:account-2fa)). Un compte utilisé dans un autre magasin doit la désactiver lui-même.

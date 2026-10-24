@@ -647,4 +647,8 @@ export const adminSettings: Record<string, string> = {
   "Send the link to choose a password again to {name}": "Enviar de nuevo a {name} el enlace para elegir la contraseña",
   "The link to choose a password was e-mailed; it confirms the address.": "El enlace para elegir la contraseña se envió por correo; confirma la dirección.",
   "Waiting for the password (e-mail not confirmed)": "Esperando la contraseña (correo no confirmado)",
+  "Two-factor authentication of {name} is off and their account unlocked. They sign in with their password and set it up again if their role requires it.": "La autenticación en dos pasos de {name} está desactivada y su cuenta desbloqueada. Inicia sesión con su contraseña y la vuelve a configurar si su rol lo exige.",
+  "Reset the two-factor authentication of {name}? Use it when they lost their phone or their codes are refused. They are signed out everywhere and unlocked.": "¿Restablecer la autenticación en dos pasos de {name}? Úselo si perdió su teléfono o si sus códigos son rechazados. Se cierra su sesión en todas partes y se desbloquea.",
+  "Reset two-factor authentication": "Restablecer la autenticación en dos pasos",
+  "Reset two-factor authentication of {name}": "Restablecer la autenticación en dos pasos de {name}",
 };

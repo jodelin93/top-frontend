@@ -4,7 +4,7 @@ title: Modificar o suspender un usuario, o restablecer su contraseña
 category: Personal
 order: 1204
 routes: [/admin/users]
-keywords: [desconectar, sesión en otro dispositivo, un solo dispositivo, sesión, modificar usuario, editar usuario, suspender, suspendido, rol, sucursales, restablecer contraseña, olvidó la contraseña, cerrar sesión, desconectar]
+keywords: [restablecer 2FA, dos pasos, cuenta bloqueada, teléfono perdido, desconectar, sesión en otro dispositivo, un solo dispositivo, sesión, modificar usuario, editar usuario, suspender, suspendido, rol, sucursales, restablecer contraseña, olvidó la contraseña, cerrar sesión, desconectar]
 related: [users-invitations, roles-permissions, faq-account]
 ---
 ## Limitar el acceso a ciertas sucursales
@@ -49,3 +49,13 @@ La sesión de la persona se cierra de inmediato en todas partes y debe volver a 
 > **Atención:** no puede restablecer su propia contraseña aquí: cámbiela en [Seguridad de la cuenta](topic:account-security). Si la cuenta también se usa en otra tienda, el restablecimiento se rechaza: la persona debe cambiar su contraseña ella misma.
 
 Para cortar el acceso de una persona en todas partes (teléfono perdido…), suspéndala o restablezca su contraseña: todas sus sesiones en la tienda se cierran.
+
+## Restablecer la autenticación en dos pasos
+
+Si una persona perdió su teléfono, o sus códigos de 6 dígitos son rechazados (la cuenta se bloquea tras varios intentos), el **propietario** hace clic en el icono del **escudo tachado** de su fila (**Restablecer la autenticación en dos pasos**) y confirma.
+
+- Su autenticación en dos pasos se desactiva y su cuenta se **desbloquea**; se cierra su sesión en todas partes.
+- Inicia sesión con su contraseña. Si su rol lo exige, se le pide configurar de nuevo la autenticación en dos pasos con un nuevo código QR.
+- La acción queda registrada en el [Registro de auditoría](topic:audit-log).
+
+> **Atención:** solo un propietario puede hacerlo, y no para su propia cuenta (vea [Autenticación en dos pasos](topic:account-2fa)). Una cuenta usada en otra tienda debe desactivarla ella misma.

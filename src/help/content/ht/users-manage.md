@@ -4,7 +4,7 @@ title: Modifye, sispann yon itilizatè oswa reyinisyalize modpas li
 category: Anplwaye
 order: 1204
 routes: [/admin/users]
-keywords: [dekonekte, konekte sou yon lòt aparèy, yon sèl aparèy, sesyon, modifye itilizatè, modifye itilizate, sispann, wòl, wol, siksisal, reyinisyalize modpas, modpas bliye, dekonekte, modifier un utilisateur, suspendre, suspendu, rôle, succursales, réinitialiser le mot de passe, mot de passe oublié, déconnecter]
+keywords: [reyinisyalize A2F, de faktè, kont bloke, telefòn pèdi, dekonekte, konekte sou yon lòt aparèy, yon sèl aparèy, sesyon, modifye itilizatè, modifye itilizate, sispann, wòl, wol, siksisal, reyinisyalize modpas, modpas bliye, dekonekte, modifier un utilisateur, suspendre, suspendu, rôle, succursales, réinitialiser le mot de passe, mot de passe oublié, déconnecter]
 related: [users-invitations, roles-permissions, faq-account]
 ---
 ## Limite aksè a kèk siksisal
@@ -49,3 +49,13 @@ Moun nan dekonekte touswit toupatou epi li rekonekte ak nouvo modpas la.
 > **Atansyon:** ou pa ka reyinisyalize pwòp modpas ou isit la: chanje l nan [Sekirite kont](topic:account-security). Si yo itilize kont lan nan yon lòt magazen tou, reyinisyalizasyon an ap refize: se moun nan ki pou chanje modpas li li menm.
 
 Pou koupe aksè yon moun toupatou (telefòn pèdi…), sispann li oswa reyinisyalize modpas li: tout sesyon li nan magazen an ap fèmen.
+
+## Reyinisyalize otantifikasyon de faktè
+
+Si yon moun pèdi telefòn li, oswa si kòd 6 chif li yo refize (kont lan bloke apre plizyè esè), **pwopriyetè** a klike sou ikòn **plak pwoteksyon bare** a sou liy li (**Reyinisyalize otantifikasyon de faktè**) epi li konfime.
+
+- Otantifikasyon de faktè li dezaktive epi kont li **debloke** ; li dekonekte toupatou.
+- Li konekte ak modpas li. Si wòl li egzije l, yo mande l remete otantifikasyon de faktè ak yon nouvo kòd QR.
+- Aksyon an note nan [Jounal odit](topic:audit-log).
+
+> **Atansyon :** se sèlman yon pwopriyetè ki ka fè sa, epi pa pou pwòp kont li (gade [Otantifikasyon de faktè](topic:account-2fa)). Yon kont ki itilize nan yon lòt magazen dwe dezaktive l li menm.

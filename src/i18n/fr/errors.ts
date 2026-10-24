@@ -242,4 +242,7 @@ export const errors: Record<string, string> = {
   "The e-mail could not be sent. Check the address, then send the link again.": "L'e-mail n'a pas pu être envoyé. Vérifiez l'adresse, puis renvoyez le lien.",
   "This person has already chosen their password": "Cette personne a déjà choisi son mot de passe",
   "This person has not chosen a password yet: send them the link again": "Cette personne n'a pas encore choisi de mot de passe : renvoyez-lui le lien",
+  "Only an owner can reset two-factor authentication": "Seul un propriétaire peut réinitialiser l'authentification à deux facteurs",
+  "Turn off your own two-factor authentication from your account settings": "Désactivez votre propre authentification à deux facteurs depuis les paramètres de votre compte",
+  "This account is also used in another store. The user must turn off two-factor themselves.": "Ce compte est aussi utilisé dans un autre magasin. La personne doit désactiver elle-même l'authentification à deux facteurs.",
 };

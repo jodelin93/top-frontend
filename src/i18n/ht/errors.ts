@@ -242,4 +242,7 @@ export const errors: Record<string, string> = {
   "The e-mail could not be sent. Check the address, then send the link again.": "Yo pa t ka voye imèl la. Verifye adrès la, epi voye lyen an ankò.",
   "This person has already chosen their password": "Moun sa a deja chwazi modpas li",
   "This person has not chosen a password yet: send them the link again": "Moun sa a poko chwazi yon modpas : voye lyen an ba li ankò",
+  "Only an owner can reset two-factor authentication": "Se sèlman yon pwopriyetè ki ka reyinisyalize otantifikasyon de faktè",
+  "Turn off your own two-factor authentication from your account settings": "Dezaktive pwòp otantifikasyon de faktè ou nan paramèt kont ou",
+  "This account is also used in another store. The user must turn off two-factor themselves.": "Kont sa a itilize nan yon lòt magazen tou. Se moun nan menm ki dwe dezaktive otantifikasyon de faktè a.",
 };

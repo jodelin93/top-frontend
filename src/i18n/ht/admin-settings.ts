@@ -544,4 +544,8 @@ export const adminSettings: Record<string, string> = {
   "Send the link to choose a password again to {name}": "Voye lyen pou chwazi modpas la ankò bay {name}",
   "The link to choose a password was e-mailed; it confirms the address.": "Yo voye lyen pou chwazi modpas la pa imèl ; li konfime adrès la.",
   "Waiting for the password (e-mail not confirmed)": "Ap tann modpas la (imèl pa konfime)",
+  "Two-factor authentication of {name} is off and their account unlocked. They sign in with their password and set it up again if their role requires it.": "Otantifikasyon de faktè {name} dezaktive epi kont li debloke. Moun nan konekte ak modpas li epi li remete l si wòl li egzije l.",
+  "Reset the two-factor authentication of {name}? Use it when they lost their phone or their codes are refused. They are signed out everywhere and unlocked.": "Reyinisyalize otantifikasyon de faktè {name}? Sèvi ak sa si moun nan pèdi telefòn li oswa si kòd li yo refize. Li dekonekte toupatou epi li debloke.",
+  "Reset two-factor authentication": "Reyinisyalize otantifikasyon de faktè",
+  "Reset two-factor authentication of {name}": "Reyinisyalize otantifikasyon de faktè {name}",
 };

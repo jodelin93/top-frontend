@@ -4,7 +4,7 @@ title: Edit or suspend a user, or reset their password
 category: Staff
 order: 1204
 routes: [/admin/users]
-keywords: [disconnect, signed in on another device, one device, session, suspend, suspended, role, branches, branch access, reset password, forgot password, sign out, deactivate user, remove access]
+keywords: [reset 2FA, two-factor, locked account, lost phone, disconnect, signed in on another device, one device, session, suspend, suspended, role, branches, branch access, reset password, forgot password, sign out, deactivate user, remove access]
 related: [users-invitations, roles-permissions, faq-account]
 ---
 ## Limit access to certain branches
@@ -49,3 +49,13 @@ The person is immediately signed out everywhere and signs back in with the new p
 > **Warning:** you cannot reset your own password here: change it in [Account security](topic:account-security). If the account is also used in another store, the reset is refused: the person must change their password themselves.
 
 To cut off someone's access everywhere (lost phone…), suspend them or reset their password: all their sessions in the store are closed.
+
+## Reset two-factor authentication
+
+If someone lost their phone, or their 6-digit codes are refused (the account locks after several tries), the **owner** clicks the **crossed-out shield** icon on their row (**Reset two-factor authentication**) and confirms.
+
+- Their two-factor authentication is turned off and their account **unlocked**; they are signed out everywhere.
+- They sign in with their password. If their role requires it, they are asked to set two-factor up again with a new QR code.
+- The action is recorded in the [Audit log](topic:audit-log).
+
+> **Warning:** only an owner can do it, and not for their own account (see [Two-factor authentication](topic:account-2fa)). An account used in another store must turn it off itself.

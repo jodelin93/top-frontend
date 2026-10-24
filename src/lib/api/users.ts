@@ -55,6 +55,10 @@ export const usersApi = {
     const { data } = await apiClient.patch(`/users/${userId}`, input);
     return data;
   },
+  // The owner turns off a member's two-factor (lost phone) and lifts their lock
+  resetMfa: async (userId: string): Promise<void> => {
+    await apiClient.post(`/users/${userId}/mfa/reset`);
+  },
   // The "choose your password" link again (for someone who has not used it)
   resendSetupLink: async (userId: string, language: string): Promise<void> => {
     await apiClient.post(`/users/${userId}/setup-link`, { language });

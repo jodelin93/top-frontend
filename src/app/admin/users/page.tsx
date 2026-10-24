@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { KeyRound, LogOut, MailCheck, Pencil, Plus, Send, ShieldCheck } from 'lucide-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { KeyRound, LogOut, MailCheck, Pencil, Plus, Send, ShieldCheck, ShieldOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge, statusVariant } from '@/components/ui/badge';
@@ -30,6 +30,7 @@ import { roleLabel } from '@/lib/server-texts';
 
 export default function UsersPage() {
   const currentUser = useAuthStore((state) => state.user);
+  const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Member | null>(null);
   const [resetting, setResetting] = useState<Member | null>(null);
@@ -113,6 +114,36 @@ export default function UsersPage() {
         <KeyRound className="h-4 w-4" />
       </Button>
     );
+  // The owner can turn off someone's two-factor (lost phone, codes refused); it lifts their lock too
+  const isOwner = currentUser?.role === 'owner';
+  const resetMfa = useMutation({
+    mutationFn: (member: Member) => usersApi.resetMfa(member.id),
+    onSuccess: (_, member) => {
+      setNotice(t('Two-factor authentication of {name} is off and their account unlocked. They sign in with their password and set it up again if their role requires it.', { name: memberName(member) }));
+      void queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+    onError: (err) => setNotice(getErrorMessage(err)),
+  });
+  const resetMfaButton = (member: Member) =>
+    isOwner && member.mfaEnabled ? (
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8"
+        onClick={() => {
+          setNotice(null);
+          if (window.confirm(t('Reset the two-factor authentication of {name}? Use it when they lost their phone or their codes are refused. They are signed out everywhere and unlocked.', { name: memberName(member) }))) {
+            resetMfa.mutate(member);
+          }
+        }}
+        disabled={resetMfa.isPending}
+        title={t('Reset two-factor authentication')}
+        aria-label={t('Reset two-factor authentication of {name}', { name: member.email })}
+        data-testid="reset-mfa"
+      >
+        <ShieldOff className="h-4 w-4" />
+      </Button>
+    ) : null;
   const statusBadge = (member: Member) =>
     member.status === 'invited' ? (
       <Badge variant="warning">{t('Invited — waiting for acceptance')}</Badge>
@@ -232,6 +263,7 @@ export default function UsersPage() {
                       ) : (
                         <>
                           {passwordButton(member)}
+                          {resetMfaButton(member)}
                           {disconnectButton(member)}
                         </>
                       )}
@@ -316,6 +348,7 @@ export default function UsersPage() {
                           ) : (
                             <>
                               {passwordButton(member)}
+                              {resetMfaButton(member)}
                               {disconnectButton(member)}
                             </>
                           )}
