@@ -507,4 +507,6 @@ export const adminCatalog: Record<string, string> = {
   'Item code the scale prints in weighed labels (barcodes starting with 20 to 29).': 'Kòd atik balans lan enprime sou etikèt peze yo (kòd ba ki kòmanse ak 20 rive 29).',
   'PLU code must be 1 to 6 digits': 'Kòd PLU a dwe gen 1 rive 6 chif',
   'Every line needs a quantity above 0': 'Chak liy bezwen yon kantite ki pi wo pase 0',
+  "Shown in every branch. Tick branches to show it only there.": "Li parèt nan tout siksisal yo. Koche siksisal pou l parèt la sèlman.",
+  "Only shown in the ticked branches: their staff see it, the others do not.": "Li parèt sèlman nan siksisal ki koche yo : anplwaye yo wè l, lòt yo pa wè l.",
 };

@@ -120,10 +120,16 @@ export function ProductBranchesPicker({
   value,
   onChange,
   enabled = true,
+  onlyIds,
+  hints,
 }: {
   value: string[];
   onChange: (branchIds: string[]) => void;
   enabled?: boolean;
+  // Only these branches can be ticked (someone limited to some branches)
+  onlyIds?: string[] | null;
+  // Wording under the boxes (none ticked / some ticked), for a category
+  hints?: { all: string; some: string };
 }) {
   const { data: branches = [], isLoading } = useQuery({
     queryKey: ['branches'],
@@ -139,7 +145,7 @@ export function ProductBranchesPicker({
         <p className="text-sm text-gray-400">{t('Loading branches...')}</p>
       ) : (
         <div className="flex flex-wrap gap-x-4 gap-y-2">
-          {branches.map((branch) => (
+          {branches.filter((branch) => !onlyIds || onlyIds.includes(branch.id)).map((branch) => (
             <label key={branch.id} className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -155,8 +161,8 @@ export function ProductBranchesPicker({
       )}
       <p className="text-xs text-gray-500">
         {value.length === 0
-          ? t('Sold at every branch. Tick branches to limit where it is sold.')
-          : t('Only sold at the ticked branches.')}
+          ? (hints?.all ?? t('Sold at every branch. Tick branches to limit where it is sold.'))
+          : (hints?.some ?? t('Only sold at the ticked branches.'))}
       </p>
     </div>
   );

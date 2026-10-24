@@ -225,6 +225,23 @@ function POSScreen() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [categoryId, setCategoryId] = useState<string | null>(null);
+  // Only the categories with products of this till's branch (or of their sub-categories);
+  // all of them until the catalog is loaded
+  const shownCategories = useMemo(() => {
+    const categories = context?.categories ?? [];
+    const items = catalog.items;
+    if (!items?.length) return categories;
+    const parentOf = new Map(categories.map((c) => [c.id, c.parentId ?? null]));
+    const shown = new Set<string>();
+    for (const item of items) {
+      let id: string | null = item.categoryId ?? null;
+      while (id && !shown.has(id)) {
+        shown.add(id);
+        id = parentOf.get(id) ?? null;
+      }
+    }
+    return categories.filter((c) => shown.has(c.id));
+  }, [context?.categories, catalog.items]);
   const [notice, setNotice] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   // Not on phones: focusing the search box would pop the on-screen keyboard after every action
@@ -1446,7 +1463,7 @@ function POSScreen() {
             />
           </form>
 
-          {context.categories.length > 0 && (
+          {shownCategories.length > 0 && (
             <div
               className="flex gap-2 overflow-x-auto pb-1 max-md:-mx-3 max-md:shrink-0 max-md:snap-x max-md:px-3 max-md:[scrollbar-width:none]"
               role="group"
@@ -1455,7 +1472,7 @@ function POSScreen() {
               <CategoryChip active={!categoryId} onClick={() => setCategoryId(null)}>
                 {t('All')}
               </CategoryChip>
-              {context.categories.map((category) => (
+              {shownCategories.map((category) => (
                 <CategoryChip
                   key={category.id}
                   active={categoryId === category.id}

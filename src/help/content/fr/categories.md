@@ -4,7 +4,7 @@ title: Organiser les catégories
 category: Catalogue
 order: 805
 routes: [/admin/categories]
-keywords: [catégorie, sous-catégorie, arborescence, rayon, famille, ordre d'affichage, catégorie parente]
+keywords: [succursale, boutique, magasin, catégorie, sous-catégorie, arborescence, rayon, famille, ordre d'affichage, catégorie parente]
 related: [products-create, products-import]
 ---
 Les catégories forment une arborescence : une catégorie principale (ex. Alimentation) peut contenir des sous-catégories (ex. Boissons). Elles organisent la caisse et les rapports.
@@ -19,3 +19,14 @@ Les catégories forment une arborescence : une catégorie principale (ex. Alimen
 6. Cliquez sur **Créer la catégorie**.
 
 > **Astuce :** pour modifier une catégorie, cliquez sur son crayon. Désactiver une catégorie la cache à la caisse sans toucher aux produits.
+
+## Rattacher une catégorie à des succursales
+
+Dans la fiche d'une catégorie (nouvelle ou existante, avec le crayon), la partie **Succursales** choisit où elle est affichée :
+
+- **aucune cochée** : la catégorie est affichée dans toutes les succursales ;
+- **certaines cochées** : seul le personnel de ces succursales la voit (caissiers, magasiniers d'une seule boutique), dans l'administration comme à la caisse. Le propriétaire, l'administrateur et un gérant de toute l'entreprise voient toutes les catégories.
+
+La colonne **Succursales** de la liste montre le réglage de chaque catégorie. À la caisse, une catégorie qui n'a aucun produit vendu dans la succursale de la caisse n'est pas affichée.
+
+> **Astuce :** une personne limitée à certaines succursales ne peut rattacher une catégorie qu'à ses propres succursales.

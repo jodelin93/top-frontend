@@ -246,4 +246,7 @@ export const errors: Record<string, string> = {
   "Turn off your own two-factor authentication from your account settings": "Dezaktive pwòp otantifikasyon de faktè ou nan paramèt kont ou",
   "This account is also used in another store. The user must turn off two-factor themselves.": "Kont sa a itilize nan yon lòt magazen tou. Se moun nan menm ki dwe dezaktive otantifikasyon de faktè a.",
   "Choose the branch of the estimate": "Chwazi siksisal devi a",
+  "Tie the category to your branches: you cannot show it in every branch": "Mare kategori a ak siksisal ou yo : ou pa ka fè l parèt nan tout siksisal",
+  "You can only choose your own branches": "Ou ka chwazi sèlman pwòp siksisal ou yo",
+  "Unknown branch": "Siksisal enkoni",
 };

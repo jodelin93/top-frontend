@@ -9,6 +9,8 @@ export interface Category {
   sortOrder: number;
   isActive: boolean;
   imageUrl: string | null;
+  // Branches it is shown in: none = every branch
+  branchIds?: string[] | null;
   // Optimistic concurrency (sent back as If-Match when editing)
   version?: number;
 }

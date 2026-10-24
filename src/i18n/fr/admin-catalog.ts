@@ -561,4 +561,6 @@ export const adminCatalog: Record<string, string> = {
   'Item code the scale prints in weighed labels (barcodes starting with 20 to 29).': 'Code article imprimé par la balance sur les étiquettes de pesée (codes-barres commençant par 20 à 29).',
   'PLU code must be 1 to 6 digits': 'Le code PLU doit comporter de 1 à 6 chiffres',
   'Every line needs a quantity above 0': 'Chaque ligne doit avoir une quantité supérieure à 0',
+  "Shown in every branch. Tick branches to show it only there.": "Affichée dans toutes les succursales. Cochez des succursales pour ne l'afficher que là.",
+  "Only shown in the ticked branches: their staff see it, the others do not.": "Affichée seulement dans les succursales cochées : leur personnel la voit, les autres non.",
 };

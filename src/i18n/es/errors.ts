@@ -246,4 +246,7 @@ export const errors: Record<string, string> = {
   "Turn off your own two-factor authentication from your account settings": "Desactive su propia autenticación en dos pasos desde la configuración de su cuenta",
   "This account is also used in another store. The user must turn off two-factor themselves.": "Esta cuenta también se usa en otra tienda. La persona debe desactivar ella misma la autenticación en dos pasos.",
   "Choose the branch of the estimate": "Elija la sucursal del presupuesto",
+  "Tie the category to your branches: you cannot show it in every branch": "Vincule la categoría a sus sucursales: no puede mostrarla en todas las sucursales",
+  "You can only choose your own branches": "Solo puede elegir sus propias sucursales",
+  "Unknown branch": "Sucursal desconocida",
 };

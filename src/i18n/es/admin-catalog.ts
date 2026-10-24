@@ -557,4 +557,6 @@ export const adminCatalog: Record<string, string> = {
     'Código de artículo que la balanza imprime en las etiquetas de pesaje (códigos de barras que empiezan con 20 a 29).',
   'PLU code must be 1 to 6 digits': 'El código PLU debe tener de 1 a 6 dígitos',
   'Every line needs a quantity above 0': 'Cada línea necesita una cantidad mayor que 0',
+  "Shown in every branch. Tick branches to show it only there.": "Se muestra en todas las sucursales. Marque sucursales para mostrarla solo allí.",
+  "Only shown in the ticked branches: their staff see it, the others do not.": "Solo se muestra en las sucursales marcadas: su personal la ve, los demás no.",
 };

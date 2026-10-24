@@ -21,6 +21,7 @@ import { getErrorMessage } from '@/lib/api/client';
 import { categoriesApi, Category } from '@/lib/api/categories';
 import { text } from '@/lib/api/crud';
 import { t } from '@/i18n';
+import { branchesApi } from '@/lib/api/settings';
 
 export default function CategoriesPage() {
   const queryClient = useQueryClient();
@@ -29,6 +30,12 @@ export default function CategoriesPage() {
   const [actionError, setActionError] = useState<string | null>(null);
   const smallScreen = useSmallScreen();
 
+  const { data: branches = [] } = useQuery({ queryKey: ['branches'], queryFn: () => branchesApi.list() });
+  // The branches a category is shown in ("All branches" when none is ticked)
+  const branchesOf = (category: Category) =>
+    category.branchIds?.length
+      ? branches.filter((b) => category.branchIds!.includes(b.id)).map((b) => b.name).join(', ') || '—'
+      : t('All branches');
   const { data: categories = [], isLoading, error } = useQuery({
     queryKey: ['categories'],
     queryFn: () => categoriesApi.list(),
@@ -109,6 +116,7 @@ export default function CategoriesPage() {
                   }
                 />
                 <DataCardFields>
+                  <DataCardField label={t('Branches')}>{branchesOf(category)}</DataCardField>
                   <DataCardField label={t('Code')}>
                     <span className="font-mono text-xs">{category.code}</span>
                   </DataCardField>
@@ -144,6 +152,7 @@ export default function CategoriesPage() {
             <tr>
               <Th>{t('Name')}</Th>
               <Th>{t('Code')}</Th>
+              <Th>{t('Branches')}</Th>
               <Th>{t('Sort order')}</Th>
               <Th>{t('Status')}</Th>
               <Th />
@@ -151,9 +160,9 @@ export default function CategoriesPage() {
           </THead>
           <TBody>
             {isLoading ? (
-              <EmptyRow colSpan={5}>{t('Loading categories...')}</EmptyRow>
+              <EmptyRow colSpan={6}>{t('Loading categories...')}</EmptyRow>
             ) : rows.length === 0 ? (
-              <EmptyRow colSpan={5}>{t('No categories yet. Create your first one.')}</EmptyRow>
+              <EmptyRow colSpan={6}>{t('No categories yet. Create your first one.')}</EmptyRow>
             ) : (
               rows.map(({ category, depth }) => (
                 <tr key={category.id} className="hover:bg-gray-50">
@@ -164,6 +173,7 @@ export default function CategoriesPage() {
                     </span>
                   </Td>
                   <Td className="font-mono text-xs">{category.code}</Td>
+                  <Td className="text-sm text-gray-600">{branchesOf(category)}</Td>
                   <Td>{category.sortOrder}</Td>
                   <Td>
                     <Badge variant={category.isActive ? 'success' : 'warning'}>

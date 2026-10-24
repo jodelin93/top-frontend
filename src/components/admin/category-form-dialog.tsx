@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as z from 'zod';
@@ -22,6 +22,8 @@ import { getErrorMessage, isVersionConflict } from '@/lib/api/client';
 import { categoriesApi, Category } from '@/lib/api/categories';
 import { LocalizedText, text } from '@/lib/api/crud';
 import { t } from '@/i18n';
+import { hasAllBranches, useAuthStore } from '@/stores/auth-store';
+import { ProductBranchesPicker } from '@/components/admin/product-catalog-fields';
 
 /**
  * Order categories depth-first so children follow their parent.
@@ -69,6 +71,8 @@ const categorySchema = z.object({
   parentId: z.string(),
   sortOrder: z.string().regex(/^\d*$/, 'Must be a whole number'),
   isActive: z.boolean(),
+  // Branches it is shown in; none = every branch
+  branchIds: z.array(z.string()),
 });
 
 type CategoryFormData = z.infer<typeof categorySchema>;
@@ -80,10 +84,13 @@ interface CategoryInput {
   parentId?: string | null;
   sortOrder?: number;
   isActive?: boolean;
+  branchIds?: string[];
 }
 
-function toFormData(category?: Category | null): CategoryFormData {
+function toFormData(category?: Category | null, myBranches: string[] | null = null): CategoryFormData {
   return {
+    // A new category of someone limited to some branches: shown in theirs
+    branchIds: category?.branchIds ?? myBranches ?? [],
     code: category?.code ?? '',
     name: text(category?.name),
     description: category?.description?.en ?? '',
@@ -106,6 +113,7 @@ function toInput(data: CategoryFormData, category?: Category | null): CategoryIn
     parentId: data.parentId || empty,
     sortOrder: data.sortOrder === '' ? (category ? 0 : undefined) : Number(data.sortOrder),
     ...(category && { isActive: data.isActive }),
+    branchIds: data.branchIds,
   };
 }
 
@@ -126,11 +134,17 @@ export function CategoryFormDialog({
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
   const isEdit = !!category;
+  // Branches it is shown in (none = every branch); someone limited to some branches
+  // ties it to theirs
+  const me = useAuthStore((state) => state.user);
+  const myBranches = hasAllBranches(me) ? null : (me?.branchIds ?? []);
 
   const {
     register,
     handleSubmit,
     reset,
+    control,
+    setValue,
     formState: { errors },
   } = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
@@ -139,9 +153,13 @@ export function CategoryFormDialog({
 
   useEffect(() => {
     if (open) {
-      reset(toFormData(category));
+      reset(toFormData(category, myBranches));
     }
+    // myBranches follows the signed-in user, read when the dialog opens
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, category, reset]);
+
+  const branchIds = useWatch({ control, name: 'branchIds' });
 
   // A category can't be moved inside itself or one of its children
   const parentOptions = useMemo(() => {
@@ -214,6 +232,18 @@ export function CategoryFormDialog({
             </Field>
             <Field label={t('Sort order')} htmlFor="sortOrder" error={errors.sortOrder?.message && t(errors.sortOrder.message)}>
               <Input id="sortOrder" inputMode="numeric" placeholder="0" {...register('sortOrder')} />
+            </Field>
+
+            <Field label={t('Branches')} className="sm:col-span-2">
+              <ProductBranchesPicker
+                value={branchIds}
+                onChange={(ids) => setValue('branchIds', ids, { shouldDirty: true })}
+                onlyIds={myBranches}
+                hints={{
+                  all: t('Shown in every branch. Tick branches to show it only there.'),
+                  some: t('Only shown in the ticked branches: their staff see it, the others do not.'),
+                }}
+              />
             </Field>
 
             {isEdit && (
