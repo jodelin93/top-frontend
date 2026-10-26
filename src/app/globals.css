@@ -2,23 +2,31 @@
 
 /* Design tokens used by the shadcn-style UI components (bg-primary, text-muted-foreground, ...) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Press room: coated paper, key ink, process cyan. CMYK appears only in the
+     registration mark (components/brand-mark.tsx), never as a state colour. */
+  --paper: #f6f7f5;
+  --ink: #172235;
+  --process-cyan: #00a3da;
+  --process-magenta: #d6247a;
+  --process-yellow: #f2c200;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
   --card: #ffffff;
-  --card-foreground: #171717;
-  --primary: #2563eb;
+  --card-foreground: var(--ink);
+  --primary: #0a6e99;
   --primary-foreground: #ffffff;
-  --secondary: #f3f4f6;
-  --secondary-foreground: #111827;
-  --muted: #f3f4f6;
-  --muted-foreground: #6b7280;
-  --accent: #f3f4f6;
-  --accent-foreground: #111827;
-  --destructive: #dc2626;
+  --secondary: #eef0ed;
+  --secondary-foreground: var(--ink);
+  --muted: #eef0ed;
+  --muted-foreground: #6b7380;
+  --accent: #eef0ed;
+  --accent-foreground: var(--ink);
+  --destructive: #b42318;
   --destructive-foreground: #ffffff;
-  --border: #e5e7eb;
-  --input: #d1d5db;
-  --ring: #2563eb;
+  --border: #e0e3e0;
+  --input: #c9cdcc;
+  --ring: #0a6e99;
 }
 
 @theme inline {
@@ -39,8 +47,40 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-schibsted), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* The app's neutrals and its action colour, as scales: every bg-gray-*, text-gray-*,
+   bg-blue-* … across the app takes the press-room palette from here. Grays lean to
+   coated paper when light and to key ink when dark; "blue" is process cyan. */
+@theme {
+  --color-gray-50: #f6f7f5;
+  --color-gray-100: #eef0ed;
+  --color-gray-200: #e0e3e0;
+  --color-gray-300: #c9cdcc;
+  --color-gray-400: #9aa1a7;
+  --color-gray-500: #6b7380;
+  --color-gray-600: #525b68;
+  --color-gray-700: #3d4655;
+  --color-gray-800: #2a3343;
+  --color-gray-900: #1c2535;
+  --color-gray-950: #111a28;
+
+  --color-blue-50: #ebf6fa;
+  --color-blue-100: #d2ebf4;
+  --color-blue-200: #a6d6e9;
+  --color-blue-300: #6cbbd8;
+  --color-blue-400: #2e9cc4;
+  --color-blue-500: #0c82ae;
+  --color-blue-600: #0a6e99;
+  --color-blue-700: #095a7f;
+  --color-blue-800: #0b4a67;
+  --color-blue-900: #0d3d55;
+  --color-blue-950: #082738;
+
+  --color-ink: #172235;
+  --color-paper: #f6f7f5;
 }
 
 @layer base {
@@ -52,6 +92,86 @@
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+/* Schibsted's digits are already the same width; its tabular feature would also
+   widen commas and periods ("132 . 5"), so amounts keep the plain figures */
+.tabular-nums {
+  font-feature-settings: 'tnum' 0;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.015em;
+}
+
+/* Crop marks: the sign-in sheet sits on the press like a job ready to trim */
+.crop-marks {
+  position: relative;
+}
+.crop-marks > .crop {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+}
+.crop-marks > .crop::before,
+.crop-marks > .crop::after {
+  content: '';
+  position: absolute;
+  background: var(--ink);
+  opacity: 0.55;
+}
+.crop-marks > .crop::before {
+  width: 16px;
+  height: 1px;
+}
+.crop-marks > .crop::after {
+  width: 1px;
+  height: 16px;
+}
+.crop-marks > .crop-tl { top: -22px; left: -22px; }
+.crop-marks > .crop-tl::before { bottom: 0; left: 0; }
+.crop-marks > .crop-tl::after { right: 0; top: 0; }
+.crop-marks > .crop-tr { top: -22px; right: -22px; }
+.crop-marks > .crop-tr::before { bottom: 0; right: 0; }
+.crop-marks > .crop-tr::after { left: 0; top: 0; }
+.crop-marks > .crop-bl { bottom: -22px; left: -22px; }
+.crop-marks > .crop-bl::before { top: 0; left: 0; }
+.crop-marks > .crop-bl::after { right: 0; bottom: 0; }
+.crop-marks > .crop-br { bottom: -22px; right: -22px; }
+.crop-marks > .crop-br::before { top: 0; right: 0; }
+.crop-marks > .crop-br::after { left: 0; bottom: 0; }
+
+/* Home page: the receipt comes out of the printer once, when the page opens */
+.receipt-print {
+  animation: receipt-print 1.6s cubic-bezier(0.22, 0.8, 0.3, 1) 0.25s both;
+}
+@keyframes receipt-print {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .receipt-print {
+    animation: none;
+  }
+}
+/* The torn edge of the paper roll */
+.receipt-tear {
+  background:
+    linear-gradient(-45deg, transparent 6px, #fff 0) 0 0 / 12px 8px repeat-x,
+    linear-gradient(45deg, transparent 6px, #fff 0) 0 0 / 12px 8px repeat-x;
+}
+
+@media (max-width: 480px) {
+  .crop-marks > .crop {
+    display: none;
+  }
 }
 
 /* Receipt printing: only the receipt is printed. The page is the printer's own paper

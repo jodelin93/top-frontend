@@ -8,7 +8,7 @@ keywords: [touche, resevwa peman, peman, peye, F12, fini vant lan, mwayen peman,
 related: [pos-payment-cash-change, pos-payment-card, pos-loyalty, pos-gift-cards, pos-on-account, pos-receipt]
 ---
 1. Klike sou **Touche** (touch **F12**). Sou telefòn, touche **Touche** nan ba anba a.
-2. Fenèt **Peman** an montre **TOTAL**, **LAJAN RESEVWA** ak **KI RETE POU PEYE**, an dola ak an goud.
+2. Fenèt **Peman** an montre **Total**, **Lajan resevwa** ak **Ki rete pou peye**, an dola ak an goud.
 3. Anba bwat sa yo, to jou a parèt, pa egzanp **1 USD = 132,5 HTG**.
 
 ![Fenèt Peman an](shot:pos-payment)

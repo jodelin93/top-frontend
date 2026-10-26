@@ -109,6 +109,7 @@ import {
 } from '@/stores/pos-store';
 import { canUseAdmin, hasPermission, useAuthStore } from '@/stores/auth-store';
 import { plural, t } from '@/i18n';
+import { RegistrationMark } from '@/components/brand-mark';
 import { randomId } from '@/lib/uuid';
 
 export default function POSPage() {
@@ -1481,8 +1482,8 @@ function POSScreen() {
       {/* Top bar. Phones: two rows (store + status, then register + shift); the
           secondary actions move to the "more" menu */}
       <header className="flex flex-wrap items-center gap-x-2 gap-y-1.5 border-b bg-white px-3 py-2 md:flex-nowrap md:gap-3 md:px-4">
-        <ShoppingCart className="h-5 w-5 shrink-0 text-blue-600" aria-hidden />
-        <span className="min-w-0 flex-1 truncate font-semibold md:min-w-auto md:flex-none md:overflow-visible md:whitespace-normal">
+        <RegistrationMark className="h-4" />
+        <span className="min-w-0 flex-1 truncate font-bold tracking-[-0.01em] md:min-w-auto md:flex-none md:overflow-visible md:whitespace-normal">
           {context.settings.storeName}
         </span>
         <div className="order-last flex w-full min-w-0 items-center gap-2 md:order-none md:contents">

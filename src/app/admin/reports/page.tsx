@@ -477,7 +477,7 @@ function ReconciliationView({ from, to, branchId }: { from: string; to: string; 
 function Figure({ label, value, warn }: { label: string; value: string; warn?: boolean }) {
   return (
     <div className={cn('rounded-md border p-3', warn && 'border-red-300 bg-red-50')}>
-      <div className="text-xs uppercase text-gray-500">{label}</div>
+      <div className="text-xs font-medium text-gray-500">{label}</div>
       <div className="text-lg font-semibold">{value}</div>
     </div>
   );

@@ -732,7 +732,7 @@ function CurrencyToggle({
 function Stat({ label, value, highlight, others = [] }: { label: string; value: string; highlight?: boolean; others?: string[] }) {
   return (
     <div>
-      <div className="text-xs uppercase text-gray-500">{label}</div>
+      <div className="text-xs font-medium text-gray-500">{label}</div>
       <div className={cn('text-lg font-semibold break-words max-sm:text-base', highlight && 'text-blue-700')}>{value}</div>
       {others.map((o) => (
         <div key={o} className="text-xs text-gray-500">{`≈ ${o}`}</div>

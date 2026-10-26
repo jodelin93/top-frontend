@@ -1,17 +1,33 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/auth-store';
 import { homePath } from '@/lib/landing';
-import { ShoppingCart, Package, Users, BarChart3 } from 'lucide-react';
+import { tenantsApi } from '@/lib/api/tenants';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { BrandMark } from '@/components/brand-mark';
+import { LanguageSwitcher } from '@/components/language-switcher';
 import { t } from '@/i18n';
+
+// A sale as the till prints it: the most familiar object in the shop
+const RECEIPT_LINES: { label: string; qty: string; amount: string }[] = [
+  { label: 'Banderole 2 × 1 m', qty: '1', amount: '3 500,00' },
+  { label: 'Cartes de visite', qty: '100', amount: '1 750,00' },
+  { label: 'Photocopie couleur', qty: '20', amount: '400,00' },
+  { label: 'Plastification A4', qty: '4', amount: '300,00' },
+];
 
 export default function Home() {
   const router = useRouter();
   const { isAuthenticated, user } = useAuthStore();
+  const { data: signupEnabled = false } = useQuery({
+    queryKey: ['signup-enabled'],
+    queryFn: tenantsApi.signupEnabled,
+    staleTime: Infinity,
+  });
 
   useEffect(() => {
     // Signed-in users go to the till, or to the admin area when they don't sell
@@ -20,108 +36,117 @@ export default function Home() {
     }
   }, [isAuthenticated, user, router]);
 
-  const handleLogin = () => {
-    router.push('/auth/login');
-  };
-
-  const features = [
+  const facts = [
     {
-      icon: ShoppingCart,
-      title: t('Point of Sale'),
-      description: t('Fast and intuitive checkout experience with barcode scanning'),
+      title: t('Keeps selling offline'),
+      text: t('When the connection drops, the till goes on and sends the sales once it is back.'),
     },
     {
-      icon: Package,
-      title: t('Inventory Management'),
-      description: t('Track stock levels, movements, and transfers across locations'),
+      title: t('Gourdes and dollars'),
+      text: t('Prices in your currency, payments in the other at your buy and sell rates.'),
     },
     {
-      icon: Users,
-      title: t('Customer Management'),
-      description: t('Manage customer profiles, loyalty points, and purchase history'),
+      title: t('Prints at the counter'),
+      text: t('Receipts, labels and A4 documents on the shop’s own printers, and the drawer opens.'),
     },
     {
-      icon: BarChart3,
-      title: t('Reports & Analytics'),
-      description: t('Real-time insights into sales, inventory, and customer trends'),
+      title: t('Four languages'),
+      text: t('Kreyòl, français, English and español, chosen by each person.'),
     },
   ];
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-blue-50 to-white">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-2">
-            <ShoppingCart className="h-6 w-6 text-blue-600" />
-            <h1 className="text-xl font-bold text-gray-900">Modern POS</h1>
-          </div>
-          <Button onClick={handleLogin}>{t('Sign In')}</Button>
+    <div className="flex min-h-screen flex-col bg-paper text-ink">
+      <header className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-5 sm:px-8">
+        <BrandMark />
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher compact className="hidden bg-white sm:flex" />
+          <Button asChild variant="outline">
+            <Link href="/auth/login">{t('Sign in')}</Link>
+          </Button>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <main className="container mx-auto flex-1 px-4 py-16">
-        <div className="mx-auto max-w-3xl text-center">
-          <h2 className="mb-6 text-5xl font-bold tracking-tight text-gray-900">
-            {t('Modern Point of Sale System')}
-          </h2>
-          <p className="mb-8 text-xl text-gray-600">
-            {t('Streamline your retail operations with our comprehensive POS solution. Manage sales, inventory, customers, and analytics all in one place.')}
+      <main className="mx-auto grid w-full max-w-6xl flex-1 items-center gap-12 px-4 pb-16 pt-6 sm:px-8 md:grid-cols-[1.1fr_0.9fr] md:gap-16 md:pt-10">
+        <div className="max-w-xl">
+          <h1 className="text-[2.6rem] font-extrabold leading-[1.02] tracking-[-0.035em] sm:text-6xl">
+            {t('Sell, print the receipt, count the drawer.')}
+          </h1>
+          <p className="mt-6 max-w-[34rem] text-lg leading-relaxed text-gray-600">
+            {t('Joda POS is the till and the back office of shops in Haiti: sales, stock, customers, cash sessions and reports, on a computer, a tablet or a phone.')}
           </p>
-          <div className="flex justify-center gap-4">
-            <Button size="lg" onClick={handleLogin} className="px-8">
-              {t('Get Started')}
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button asChild size="lg" className="px-7">
+              <Link href="/auth/login">{t('Sign in')}</Link>
             </Button>
-            <Button size="lg" variant="outline" className="px-8">
-              {t('Learn More')}
-            </Button>
+            {signupEnabled && (
+              <Button asChild size="lg" variant="outline" className="px-7">
+                <Link href="/signup">{t('Create a store')}</Link>
+              </Button>
+            )}
           </div>
         </div>
 
-        {/* Features Grid */}
-        <div className="mx-auto mt-20 grid max-w-5xl gap-6 sm:grid-cols-2">
-          {features.map((feature, index) => {
-            const Icon = feature.icon;
-            return (
-              <Card key={index} className="border-2 transition-shadow hover:shadow-lg">
-                <CardContent className="p-6">
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
-                    <Icon className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600">{feature.description}</p>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        {/* CTA Section */}
-        <div className="mx-auto mt-20 max-w-2xl text-center">
-          <div className="rounded-2xl bg-blue-600 p-8 text-white shadow-xl">
-            <h3 className="mb-4 text-2xl font-bold">{t('Ready to modernize your business?')}</h3>
-            <p className="mb-6 text-blue-100">
-              {t('Join thousands of businesses using Modern POS to streamline their operations.')}
-            </p>
-            <Button
-              size="lg"
-              variant="secondary"
-              onClick={handleLogin}
-              className="bg-white text-blue-600 hover:bg-blue-50"
-            >
-              {t('Sign In to Continue')}
-            </Button>
+        {/* The printer and its receipt: prints once when the page opens */}
+        <div className="relative mx-auto w-full max-w-[320px]" aria-hidden>
+          <div className="relative z-10 h-6 rounded-t-xl bg-ink shadow-[0_10px_24px_-12px_rgba(23,34,53,0.6)]">
+            <div className="absolute inset-x-6 bottom-1.5 h-1 rounded-full bg-black/50" />
+          </div>
+          <div className="overflow-hidden px-4">
+            <div className="receipt-print relative bg-white px-5 pb-6 pt-5 text-[13px] leading-snug text-gray-800 shadow-[0_18px_40px_-24px_rgba(23,34,53,0.45)]">
+              <p className="text-center text-base font-bold tracking-[-0.01em] text-ink">Top Multi Services</p>
+              <p className="text-center text-gray-500">Reçu de vente</p>
+              <p className="mt-3 flex justify-between text-gray-500">
+                <span>MAIN-000128</span>
+                <span>26/10/2026 09:42</span>
+              </p>
+              <div className="my-3 border-t border-dashed border-gray-300" />
+              <ul className="space-y-1.5">
+                {RECEIPT_LINES.map((line) => (
+                  <li key={line.label} className="flex justify-between gap-3">
+                    <span className="min-w-0 truncate">
+                      {line.label} <span className="text-gray-500">×{line.qty}</span>
+                    </span>
+                    <span>{line.amount}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="my-3 border-t border-dashed border-gray-300" />
+              <p className="flex justify-between text-base font-bold text-ink">
+                <span>Total HTG</span>
+                <span>5 950,00</span>
+              </p>
+              <p className="flex justify-between text-gray-500">
+                <span>Payé USD 45,00</span>
+                <span>taux 132,25</span>
+              </p>
+              <p className="flex justify-between text-gray-500">
+                <span>Monnaie HTG</span>
+                <span>1,25</span>
+              </p>
+              <p className="mt-4 text-center text-gray-500">Mèsi, a lòt fwa!</p>
+              {/* Torn edge of the roll */}
+              <div className="receipt-tear absolute inset-x-4 -bottom-2 h-2" />
+            </div>
           </div>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t bg-gray-50">
-        <div className="container mx-auto px-4 py-8 text-center text-sm text-gray-600">
-          <p>{t('© 2026 Modern POS. All rights reserved.')}</p>
+      <section className="border-t border-gray-200 bg-white">
+        <dl className="mx-auto grid max-w-6xl gap-x-10 gap-y-8 px-4 py-12 sm:grid-cols-2 sm:px-8 lg:grid-cols-4">
+          {facts.map((fact) => (
+            <div key={fact.title}>
+              <dt className="text-base font-bold tracking-[-0.01em]">{fact.title}</dt>
+              <dd className="mt-1.5 leading-relaxed text-gray-600">{fact.text}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <footer className="border-t border-gray-200">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-6 text-sm text-gray-500 sm:px-8">
+          <span>© 2026 Joda POS</span>
+          <LanguageSwitcher compact className="bg-white sm:hidden" />
         </div>
       </footer>
     </div>

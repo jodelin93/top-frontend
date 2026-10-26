@@ -171,12 +171,12 @@ export function ExchangeRateCard() {
               const given = t('{base} → {code} given out', { code, base });
               return [
                 <div key={`${code}-sell`} className="min-w-44 rounded-lg border bg-gray-50 px-4 py-2" data-testid="rate-sell">
-                  <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">{t('Sell rate')}</div>
+                  <div className="text-xs font-semibold text-gray-500">{t('Sell rate')}</div>
                   <div className="text-2xl font-semibold tabular-nums">{quoteRate(base, code, sell)}</div>
                   <div className="text-xs text-gray-500">{receivedRateName(rate) === 'sell' ? received : given}</div>
                 </div>,
                 <div key={`${code}-buy`} className="min-w-44 rounded-lg border bg-gray-50 px-4 py-2" data-testid="rate-buy">
-                  <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">{t('Buy rate')}</div>
+                  <div className="text-xs font-semibold text-gray-500">{t('Buy rate')}</div>
                   <div className="text-2xl font-semibold tabular-nums">{quoteRate(base, code, buy)}</div>
                   <div className="text-xs text-gray-500">{receivedRateName(rate) === 'buy' ? received : given}</div>
                 </div>,
@@ -287,7 +287,7 @@ export function ExchangeRateCard() {
       {showHistory && !editing && (
         <div className="mt-3 max-h-56 overflow-y-auto rounded-md border text-sm">
           <table className="w-full">
-            <thead className="bg-gray-50 text-left text-xs uppercase text-gray-500">
+            <thead className="bg-gray-50 text-left text-xs font-medium text-gray-500">
               <tr>
                 <th className="px-3 py-1.5">{t('When')}</th>
                 <th className="px-3 py-1.5">{t('Rates')}</th>

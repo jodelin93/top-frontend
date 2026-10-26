@@ -275,7 +275,7 @@ export function UnplannedReceiptDialog({ onClose, onDone }: { onClose: () => voi
           {lines.length > 0 && !smallScreen && (
             <div className="overflow-x-auto rounded-md border">
               <table className="w-full text-sm">
-                <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
+                <thead className="border-b bg-gray-50 text-left text-xs font-semibold text-gray-600">
                   <tr>
                     <th className="px-3 py-2 font-medium">{t('Product')}</th>
                     <th className="w-24 px-2 py-2 font-medium">{t('Good')}</th>

@@ -12,7 +12,7 @@ const Table = ({ className, ...props }: React.HTMLAttributes<HTMLTableElement>) 
 
 const THead = ({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
   <thead
-    className={cn("border-b bg-gray-50 text-left text-xs uppercase text-gray-500", className)}
+    className={cn("border-b bg-gray-50 text-left text-xs font-semibold text-gray-600", className)}
     {...props}
   />
 )
@@ -22,7 +22,7 @@ const TBody = ({ className, ...props }: React.HTMLAttributes<HTMLTableSectionEle
 )
 
 const Th = ({ className, ...props }: React.ThHTMLAttributes<HTMLTableCellElement>) => (
-  <th className={cn("px-4 py-3 font-medium", className)} {...props} />
+  <th className={cn("px-4 py-2.5 font-semibold", className)} {...props} />
 )
 
 const Td = ({ className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement>) => (

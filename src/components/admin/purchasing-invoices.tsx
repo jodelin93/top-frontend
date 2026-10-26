@@ -589,7 +589,7 @@ function SupplierInvoiceFormDialog({
               ) : (
                 <div className="overflow-x-auto rounded-md border">
                   <table className="w-full text-sm">
-                    <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
+                    <thead className="border-b bg-gray-50 text-left text-xs font-semibold text-gray-600">
                       <tr>
                         <th className="w-8 px-2 py-2" />
                         <th className="px-3 py-2 font-medium">{t('Description')}</th>
@@ -794,7 +794,7 @@ function SupplierInvoiceDetailDialog({ id, onClose }: { id: string; onClose: () 
           {invoice && invoice.items.length > 0 && !smallScreen && (
             <div className="overflow-x-auto rounded-md border">
               <table className="w-full text-sm">
-                <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
+                <thead className="border-b bg-gray-50 text-left text-xs font-semibold text-gray-600">
                   <tr>
                     <th className="px-3 py-2 font-medium">{t('Description')}</th>
                     <th className="px-3 py-2 text-right font-medium">{t('Qty')}</th>

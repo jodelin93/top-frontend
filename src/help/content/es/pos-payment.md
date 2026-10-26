@@ -8,7 +8,7 @@ keywords: [cobrar, pago, pagar, F12, completar venta, finalizar venta, medio de 
 related: [pos-payment-cash-change, pos-payment-card, pos-loyalty, pos-gift-cards, pos-on-account, pos-receipt]
 ---
 1. Haga clic en **Cobrar** (tecla **F12**). En el teléfono, toque **Cobrar** en la barra inferior.
-2. La ventana **Pago** muestra el **TOTAL**, lo **RECIBIDO** y el **SALDO PENDIENTE**, en dólares y en gourdes.
+2. La ventana **Pago** muestra el **Total**, lo **Recibido** y el **Saldo pendiente**, en dólares y en gourdes.
 3. Debajo de estas casillas se recuerda la tasa del día, por ejemplo **1 USD = 132,5 HTG**.
 
 ![La ventana Pago](shot:pos-payment)

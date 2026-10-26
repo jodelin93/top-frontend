@@ -23,7 +23,7 @@ const DialogContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
 >(({ className, children, ...props }, ref) => (
   <DialogPrimitive.Portal>
-    <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50" />
+    <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-ink/55" />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
@@ -70,7 +70,7 @@ const DialogTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn("text-lg font-semibold leading-none", className)}
+    className={cn("text-lg font-bold leading-tight tracking-[-0.015em]", className)}
     {...props}
   />
 ))

@@ -1,24 +1,20 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { isLang } from "@/i18n";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Schibsted_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { ServiceWorker } from "@/components/service-worker";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+// Born for newsprint: sturdy figures for money, accents for French and Creole
+const schibsted = Schibsted_Grotesk({
+  variable: "--font-schibsted",
+  subsets: ["latin", "latin-ext"],
 });
 
 export const metadata: Metadata = {
-  title: "Modern POS",
-  description: "Point of Sale System",
+  title: "Joda POS",
+  description: "Point of sale and back office",
 };
 
 export default async function RootLayout({
@@ -32,7 +28,7 @@ export default async function RootLayout({
   return (
     <html
       lang={lang}
-      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      className={`${schibsted.variable} antialiased`}
     >
       <body
         className="min-h-screen bg-background font-sans text-foreground antialiased"

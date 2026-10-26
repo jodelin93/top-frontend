@@ -211,7 +211,7 @@ function SearchResults({
               onClick={() => onOpenTopic(topic.id)}
               className="w-full rounded-md border bg-white p-3 text-left hover:border-blue-300 hover:bg-blue-50/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             >
-              <div className="text-xs font-medium uppercase tracking-wide text-gray-400">{topic.category}</div>
+              <div className="text-xs font-medium text-gray-500">{topic.category}</div>
               <div className="font-semibold text-gray-900">
                 <Highlighted parts={highlightTitle(topic.title, matched)} />
               </div>
@@ -271,7 +271,7 @@ function HelpHome({
       {pageOnly && <h2 className="text-base font-semibold text-gray-900">{t('Help for this page')}</h2>}
       {categories.map(([category, list]) => (
         <section key={category}>
-          <h3 className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+          <h3 className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-gray-500">
             <BookOpen className="h-3.5 w-3.5" aria-hidden />
             {category}
           </h3>
@@ -312,7 +312,7 @@ function TopicView({
         <ArrowLeft className="h-4 w-4" aria-hidden />
         {t('Back')}
       </button>
-      <div className="text-xs font-medium uppercase tracking-wide text-gray-400">{topic.category}</div>
+      <div className="text-xs font-medium text-gray-500">{topic.category}</div>
       <h2 className="mb-3 text-xl font-bold text-gray-900">{topic.title}</h2>
       {topicLang !== lang && (
         <p className="mb-3 rounded-md bg-gray-100 p-2 text-xs text-gray-600" lang={lang}>
@@ -322,7 +322,7 @@ function TopicView({
       <MarkdownView blocks={topic.blocks} lang={topicLang} onOpenTopic={onOpenTopic} onLeave={onLeave} />
       {related.length > 0 && (
         <section className="mt-6 border-t pt-4" lang={lang}>
-          <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">{t('Related topics')}</h3>
+          <h3 className="mb-1 text-xs font-semibold text-gray-500">{t('Related topics')}</h3>
           {related.map((r) => (
             <TopicLink key={r.id} topic={r} onOpenTopic={onOpenTopic} />
           ))}

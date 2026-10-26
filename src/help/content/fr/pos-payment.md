@@ -8,7 +8,7 @@ keywords: [encaisser, paiement, payer, F12, finaliser la vente, mode de paiement
 related: [pos-payment-cash-change, pos-payment-card, pos-loyalty, pos-gift-cards, pos-on-account, pos-receipt]
 ---
 1. Cliquez sur **Encaisser** (touche **F12**). Sur téléphone, touchez **Encaisser** dans la barre du bas.
-2. La fenêtre **Paiement** affiche le **TOTAL**, l'**ENCAISSÉ** et le **RESTE À PAYER**, en dollars et en gourdes.
+2. La fenêtre **Paiement** affiche le **Total**, l'**Encaissé** et le **Reste à payer**, en dollars et en gourdes.
 3. Sous ces cases, le taux du jour est rappelé, par exemple **1 USD = 132,5 HTG**.
 
 ![La fenêtre Paiement](shot:pos-payment)

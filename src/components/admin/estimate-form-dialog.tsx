@@ -386,7 +386,7 @@ export function EstimateFormDialog({
             ) : (
               <div className="overflow-x-auto rounded-md border">
                 <table className="w-full text-sm max-md:min-w-[32rem]">
-                  <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
+                  <thead className="border-b bg-gray-50 text-left text-xs font-semibold text-gray-600">
                     <tr>
                       <th className="px-3 py-2">{t('Product')}</th>
                       <th className="px-3 py-2 text-right">{t('Qty')}</th>

@@ -10,7 +10,7 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { BrandMark } from '@/components/brand-mark';
 import { authApi, signInErrorMessage } from '@/lib/api/auth';
 import { tenantsApi } from '@/lib/api/tenants';
 import { useAuthStore } from '@/stores/auth-store';
@@ -77,19 +77,25 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <LanguageSwitcher compact className="absolute right-4 top-4 bg-white" />
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
-            {t('Sign in to Modern POS')}
-          </CardTitle>
-          <CardDescription className="text-center">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-paper px-4 py-12">
+      <div className="absolute inset-x-0 top-0 flex items-center justify-between px-4 py-4 sm:px-6">
+        <Link href="/" aria-label="Joda POS">
+          <BrandMark size="sm" />
+        </Link>
+        <LanguageSwitcher compact className="bg-white" />
+      </div>
+      {/* The sheet on the press, with its crop marks */}
+      <div className="crop-marks w-full max-w-md">
+        <span className="crop crop-tl" aria-hidden />
+        <span className="crop crop-tr" aria-hidden />
+        <span className="crop crop-bl" aria-hidden />
+        <span className="crop crop-br" aria-hidden />
+        <div className="bg-white px-6 pb-6 pt-8 shadow-[0_1px_2px_rgba(23,34,53,0.08),0_16px_40px_-28px_rgba(23,34,53,0.5)] sm:px-9 sm:pt-10">
+          <h1 className="text-3xl font-extrabold tracking-[-0.03em] text-ink">{t('Sign in')}</h1>
+          <p className="mt-2 text-gray-600">
             {t('Enter your email and password to access your account')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          </p>
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-7 space-y-4">
             {error && (
               <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
                 {error}
@@ -145,11 +151,11 @@ export default function LoginPage() {
               </Link>
             </p>
           )}
-        </CardContent>
-        <div className="pb-4 text-center">
-          <HelpLink topicId="auth-login" />
+          <div className="mt-6 border-t border-gray-200 pt-4 text-center">
+            <HelpLink topicId="auth-login" />
+          </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

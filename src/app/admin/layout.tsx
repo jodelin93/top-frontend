@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { roleLabel } from '@/lib/server-texts';
 import { t } from '@/i18n';
 import { HelpButton } from '@/help/help-drawer';
+import { BrandMark } from '@/components/brand-mark';
 
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -57,7 +58,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <ProtectedRoute>
-      <div className="flex min-h-screen bg-gray-100">
+      <div className="flex min-h-screen bg-paper">
         {drawerOpen && (
           <div
             className="fixed inset-0 z-40 bg-black/40 md:hidden"
@@ -75,25 +76,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             drawerOpen ? 'translate-x-0' : 'invisible -translate-x-full'
           )}
         >
-          <div className="border-b px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="text-lg font-semibold">{t('Admin')}</div>
-              <div className="hidden items-center md:flex">
-                <HelpButton className="h-8 w-8 text-gray-600" />
+          {/* The ink plate: the brand and who is signed in */}
+          <div className="bg-ink px-4 pb-4 pt-5 text-white">
+            <div className="flex items-center justify-between gap-2">
+              <BrandMark inverse />
+              <div className="hidden items-center text-white/80 md:flex [&_button:hover]:bg-white/10 [&_button:hover]:text-white">
+                <HelpButton className="h-8 w-8 text-white/80" />
                 <NotificationBell align="left" />
               </div>
               <button
                 type="button"
                 onClick={closeDrawer}
-                className="-mr-2 flex h-10 w-10 items-center justify-center rounded-md text-gray-600 hover:bg-gray-100 md:hidden"
+                className="-mr-2 flex h-10 w-10 items-center justify-center rounded-md text-white/80 hover:bg-white/10 md:hidden"
                 aria-label={t('Close menu')}
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
             {user && (
-              <div className="truncate text-xs text-gray-500">
-                {user.email} · {roleLabel(user.roleName ?? user.role)}
+              <div className="mt-3 min-w-0 text-xs leading-snug">
+                <div className="truncate text-white/90">{user.email}</div>
+                <div className="truncate text-white/55">{roleLabel(user.roleName ?? user.role)}</div>
               </div>
             )}
           </div>
@@ -103,7 +106,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               if (visible.length === 0) return null;
               return (
                 <div key={section} className="pb-2">
-                  <div className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                  <div className="px-3 pb-1 pt-3 text-xs font-semibold text-gray-500">
                     {t(section)}
                   </div>
                   {visible.map(({ href, label, icon: Icon }) => (
@@ -112,8 +115,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       href={href}
                       onClick={closeDrawer}
                       className={cn(
-                        'flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 md:py-2',
-                        pathname.startsWith(href) && 'bg-blue-50 text-blue-700 hover:bg-blue-50'
+                        'flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 md:py-2',
+                        pathname.startsWith(href) && 'bg-blue-50 font-semibold text-blue-700 hover:bg-blue-50'
                       )}
                     >
                       <Icon className="h-4 w-4" />

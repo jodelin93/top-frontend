@@ -312,7 +312,7 @@ function Stat({ label, value, tone }: { label: string; value: number; tone?: 'wa
   const color = tone === 'danger' ? 'text-red-600' : tone === 'warning' ? 'text-amber-600' : 'text-gray-900';
   return (
     <Card className="bg-white p-4">
-      <div className="text-xs uppercase text-gray-500">{label}</div>
+      <div className="text-xs font-medium text-gray-500">{label}</div>
       <div className={`text-2xl font-semibold ${color}`}>{value}</div>
     </Card>
   );

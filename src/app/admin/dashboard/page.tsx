@@ -453,7 +453,7 @@ function Kpi({
 }) {
   return (
     <Card className={cn('h-full bg-white p-4', className)}>
-      <div className="flex items-center justify-between gap-2 text-xs font-medium uppercase text-gray-500">
+      <div className="flex items-center justify-between gap-2 text-xs font-medium text-gray-500">
         {label}
         {icon}
       </div>

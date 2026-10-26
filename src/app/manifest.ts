@@ -2,13 +2,13 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Modern POS',
-    short_name: 'POS',
+    name: 'Joda POS',
+    short_name: 'Joda POS',
     description: 'Point of Sale System',
     start_url: '/pos',
     display: 'standalone',
-    background_color: '#f3f4f6',
-    theme_color: '#2563eb',
+    background_color: '#f6f7f5',
+    theme_color: '#172235',
     icons: [{ src: '/favicon.ico', sizes: 'any', type: 'image/x-icon' }],
   };
 }

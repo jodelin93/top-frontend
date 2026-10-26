@@ -460,7 +460,7 @@ export default function ProductsPage() {
         ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm max-md:min-w-[40rem]">
-            <thead className="border-b bg-gray-50 text-left text-xs uppercase text-gray-500">
+            <thead className="border-b bg-gray-50 text-left text-xs font-semibold text-gray-600">
               <tr>
                 <th className="px-4 py-3 font-medium">{t('Name')}</th>
                 <th className="px-4 py-3 font-medium">{t('SKU')}</th>

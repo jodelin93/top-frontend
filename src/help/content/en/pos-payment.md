@@ -8,7 +8,7 @@ keywords: [checkout, charge, pay, payment, F12, complete sale, tender, payment m
 related: [pos-payment-cash-change, pos-payment-card, pos-loyalty, pos-gift-cards, pos-on-account, pos-receipt]
 ---
 1. Click **Charge** (**F12** key). On a phone, tap **Charge** in the bottom bar.
-2. The **Payment** window shows the **TOTAL**, **RECEIVED** and **REMAINING**, in dollars and in gourdes.
+2. The **Payment** window shows the **Total**, **Received** and **Remaining**, in dollars and in gourdes.
 3. Below these boxes, the day's rate is shown, for example **1 USD = 132.5 HTG**.
 
 ![The Payment window](shot:pos-payment)

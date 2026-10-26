@@ -128,7 +128,7 @@ export default function SystemEventsPage() {
 function Stat({ label, value, tone = 'default' }: { label: string; value: string | number; tone?: 'default' | 'warning' | 'danger' }) {
   return (
     <Card className="bg-white p-4">
-      <div className="text-xs font-medium uppercase tracking-wide text-gray-500">{label}</div>
+      <div className="text-xs font-medium text-gray-500">{label}</div>
       <div
         className={
           tone === 'danger'
