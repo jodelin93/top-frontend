@@ -32,6 +32,7 @@ import { goodsReceiptsApi, SupplierReturnInput, supplierReturnsApi } from '@/lib
 import { formatDate, formatDateTime, formatMoney } from '@/lib/format';
 import { plural, t } from '@/i18n';
 import { addQty, QUANTITY_TEXT } from '@/lib/pos/quantity';
+import { randomId } from '@/lib/uuid';
 
 /**
  * Goods sent back to suppliers. Each return removes the units from stock and
@@ -188,6 +189,8 @@ function SupplierReturnDialog({
   const [reason, setReason] = useState('');
   const [reference, setReference] = useState('');
   const [error, setError] = useState<string | null>(null);
+  // One key per form, reused when the same form is sent again
+  const [idempotencyKey] = useState(randomId);
   const smallScreen = useSmallScreen();
 
   const { data: receipts = [], isLoading } = useQuery({
@@ -237,6 +240,7 @@ function SupplierReturnDialog({
     if (items.length === 0) return setError(t('Enter at least one quantity to return.'));
     create.mutate({
       receiptId: receipt.id,
+      idempotencyKey,
       reason: reason.trim(),
       items,
       ...(reference.trim() && { reference: reference.trim() }),

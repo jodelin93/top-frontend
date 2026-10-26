@@ -35,6 +35,8 @@ Un cliente con crédito puede comprar «a cuenta» y pagar más tarde, dentro de
 3. Para efectivo, elija la **Caja**: el pago entra en su turno abierto.
 4. Haga clic en **Registrar pago**.
 
+El pago cuenta en el informe **Pagos por método** (solo todas las sucursales).
+
 > **Atención:** un pago que no es en efectivo de más de 500 y que liquida una deuda requiere la aprobación de una segunda persona. **Ajustar saldo** (+ el cliente debe más, − debe menos, motivo obligatorio) está reservado al gerente o al administrador.
 
 ## Imprimir un estado de cuenta

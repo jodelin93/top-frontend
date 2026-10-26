@@ -370,6 +370,8 @@ export interface SupplierReturnInput {
   receiptId: string;
   reason: string;
   reference?: string;
+  // One per form: a retry (double click, lost answer) returns goods once
+  idempotencyKey?: string;
   items: { receiptItemId: string; quantity: number }[];
 }
 

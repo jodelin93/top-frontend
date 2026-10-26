@@ -18,4 +18,4 @@ Sèvi ak fonksyon sa a pou yon livrezon ki pa gen bon kòmand. Pou yon kòmand f
 
 ![Fenèt Resevwa stòk la](shot:inventory-receive)
 
-> **Konsèy:** pri inite w tape a mete pri revyen pwodui a ajou (pri mwayen pondere oswa PEPS, selon metòd magazen an). Inite ki domaje yo ale nan karantèn si depo a genyen youn.
+> **Konsèy:** pri inite w tape a mete pri revyen pwodui a ajou (pri mwayen pondere oswa PEPS, selon metòd magazen an). Inite ki domaje yo ale nan anplasman karantèn oswa atik domaje depo a; si li pa genyen youn, yo kreye yon anplasman **Damaged** ki pa vann. Retou ki tounen domaje ale la tou.

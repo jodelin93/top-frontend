@@ -24,7 +24,7 @@ Paj **Rapò** a (meni **Vant**) se pou moun ki gen dwa wè rapò yo sèlman.
 | Administrasyon | Aktivite jounal odit la |
 
 1. Klike sou rapò w vle a nan lis ki sou bò goch la (sou telefòn: nan lis **Rapò** anlè a).
-2. Chwazi peryòd la (yon rapò louvri sou **Jodi a**): **Jodi a**, **Yè**, **7 dènye jou**, **30 dènye jou**, **Mwa sa a**, oswa chanje dat yo dirèkteman. Dat kòmansman an pa ka pase dat fen an.
+2. Chwazi peryòd la (yon rapò louvri sou **Jodi a**): **Jodi a**, **Yè**, **7 dènye jou**, **30 dènye jou**, **Mwa sa a**, oswa chanje dat yo dirèkteman. Dat kòmansman an pa ka pase dat fen an, epi yon peryòd pa ka depase 400 jou.
 3. Chwazi yon siksisal nan **Tout siksisal yo** si w bezwen.
 4. Tablo a parèt ak yon liy **Total**. **Fèt …** endike lè kalkil la te fèt.
 

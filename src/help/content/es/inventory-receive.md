@@ -18,4 +18,4 @@ Use esta función para una entrega sin orden de compra. Para un pedido a un prov
 
 ![La ventana Recibir mercancía](shot:inventory-receive)
 
-> **Consejo:** el costo unitario ingresado actualiza el costo del producto (promedio ponderado o FIFO, según el método de la tienda). Las unidades dañadas van a cuarentena si el almacén tiene una.
+> **Consejo:** el costo unitario ingresado actualiza el costo del producto (promedio ponderado o FIFO, según el método de la tienda). Las unidades dañadas van a la ubicación de cuarentena o de artículos dañados del almacén; si no tiene ninguna, se crea una ubicación no vendible **Damaged**. Las devoluciones que llegan dañadas también van allí.

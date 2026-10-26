@@ -249,4 +249,11 @@ export const errors: Record<string, string> = {
   "Tie the category to your branches: you cannot show it in every branch": "Rattachez la catégorie à vos succursales : vous ne pouvez pas l'afficher dans toutes les succursales",
   "You can only choose your own branches": "Vous ne pouvez choisir que vos propres succursales",
   "Unknown branch": "Succursale inconnue",
+  "Choose a period of at most 400 days": "Choisissez une période de 400 jours au plus",
+  "Store-wide settings need access to every branch": "Les paramètres du magasin nécessitent l'accès à toutes les succursales",
+  "Requiring two-factor sign-in needs the permission to manage users": "Exiger la connexion à deux facteurs nécessite l'autorisation de gérer les utilisateurs",
+  "This cash session was closed meanwhile: open a new one to sell": "Cette session de caisse a été fermée entre-temps : ouvrez-en une nouvelle pour vendre",
+  "This sale is being cancelled": "Cette vente est en cours d'annulation",
+  "This payment was retried already": "Ce paiement a déjà été relancé",
+  "This customer has a history (sales, points, credit...): deactivate them, or erase their personal details, instead of deleting": "Ce client a un historique (ventes, points, crédit...) : désactivez-le, ou effacez ses données personnelles, au lieu de le supprimer",
 };

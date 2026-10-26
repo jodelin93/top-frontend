@@ -33,6 +33,7 @@ Cuando se cae la conexión, el indicador de arriba pasa de **En línea** (verde)
 | Buscar o crear un cliente | La venta continúa como cliente ocasional. |
 | Códigos promocionales | El servidor valida el código. |
 | Aprobación de un gerente | Pasa por el servidor. |
+| Descuentos por encima del límite de la tienda | Requieren la aprobación de un gerente, salvo si su rol puede superar el límite de descuentos. |
 | Devoluciones y anulaciones | El botón **Devoluciones** está desactivado. |
 
 > **Atención:** sin conexión, la caja no vende más de las existencias que conoce («Solo hay … en existencia en esta caja (sin conexión)»). Un pago en moneda extranjera usa la tasa guardada en la caja.

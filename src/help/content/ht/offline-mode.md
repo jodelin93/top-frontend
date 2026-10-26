@@ -33,6 +33,7 @@ Lè koneksyon an tonbe, endikatè anlè a pase soti **Sou entènèt** (vèt) pou
 | Chèche oswa kreye yon kliyan | Vant lan kontinye ak kliyan pasaj. |
 | Kòd pwomosyon | Sèvè a valide kòd la. |
 | Apwobasyon yon jeran | Li pase pa sèvè a. |
+| Rabè ki depase limit magazen an | Yo bezwen apwobasyon yon jeran, sòf si wòl ou ka depase limit rabè yo. |
 | Retou ak anilasyon | Bouton **Retou** a gri. |
 
 > **Atansyon:** san entènèt, kès la pa vann plis pase stòk li konnen an (« Sèlman … an stòk sou kès sa a (san entènèt) »). Yon peman an lòt lajan sèvi ak to ki kenbe sou kès la.

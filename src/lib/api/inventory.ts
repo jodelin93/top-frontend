@@ -530,6 +530,8 @@ export const inventoryApi = {
     reason: AdjustmentReason;
     mode: 'set' | 'delta';
     notes?: string;
+    // One per form: a retry (double click, lost answer) changes stock once
+    idempotencyKey?: string;
     items: { variantId: string; quantity: number }[];
   }) => {
     const { data } = await apiClient.post('/inventory/adjustments', input);
@@ -539,6 +541,8 @@ export const inventoryApi = {
     locationId: string;
     reference?: string;
     notes?: string;
+    // One per form: a retry (double click, lost answer) receives once
+    idempotencyKey?: string;
     // Damaged units go to the warehouse's quarantine / damaged location when there is one;
     // a variant may appear twice (once per condition)
     items: { variantId: string; quantity: number; cost?: number; condition?: 'good' | 'damaged' }[];

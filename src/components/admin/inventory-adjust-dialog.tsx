@@ -28,6 +28,7 @@ import { AdjustmentReason, inventoryApi } from '@/lib/api/inventory';
 import { cn } from '@/lib/utils';
 import { t } from '@/i18n';
 import { QUANTITY_TEXT, SIGNED_QUANTITY_TEXT } from '@/lib/pos/quantity';
+import { randomId } from '@/lib/uuid';
 
 type Mode = 'set' | 'delta';
 
@@ -83,6 +84,8 @@ export function InventoryAdjustDialog({
   const [notes, setNotes] = useState('');
   const [lines, setLines] = useState<InventoryLine[]>([]);
   const [error, setError] = useState<string | null>(null);
+  // One key per form, reused when the same form is sent again
+  const [idempotencyKey] = useState(randomId);
 
   const adjust = useMutation({
     mutationFn: inventoryApi.adjust,
@@ -115,7 +118,7 @@ export function InventoryAdjustDialog({
     if (!locationId) return setError(t('Choose a location.'));
     const items = toItems(lines, mode);
     if (typeof items === 'string') return setError(items);
-    adjust.mutate({ locationId, reason, mode, items, ...(notes.trim() && { notes: notes.trim() }) });
+    adjust.mutate({ locationId, reason, mode, items, idempotencyKey, ...(notes.trim() && { notes: notes.trim() }) });
   };
 
   return (

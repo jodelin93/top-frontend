@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { CatalogItem, CartDiscountInput, CustomerGroupPricing, ResumedCart } from '@/lib/api/sales';
 import type { Discount } from '@/lib/api/discounts';
-import { calculateSale, CalcResult } from '@/lib/pos/sale-calculator';
+import { calculateSale, CalcResult, samePrice } from '@/lib/pos/sale-calculator';
 import { isMeasured, roundToUnit, type CatalogUnit } from '@/lib/pos/quantity';
 import { randomId } from '@/lib/uuid';
 
@@ -44,8 +44,7 @@ export interface RepricingConfirmation {
 
 // Carts persisted before price overrides existed have no catalogPrice
 export const catalogPriceOf = (line: CartItem) => line.catalogPrice ?? line.unitPrice;
-export const isPriceOverridden = (line: CartItem) =>
-  Math.round(line.unitPrice * 100) !== Math.round(catalogPriceOf(line) * 100);
+export const isPriceOverridden = (line: CartItem) => !samePrice(line.unitPrice, catalogPriceOf(line));
 
 export interface CartCustomer {
   id: string;

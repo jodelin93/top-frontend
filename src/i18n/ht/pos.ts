@@ -285,6 +285,7 @@ export const pos: Record<string, string> = {
   'Some prices changed since the catalog was loaded — the cart was updated.': 'Gen pri ki chanje depi katalòg la te chaje — panye a mete ajou.',
   'Could not price the sale': 'Pa t kapab kalkile pri vant lan',
   'Price changes need a manager\'s approval, which needs a connection.': 'Chanjman pri bezwen apwobasyon yon manadjè, e sa bezwen koneksyon entènèt.',
+  'Discounts above the store limit need a manager\'s approval, which needs a connection.': 'Rabè ki depase limit magazen an bezwen apwobasyon yon manadjè, e sa bezwen koneksyon entènèt.',
   'The sale could not be completed': 'Vant lan pa t ka fini',
   'You are not allowed to hold carts.': 'Ou pa gen dwa mete panye ann atant.',
   'Holding a cart needs a connection (held carts are kept on the server).': 'Pou mete yon panye ann atant fòk gen koneksyon entènèt (panye ann atant yo kenbe sou sèvè a).',

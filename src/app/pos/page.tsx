@@ -648,6 +648,13 @@ function POSScreen() {
       setNotice(t("Price changes need a manager's approval, which needs a connection."));
       return;
     }
+    const overLimit =
+      cart.some((l) => l.discountPercent > maxDiscount) ||
+      (pos.cartDiscount?.type === 'percentage' && pos.cartDiscount.value > maxDiscount);
+    if (!online && overLimit && !canOverrideDiscount) {
+      setNotice(t("Discounts above the store limit need a manager's approval, which needs a connection."));
+      return;
+    }
     // Confirm prices with the server (and get approvals): a change is shown and
     // confirmed, never applied silently (spec §5). Offline, a stale cart is compared
     // with the cached catalog; a fresh one keeps its local totals.

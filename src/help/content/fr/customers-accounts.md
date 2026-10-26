@@ -35,6 +35,8 @@ Un client à crédit peut acheter « en compte » et payer plus tard, dans sa li
 3. Pour des espèces, choisissez la **Caisse** : le paiement entre dans sa session ouverte.
 4. Cliquez sur **Enregistrer le paiement**.
 
+Le paiement compte dans le rapport **Paiements par mode** (toutes les succursales uniquement).
+
 > **Attention :** un paiement sans espèces de plus de 500 qui efface une dette demande l'approbation d'une deuxième personne. **Ajuster le solde** (+ le client doit plus, − il doit moins, motif obligatoire) est réservé au gérant ou à l'administrateur.
 
 ## Imprimer un relevé

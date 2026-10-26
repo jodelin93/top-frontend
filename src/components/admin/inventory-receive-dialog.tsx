@@ -28,6 +28,7 @@ import { getErrorMessage } from '@/lib/api/client';
 import { inventoryApi } from '@/lib/api/inventory';
 import { plural, t } from '@/i18n';
 import { addQty, QUANTITY_TEXT } from '@/lib/pos/quantity';
+import { randomId } from '@/lib/uuid';
 
 type ReceiveItem = { variantId: string; quantity: number; cost?: number; condition?: 'good' | 'damaged' };
 
@@ -76,6 +77,8 @@ export function InventoryReceiveDialog({
   const [notes, setNotes] = useState('');
   const [lines, setLines] = useState<InventoryLine[]>([]);
   const [error, setError] = useState<string | null>(null);
+  // One key per form, reused when the same form is sent again
+  const [idempotencyKey] = useState(randomId);
 
   const receive = useMutation({
     mutationFn: inventoryApi.receive,
@@ -115,6 +118,7 @@ export function InventoryReceiveDialog({
     if (typeof items === 'string') return setError(items);
     receive.mutate({
       locationId,
+      idempotencyKey,
       items,
       ...(reference.trim() && { reference: reference.trim() }),
       ...(notes.trim() && { notes: notes.trim() }),

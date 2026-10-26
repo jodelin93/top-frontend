@@ -382,6 +382,19 @@ export async function importExport(file: UnsyncedExport, deviceId?: string): Pro
 const FULL_REFRESH_MS = 12 * 3600_000;
 const MAX_PAGES = 20;
 const FULL_LIMIT = 500;
+// 500 x 40 = 20,000 variants at most in the offline catalog
+const FULL_MAX_PAGES = 40;
+
+/** The whole catalog of a register, page by page (the server sends 500 at most). */
+export async function downloadWholeCatalog(registerId: string): Promise<CatalogItem[]> {
+  const items: CatalogItem[] = [];
+  for (let page = 0; page < FULL_MAX_PAGES; page++) {
+    const batch = await posApi.catalog({ registerId, limit: FULL_LIMIT, offset: page * FULL_LIMIT });
+    items.push(...batch);
+    if (batch.length < FULL_LIMIT) break;
+  }
+  return items;
+}
 
 export interface CatalogRefresh extends CachedCatalog {
   mode: 'full' | 'incremental';
@@ -397,7 +410,7 @@ async function fullDownload(registerId: string): Promise<CatalogRefresh> {
     if (isNetworkError(error)) throw error;
     // Older server or no access to /sync: plain download without a cursor
   }
-  const items = await posApi.catalog({ registerId, limit: FULL_LIMIT });
+  const items = await downloadWholeCatalog(registerId);
   await offlineCache.saveCatalog(registerId, items, cursor);
   await deviceStore.setMeta(`catalogFullAt:${registerId}`, new Date().toISOString()).catch(() => undefined);
   return { items, savedAt: new Date().toISOString(), cursor, mode: 'full' };

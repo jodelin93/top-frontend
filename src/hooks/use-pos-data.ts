@@ -20,6 +20,7 @@ import {
   ensureDevice,
   isNetworkError,
   refreshCatalog,
+  downloadWholeCatalog,
   renewLease,
   sendHeartbeat,
   storageStatus,
@@ -126,7 +127,7 @@ export function useCatalog(registerId: string | null, online: boolean) {
         } catch (error) {
           if (!isNetworkError(error)) {
             // IndexedDB or sync trouble: fall back to a plain download
-            const items = await posApi.catalog({ registerId: registerId!, limit: 500 });
+            const items = await downloadWholeCatalog(registerId!);
             return { items, savedAt: new Date().toISOString() };
           }
         }

@@ -96,6 +96,7 @@ const {
   parseExport,
   PUSH_BACKOFF_KEY,
   refreshCatalog,
+  downloadWholeCatalog,
   resnapshotCatalog,
   retryPendingSale,
   syncPendingSales,
@@ -409,6 +410,21 @@ describe('refreshCatalog', () => {
 
     expect(result.mode).toBe('full');
     expect(db.catalogs.get('r1')).toMatchObject({ cursor: 'fresh' });
+  });
+});
+
+describe('downloadWholeCatalog', () => {
+  it('downloads page after page until a page is not full', async () => {
+    const page = (prefix: string, n: number) => Array.from({ length: n }, (_, i) => item(`${prefix}${i}`));
+    fullCatalog
+      .mockResolvedValueOnce(page('a', 500))
+      .mockResolvedValueOnce(page('b', 500))
+      .mockResolvedValueOnce(page('c', 3));
+
+    const items = await downloadWholeCatalog('r1');
+
+    expect(items).toHaveLength(1003);
+    expect(fullCatalog.mock.calls.map(([params]) => params.offset)).toEqual([0, 500, 1000]);
   });
 });
 

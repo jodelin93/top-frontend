@@ -285,6 +285,7 @@ export const pos: Record<string, string> = {
   'Some prices changed since the catalog was loaded — the cart was updated.': 'Certains prix ont changé depuis le chargement du catalogue — le panier a été mis à jour.',
   'Could not price the sale': 'Impossible de calculer le prix de la vente',
   'Price changes need a manager\'s approval, which needs a connection.': 'Les modifications de prix nécessitent l\'approbation d\'un gérant, qui nécessite une connexion.',
+  'Discounts above the store limit need a manager\'s approval, which needs a connection.': 'Les remises au-delà de la limite du magasin nécessitent l\'approbation d\'un gérant, qui nécessite une connexion.',
   'The sale could not be completed': 'La vente n\'a pas pu être finalisée',
   'You are not allowed to hold carts.': 'Vous n\'êtes pas autorisé à mettre des paniers en attente.',
   'Holding a cart needs a connection (held carts are kept on the server).': 'La mise en attente nécessite une connexion (les paniers en attente sont conservés sur le serveur).',

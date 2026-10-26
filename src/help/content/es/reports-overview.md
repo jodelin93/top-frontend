@@ -24,7 +24,7 @@ La página **Reportes** (menú **Ventas**) está reservada a las personas con pe
 | Administración | Actividad del registro de auditoría |
 
 1. Haga clic en el reporte que desee en la lista de la izquierda (en el teléfono: en la lista **Informe** de arriba).
-2. Elija el período (un informe se abre en **Hoy**): **Hoy**, **Ayer**, **Últimos 7 días**, **Últimos 30 días**, **Este mes**, o cambie directamente las fechas. La fecha de inicio no puede ser posterior a la fecha de fin.
+2. Elija el período (un informe se abre en **Hoy**): **Hoy**, **Ayer**, **Últimos 7 días**, **Últimos 30 días**, **Este mes**, o cambie directamente las fechas. La fecha de inicio no puede ser posterior a la fecha de fin, y un período abarca 400 días como máximo.
 3. Elija una sucursal en **Todas las sucursales** si hace falta.
 4. La tabla se muestra con una fila **Total**. **Generado el …** indica la hora del cálculo.
 

@@ -35,6 +35,8 @@ Yon kliyan ki gen kredi ka achte « sou kont » epi peye pita, nan limit kredi l
 3. Pou lajan kach, chwazi **Kès** la: peman an antre nan sesyon kès ki louvri a.
 4. Klike sou **Anrejistre peman an**.
 
+Peman an konte nan rapò **Peman pa mwayen** (tout siksisal yo sèlman).
+
 > **Atansyon:** yon peman ki pa an kach, ki plis pase 500 epi ki efase yon dèt, mande apwobasyon yon dezyèm moun. **Ajiste balans lan** (+ kliyan an dwe plis, − li dwe mwens, rezon obligatwa) se pou jeran oswa administratè sèlman.
 
 ## Enprime yon relve

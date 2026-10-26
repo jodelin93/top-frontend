@@ -33,6 +33,7 @@ Quand la connexion tombe, l'indicateur en haut passe de **En ligne** (vert) à *
 | Rechercher ou créer un client | La vente continue en client de passage. |
 | Codes promo | Le serveur valide le code. |
 | Approbation d'un gérant | Elle passe par le serveur. |
+| Remises au-delà de la limite du magasin | Elles demandent l'approbation d'un gérant, sauf si votre rôle peut dépasser la limite des remises. |
 | Retours et annulations | Le bouton **Retours** est grisé. |
 
 > **Attention :** hors ligne, la caisse ne vend pas plus que le stock qu'elle connaît (« Seulement … en stock sur cette caisse (hors ligne) »). Un paiement en devise utilise le taux gardé sur la caisse.

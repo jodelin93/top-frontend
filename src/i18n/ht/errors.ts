@@ -249,4 +249,11 @@ export const errors: Record<string, string> = {
   "Tie the category to your branches: you cannot show it in every branch": "Mare kategori a ak siksisal ou yo : ou pa ka fè l parèt nan tout siksisal",
   "You can only choose your own branches": "Ou ka chwazi sèlman pwòp siksisal ou yo",
   "Unknown branch": "Siksisal enkoni",
+  "Choose a period of at most 400 days": "Chwazi yon peryòd ki pa depase 400 jou",
+  "Store-wide settings need access to every branch": "Paramèt tout magazen an bezwen aksè nan tout siksisal yo",
+  "Requiring two-factor sign-in needs the permission to manage users": "Pou egzije koneksyon an de etap, ou bezwen pèmisyon pou jere itilizatè yo",
+  "This cash session was closed meanwhile: open a new one to sell": "Sesyon kès sa a fèmen pandan tan an : louvri yon lòt pou vann",
+  "This sale is being cancelled": "Vant sa a ap anile kounye a",
+  "This payment was retried already": "Yo te deja eseye peman sa a ankò",
+  "This customer has a history (sales, points, credit...): deactivate them, or erase their personal details, instead of deleting": "Kliyan sa a gen yon istorik (vant, pwen, kredi...) : dezaktive l, oswa efase enfòmasyon pèsonèl li, olye ou efase l",
 };

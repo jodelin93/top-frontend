@@ -474,6 +474,7 @@ export const posApi = {
     barcode?: string;
     categoryId?: string;
     limit?: number;
+    offset?: number;
   }): Promise<CatalogItem[]> => {
     const { data } = await apiClient.get('/pos/catalog', { params });
     return data;

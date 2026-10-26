@@ -33,6 +33,7 @@ When the connection drops, the indicator at the top changes from **Online** (gre
 | Search for or create a customer | The sale continues as a walk-in customer. |
 | Promo codes | The server validates the code. |
 | Manager approval | It goes through the server. |
+| Discounts above the store limit | They need a manager's approval, unless your role can override discounts. |
 | Returns and voids | The **Returns** button is grayed out. |
 
 > **Warning:** offline, the till does not sell more than the stock it knows about ("Only … in stock on this till (offline)"). A payment in another currency uses the rate stored on the till.

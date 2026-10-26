@@ -35,6 +35,8 @@ A customer with credit can buy "on account" and pay later, within their credit l
 3. For cash, choose the **Register**: the payment goes into its open shift.
 4. Click **Record payment**.
 
+The payment counts in the **Payments by method** report (all branches only).
+
 > **Warning:** a non-cash payment over 500 that clears a debt requires approval from a second person. **Adjust balance** (+ the customer owes more, − they owe less, reason required) is reserved for the manager or administrator.
 
 ## Print a statement

@@ -321,6 +321,8 @@ export const pos: Record<string, string> = {
   'Could not price the sale': 'No se pudo calcular el precio de la venta',
   "Price changes need a manager's approval, which needs a connection.":
     'Los cambios de precio requieren la aprobación de un gerente, lo cual requiere conexión.',
+  "Discounts above the store limit need a manager's approval, which needs a connection.":
+    'Los descuentos por encima del límite de la tienda requieren la aprobación de un gerente, lo cual requiere conexión.',
   'The sale could not be completed': 'No se pudo completar la venta',
   'You are not allowed to hold carts.': 'No tiene permiso para poner ventas en espera.',
   'Holding a cart needs a connection (held carts are kept on the server).':
