@@ -597,8 +597,8 @@ export const adminSettings: Record<string, string> = {
   'Owners always have access to every branch.':
     'Los propietarios siempre tienen acceso a todas las sucursales.',
   'Only some branches': 'Solo algunas sucursales',
-  'They only see the sales, shifts, stock and reports of these branches. Customers and the catalog are shared by all branches.':
-    'Solo ve las ventas, turnos, existencias e informes de estas sucursales. Los clientes y el catálogo son compartidos por todas las sucursales.',
+  'They only see the sales, shifts, stock and reports of these branches, and the products sold there. Customers are shared by all branches.':
+    'Solo ve las ventas, turnos, existencias e informes de estas sucursales, y los productos que se venden allí. Los clientes son compartidos por todas las sucursales.',
   // Measured quantities & weighed labels
   'Scale labels (weighed items)': 'Etiquetas de balanza (artículos pesados)',
   'Read the barcodes printed by scales: an EAN-13 starting with 20 to 29 carries the item PLU and its weight or price.':

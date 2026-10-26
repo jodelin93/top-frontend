@@ -9,7 +9,7 @@ related: [users-invitations, roles-permissions, faq-account]
 ---
 ## Limit access to certain branches
 
-A limited user only sees the sales, shifts, stock and reports of their branches; customers and the catalog stay shared.
+A limited user only sees the sales, shifts, stock and reports of their branches, and only the products sold there (see [Products](topic:products-list)); customers stay shared.
 
 1. Click the pencil on the person's row.
 2. Under **Branch access**, choose **Only some branches** and check at least one branch.

@@ -500,7 +500,7 @@ export const adminSettings: Record<string, string> = {
   'Use employee branches': 'Itilize siksisal anplwaye a',
   'Owners always have access to every branch.': 'Pwopriyetè yo toujou gen aksè nan tout siksisal.',
   'Only some branches': 'Kèk siksisal sèlman',
-  'They only see the sales, shifts, stock and reports of these branches. Customers and the catalog are shared by all branches.': 'Li wè sèlman vant, sesyon kès, stòk ak rapò siksisal sa yo. Kliyan yo ak katalòg la pataje ant tout siksisal yo.',
+  'They only see the sales, shifts, stock and reports of these branches, and the products sold there. Customers are shared by all branches.': 'Li wè sèlman vant, sesyon kès, stòk ak rapò siksisal sa yo, ak pwodui yo vann la yo. Kliyan yo pataje ant tout siksisal yo.',
   'Scale labels (weighed items)': 'Etikèt balans (atik ki peze)',
   'Read the barcodes printed by scales: an EAN-13 starting with 20 to 29 carries the item PLU and its weight or price.': 'Li kòd ba balans yo enprime : yon EAN-13 ki kòmanse ak 20 rive 29 gen PLU atik la ak pwa li oswa pri li.',
   'Prefixes read as scale labels': 'Prefiks ki li kòm etikèt balans',

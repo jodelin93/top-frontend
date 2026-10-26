@@ -9,7 +9,7 @@ related: [users-invitations, roles-permissions, faq-account]
 ---
 ## Limite aksè a kèk siksisal
 
-Yon itilizatè ki limite wè sèlman vant, sesyon, stòk ak rapò siksisal li yo; kliyan yo ak katalòg la rete komen.
+Yon itilizatè ki limite wè sèlman vant, sesyon, stòk ak rapò siksisal li yo, ak sèlman pwodui yo vann la yo (gade [Pwodui](topic:products-list)); kliyan yo rete komen.
 
 1. Klike sou kreyon ki sou liy moun nan.
 2. Anba **Aksè siksisal**, chwazi **Kèk siksisal sèlman** epi koche omwen yon siksisal.

@@ -9,7 +9,7 @@ related: [users-invitations, roles-permissions, faq-account]
 ---
 ## Limiter l'accès à certaines succursales
 
-Un utilisateur limité ne voit que les ventes, sessions, stock et rapports de ses succursales ; les clients et le catalogue restent communs.
+Un utilisateur limité ne voit que les ventes, sessions, stock et rapports de ses succursales, et seulement les produits qui y sont vendus (voir [Produits](topic:products-list)) ; les clients restent communs.
 
 1. Cliquez sur le crayon de la ligne de la personne.
 2. Sous **Accès aux succursales**, choisissez **Seulement certaines succursales** et cochez au moins une succursale.

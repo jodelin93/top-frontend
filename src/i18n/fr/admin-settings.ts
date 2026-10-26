@@ -593,8 +593,8 @@ export const adminSettings: Record<string, string> = {
   'Use employee branches': "Utiliser les succursales de l'employé",
   'Owners always have access to every branch.': 'Les propriétaires ont toujours accès à toutes les succursales.',
   'Only some branches': 'Seulement certaines succursales',
-  'They only see the sales, shifts, stock and reports of these branches. Customers and the catalog are shared by all branches.':
-    'Il ne voit que les ventes, sessions, stocks et rapports de ces succursales. Les clients et le catalogue sont partagés par toutes les succursales.',
+  'They only see the sales, shifts, stock and reports of these branches, and the products sold there. Customers are shared by all branches.':
+    'Il ne voit que les ventes, sessions, stocks et rapports de ces succursales, et les produits qui y sont vendus. Les clients sont partagés par toutes les succursales.',
   // Measured quantities & weighed labels
   'Scale labels (weighed items)': 'Étiquettes de balance (articles pesés)',
   'Read the barcodes printed by scales: an EAN-13 starting with 20 to 29 carries the item PLU and its weight or price.': "Lire les codes-barres imprimés par les balances : un EAN-13 commençant par 20 à 29 contient le PLU de l'article et son poids ou son prix.",

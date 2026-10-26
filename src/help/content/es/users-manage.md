@@ -9,7 +9,7 @@ related: [users-invitations, roles-permissions, faq-account]
 ---
 ## Limitar el acceso a ciertas sucursales
 
-Un usuario limitado solo ve las ventas, los turnos, las existencias y los reportes de sus sucursales; los clientes y el catálogo son comunes.
+Un usuario limitado solo ve las ventas, los turnos, las existencias y los reportes de sus sucursales, y solo los productos que se venden allí (vea [Productos](topic:products-list)); los clientes son comunes.
 
 1. Haga clic en el lápiz de la fila de la persona.
 2. En **Acceso a sucursales**, elija **Solo algunas sucursales** y marque al menos una sucursal.

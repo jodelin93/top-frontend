@@ -298,7 +298,7 @@ export function UserFormDialog({ open, onOpenChange, member }: UserFormDialogPro
                       ))}
                     <p className="text-xs text-gray-500">
                       {t(
-                        "They only see the sales, shifts, stock and reports of these branches. Customers and the catalog are shared by all branches."
+                        "They only see the sales, shifts, stock and reports of these branches, and the products sold there. Customers are shared by all branches."
                       )}
                     </p>
                   </>
