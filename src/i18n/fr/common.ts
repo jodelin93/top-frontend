@@ -161,6 +161,7 @@ export const common: Record<string, string> = {
   "Can't scan? Enter this key manually:": 'Impossible de scanner ? Saisissez cette clé manuellement :',
   'Verification code': 'Code de vérification',
   'Verify and turn on': 'Vérifier et activer',
+  "Enter your current password to set up two-factor authentication.": "Saisissez votre mot de passe actuel pour configurer l'authentification à deux facteurs.",
   'Enter a current code from your authenticator app to turn two-factor off.':
     "Saisissez un code actuel de votre application d'authentification pour désactiver l'authentification à deux facteurs.",
   'Turning off...': 'Désactivation...',
@@ -251,4 +252,6 @@ export const common: Record<string, string> = {
   "At least 8 characters. Saving it confirms your e-mail address; then sign in with it.": "Au moins 8 caractères. L'enregistrer confirme votre adresse e-mail ; connectez-vous ensuite avec.",
   "Your e-mail address is confirmed and your password is saved. Sign in with it.": "Votre adresse e-mail est confirmée et votre mot de passe enregistré. Connectez-vous avec.",
   "Save my password": "Enregistrer mon mot de passe",
+  "You do not have access to this page": "Vous n'avez pas accès à cette page",
+  "Ask an administrator for the permission, or go back to the menu.": "Demandez l'autorisation à un administrateur, ou revenez au menu.",
 };

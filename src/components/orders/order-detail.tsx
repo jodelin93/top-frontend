@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Ban, CheckCircle2, HandCoins, PackageCheck, Printer, RotateCcw } from 'lucide-react';
+import { Ban, CheckCircle2, HandCoins, PackageCheck, Pencil, Printer, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
@@ -21,7 +21,7 @@ import { hasPermission, useAuthStore } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
 import { t } from '@/i18n';
 
-type Panel = 'deposit' | 'cancel' | null;
+type Panel = 'deposit' | 'cancel' | 'details' | null;
 
 /**
  * One order: its lines, deposits and balance, and what can be done with it
@@ -70,6 +70,8 @@ export function OrderDetail({
   const [refundMethodId, setRefundMethodId] = useState('');
   const [refundRegisterId, setRefundRegisterId] = useState('');
   const [reference, setReference] = useState('');
+  // Ready date and notes form
+  const [details, setDetails] = useState({ readyBy: '', notes: '' });
 
   const refresh = (updated: Order) => {
     queryClient.setQueryData(['orders', orderId], updated);
@@ -96,6 +98,7 @@ export function OrderDetail({
 
   const active = isActiveOrder(order);
   const canCancel = hasPermission(user, 'orders.cancel');
+  const canManageOrders = hasPermission(user, 'orders.manage');
   const cashRegister = registerId ?? (refundRegisterId || branchRegisters[0]?.id || null);
   // A cancellation gives each deposit back the way it was paid (per method and
   // currency handed over, as the server does); a method turned off since needs
@@ -144,6 +147,20 @@ export function OrderDetail({
       setPanel(null);
       onPrint(updated, t('Deposit recorded'));
     }
+  };
+
+  const editDetails = () => {
+    setDetails({ readyBy: order.readyBy ? order.readyBy.slice(0, 10) : '', notes: order.notes ?? '' });
+    setError(null);
+    setPanel('details');
+  };
+
+  const saveDetails = async () => {
+    const updated = await run(
+      () => ordersApi.update(order.id, { readyBy: details.readyBy || null, notes: details.notes.trim() || null }),
+      'Could not update the order'
+    );
+    if (updated) setPanel(null);
   };
 
   const cancel = async () => {
@@ -292,6 +309,32 @@ export function OrderDetail({
         </div>
       )}
 
+      {panel === 'details' && (
+        <div className="space-y-2 rounded-md border p-3">
+          <label className="block space-y-1">
+            <span className="font-medium">{t('Ready by')}</span>
+            <Input type="date" value={details.readyBy} onChange={(e) => setDetails({ ...details, readyBy: e.target.value })} />
+          </label>
+          <label className="block space-y-1">
+            <span className="font-medium">{t('Notes for the preparation')}</span>
+            <Input
+              value={details.notes}
+              onChange={(e) => setDetails({ ...details, notes: e.target.value })}
+              maxLength={1000}
+              placeholder={t('Size, colours, text to print...')}
+            />
+          </label>
+          <div className="flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setPanel(null)}>
+              {t('Back')}
+            </Button>
+            <Button onClick={saveDetails} disabled={busy}>
+              {busy ? t('Saving...') : t('Save')}
+            </Button>
+          </div>
+        </div>
+      )}
+
       {panel === 'cancel' && (
         <div className="space-y-2 rounded-md border border-red-200 p-3">
           <p className="font-medium">{t('Cancel the order')}</p>
@@ -391,6 +434,12 @@ export function OrderDetail({
             <Printer className="h-4 w-4" />
             {t('Print')}
           </Button>
+          {active && canManageOrders && (
+            <Button variant="outline" onClick={editDetails}>
+              <Pencil className="h-4 w-4" />
+              {t('Edit details')}
+            </Button>
+          )}
           {active && Number(order.balanceDue) > 0 && (
             <Button variant="outline" onClick={() => setPanel('deposit')}>
               <HandCoins className="h-4 w-4" />

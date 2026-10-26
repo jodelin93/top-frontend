@@ -12,10 +12,11 @@ La double authentification ajoute un code à 6 chiffres, affiché par une applic
 Installez d'abord une application d'authentification : Google Authenticator, Microsoft Authenticator ou 1Password par exemple.
 
 1. Dans **Sécurité du compte**, zone **Authentification à deux facteurs**, cliquez sur **Activer**.
-2. Ouvrez l'application sur votre téléphone et scannez le code QR affiché.
-3. Si vous ne pouvez pas scanner, tapez dans l'application la clé affichée sous **Impossible de scanner ? Saisissez cette clé manuellement**.
-4. Tapez le code à 6 chiffres que l'application affiche.
-5. Cliquez sur **Vérifier et activer**.
+2. Saisissez votre mot de passe actuel, puis cliquez sur **Continuer**.
+3. Ouvrez l'application sur votre téléphone et scannez le code QR affiché.
+4. Si vous ne pouvez pas scanner, tapez dans l'application la clé affichée sous **Impossible de scanner ? Saisissez cette clé manuellement**.
+5. Tapez le code à 6 chiffres que l'application affiche.
+6. Cliquez sur **Vérifier et activer**.
 
 Le **Statut** passe à **Activée**. À chaque connexion, le code vous sera demandé après le mot de passe (voir [Saisir le code](topic:auth-mfa)).
 

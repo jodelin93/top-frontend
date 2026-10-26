@@ -83,10 +83,11 @@ export function HelpView({
   const pageTopics = useMemo(() => (location ? topicsForPage(topics, location.pathname) : []), [topics, location]);
   const pageScope = scope === 'page' && pageTopics.length > 0;
 
-  // Each topic starts at the top
+  // Each topic starts at the top (and so does switching between search and browsing)
+  const searching = results !== null;
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
-  }, [topicId, results === null]);
+  }, [topicId, searching]);
 
   return (
     <div className={cn('flex min-h-0 flex-col', className)}>

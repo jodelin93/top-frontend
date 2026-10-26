@@ -28,6 +28,7 @@ Haga clic en **Pedidos** en la barra superior (en el teléfono: **⋯** y luego 
 
 - **Agregar un anticipo**: el cliente paga otra parte (nunca más que el saldo).
 - **Marcar como listo**: el pedido está preparado. Llame al cliente. **Volver a preparación** lo deshace.
+- **Editar detalles**: cambie la fecha **Listo para el** o las notas.
 - **Imprimir**: el recibo del pedido otra vez, con todos los anticipos.
 
 ## Entregar el pedido

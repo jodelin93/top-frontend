@@ -28,6 +28,7 @@ Click **Orders** in the top bar (on a phone: **⋯** then **Orders**). Search by
 
 - **Add a deposit**: the customer pays another part (never more than the balance).
 - **Mark ready**: the order is prepared. Call the customer. **Back in preparation** undoes it.
+- **Edit details**: change the **Ready by** date or the notes.
 - **Print**: the order receipt again, with every deposit.
 
 ## Hand the order over

@@ -13,7 +13,7 @@ La página **Pedidos** lista los servicios preparados para clientes que pagaron 
 2. Busque por número de pedido, nombre o teléfono del cliente.
 3. Haga clic en un pedido para ver sus líneas, cada anticipo (fecha, método, quién lo tomó) y su historial.
 
-Desde un pedido puede **Imprimir** el recibo del pedido, **Agregar un anticipo**, **Marcar como listo** o **Cancelar el pedido**. El cliente lo retira en caja: **Pedidos** y luego **Retirar: cobrar el saldo**.
+Desde un pedido puede **Imprimir** el recibo del pedido, **Agregar un anticipo**, **Editar detalles** (fecha de entrega y notas), **Marcar como listo** o **Cancelar el pedido**. El cliente lo retira en caja: **Pedidos** y luego **Retirar: cobrar el saldo**.
 
 ## Dónde aparece el dinero
 

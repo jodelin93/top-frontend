@@ -11,10 +11,8 @@ import { ErrorMessage, PageHeader } from '@/components/admin/page-header';
 import {
   DateRange,
   DateRangeFilter,
-  endOfDayIso,
   presetRange,
   RangePreset,
-  startOfDayIso,
   toDateInput,
 } from '@/components/admin/reports-date-range';
 import { BranchFilter, FreshnessNote } from '@/components/admin/reports-filters';
@@ -39,11 +37,11 @@ export default function ReportsPage() {
   const [range, setRange] = useState<DateRange>(() => presetRange('today'));
   const [branchId, setBranchId] = useState('');
   const [parameters, setParameters] = useState<ParameterValues>({});
-  const [timezone] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone);
   const [printing, setPrinting] = useState(false);
   const [printError, setPrintError] = useState<string | null>(null);
-  const from = range.from ? startOfDayIso(range.from) : '';
-  const to = range.to ? endOfDayIso(range.to) : '';
+  // Whole days: the server counts them in the store's time zone
+  const from = range.from;
+  const to = range.to;
 
   const { data: catalog = [] } = useQuery({ queryKey: ['reports', 'catalog'], queryFn: reportsApi.catalog, staleTime: Infinity });
   const groups = useMemo(() => {
@@ -59,7 +57,9 @@ export default function ReportsPage() {
     if (params.preset && params.preset !== 'custom') {
       setRange(presetRange(params.preset as Exclude<RangePreset, 'custom'>));
     } else if (params.from && params.to) {
-      setRange({ preset: 'custom', from: toDateInput(new Date(params.from)), to: toDateInput(new Date(params.to)) });
+      // Saved as days, or as timestamps by earlier versions
+      const day = (value: string) => (/^\d{4}-\d{2}-\d{2}$/.test(value) ? value : toDateInput(new Date(value)));
+      setRange({ preset: 'custom', from: day(params.from), to: day(params.to) });
     }
     setBranchId(params.branchId ?? '');
     setParameters({
@@ -76,7 +76,6 @@ export default function ReportsPage() {
     try {
       await reportsApi.dailySummaryPdf({
         date: range.to || toDateInput(new Date()),
-        timezone,
         branchId: branchId || undefined,
       });
     } catch (err) {
@@ -160,7 +159,6 @@ export default function ReportsPage() {
             report={report}
             params={{
               ...(report.usesDateRange ? { from, to } : {}),
-              timezone,
               ...(report.branchFilter && branchId ? { branchId } : {}),
               ...(parameters.variantId && report.parameters.some((p) => p.key === 'variantId')
                 ? { variantId: parameters.variantId }

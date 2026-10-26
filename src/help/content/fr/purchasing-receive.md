@@ -14,6 +14,8 @@ related: [purchasing-orders, purchasing-invoices, inventory-receive]
 5. Vérifiez le **Coût unitaire** et saisissez le **Numéro de bon de livraison / facture**.
 6. Cliquez sur **Réceptionner**.
 
+> **Remarque :** un **Coût unitaire** qui s'écarte de plus de 10 % du coût de la commande demande une personne ayant **Approuver les bons de commande**.
+
 Si tout n'est pas arrivé, la commande passe **Partiellement reçu** : le reste sera réceptionné à la prochaine livraison. Chaque réception reçoit un numéro (GRN-…) visible dans **Réceptions de marchandises**.
 
 > **Attention :** recevoir plus que la quantité commandée n'est accepté que dans la tolérance du magasin. Au-delà, une personne avec la permission **Approuver les bons de commande** doit l'autoriser.

@@ -14,6 +14,7 @@ Cuando una persona intenta una acción que no tiene permiso para hacer sola, se 
 2. Si tiene activada la autenticación de dos factores, escribe también el **Código de dos factores**.
 3. Hace clic en **Aprobar**. La acción continúa normalmente.
 4. Si hay varias acciones que aprobar (un precio y un descuento, por ejemplo), la ventana vuelve a aparecer para cada una.
+El gerente debe trabajar en todas sus sucursales: un gerente limitado a otra sucursal no puede aprobar por usted.
 
 Para desistir, haga clic en **Cancelar**.
 

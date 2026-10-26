@@ -25,6 +25,8 @@ The **Reports** page (**Sales** menu) is only for people allowed to see reports.
 
 1. Click the report you want in the list on the left (on a phone: in the **Report** list at the top).
 2. Choose the date range (a report opens on **Today**): **Today**, **Yesterday**, **Last 7 days**, **Last 30 days**, **This month**, or change the dates directly. The start date cannot be after the end date, and a period covers at most 400 days.
+
+> **Note:** days are the store's days, in the time zone of the branch (or of the first branch for all branches), wherever you look at the report from. Sales, payment, return, cash and customer reports need the permission to see all sales.
 3. If needed, choose a branch in **All branches**.
 4. The table shows with a **Total** row. **Generated …** shows when it was calculated.
 

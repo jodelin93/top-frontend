@@ -157,7 +157,7 @@ export function ShiftPanel({
             )}
 
             {/* Deposits taken on orders in this session: cash ones are in "Paid in" */}
-            {!!shift.sales?.orderDeposits?.received && (
+            {!!(shift.sales?.orderDeposits?.received || shift.sales?.orderDeposits?.refunded) && (
               <div className="space-y-1 rounded-md border p-3 text-sm">
                 <div className="font-medium">{t('Order deposits')}</div>
                 {shift.sales.orderDeposits.byPaymentMethod.map((m) => (

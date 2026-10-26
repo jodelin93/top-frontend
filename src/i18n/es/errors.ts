@@ -256,4 +256,12 @@ export const errors: Record<string, string> = {
   "This sale is being cancelled": "Esta venta se está cancelando",
   "This payment was retried already": "Este pago ya se reintentó",
   "This customer has a history (sales, points, credit...): deactivate them, or erase their personal details, instead of deleting": "Este cliente tiene un historial (ventas, puntos, crédito...): desactívelo, o borre sus datos personales, en lugar de eliminarlo",
+  "The approver does not work in all of the requester's branches": "Quien aprueba no trabaja en todas las sucursales del solicitante",
+  "Choose a register of the order's branch": "Elija una caja de la sucursal del pedido",
+  "A received cost is more than 10% away from the order's cost. Someone with \"Approve purchase orders\" must authorise it.": "Un costo recibido se aleja más de un 10 % del costo del pedido. Alguien con el permiso «Aprobar órdenes de compra» debe autorizarlo.",
+  "Stock in transit is changed through its transfer, not here": "Las existencias en tránsito se cambian desde su transferencia, no aquí",
+  "This report covers every sale: it needs the permission to view all sales": "Este informe abarca todas las ventas: requiere el permiso para ver todas las ventas",
+  "Ask another manager to record your own hours": "Pida a otro responsable que registre sus propias horas",
+  "a SKU or barcode in this batch is already used by another product": "un SKU o código de barras de este lote ya lo usa otro producto",
+  "the database refused this batch": "la base de datos rechazó este lote",
 };

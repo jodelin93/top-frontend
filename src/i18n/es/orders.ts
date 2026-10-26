@@ -119,4 +119,5 @@ export const orders: Record<string, string> = {
   "{method} can no longer be used: choose how to give that deposit back": "{method} ya no se puede usar: elija cómo devolver ese anticipo",
   "Enter the reference of the refund ({method})": "Introduzca la referencia del reembolso ({method})",
   "The order's deposits do not add up: reload the order and try again": "Los anticipos del pedido no cuadran: recargue el pedido e inténtelo de nuevo",
+  "Edit details": "Editar detalles",
 };

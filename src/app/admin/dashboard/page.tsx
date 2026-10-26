@@ -20,9 +20,7 @@ import { PendingInvitations } from '@/components/auth/pending-invitations';
 import {
   DateRange,
   DateRangeFilter,
-  endOfDayIso,
   presetRange,
-  startOfDayIso,
 } from '@/components/admin/reports-date-range';
 import { SalesByDayChart } from '@/components/admin/reports-sales-chart';
 import { BranchFilter, FreshnessNote } from '@/components/admin/reports-filters';
@@ -43,14 +41,14 @@ export default function DashboardPage() {
   const [branchId, setBranchId] = useState('');
   const smallScreen = useSmallScreen();
 
-  // Group days in the browser's timezone so "today" matches the cashier's day
-  const [timezone] = useState(() => Intl.DateTimeFormat().resolvedOptions().timeZone);
-  const from = range.from ? startOfDayIso(range.from) : '';
-  const to = range.to ? endOfDayIso(range.to) : '';
+  // Whole days: the server counts them in the store's time zone, wherever the
+  // viewer is
+  const from = range.from;
+  const to = range.to;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['reports', 'summary', from, to, branchId],
-    queryFn: () => reportsApi.summary({ from, to, timezone, branchId: branchId || undefined }),
+    queryFn: () => reportsApi.summary({ from, to, branchId: branchId || undefined }),
     enabled: !!from && !!to,
   });
 

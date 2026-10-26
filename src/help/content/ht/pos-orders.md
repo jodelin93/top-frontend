@@ -28,6 +28,7 @@ Klike sou **Kòmand** nan ba anwo a (sou telefòn: **⋯** apre **Kòmand**). Ch
 
 - **Ajoute yon avans**: kliyan an peye yon lòt pati (pa janm plis pase rès la).
 - **Make l pare**: kòmand lan prepare. Rele kliyan an. **Remete l ap prepare** defèt sa.
+- **Modifye detay yo**: chanje dat **Pare pou** a oswa nòt yo.
 - **Enprime**: resi kòmand lan ankò, ak tout avans yo.
 
 ## Remèt kòmand lan

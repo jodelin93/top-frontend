@@ -13,7 +13,7 @@ Paj **Kòmand** lan bay lis sèvis ki prepare pou kliyan ki bay yon avans. Chak 
 2. Chèche ak nimewo kòmand, non oswa telefòn kliyan an.
 3. Klike sou yon kòmand pou wè liy li yo, chak avans (dat, mwayen, ki moun ki pran l) ak istwa l.
 
-Nan yon kòmand ou ka **Enprime** resi kòmand lan, **Ajoute yon avans**, **Make l pare** oswa **Anile kòmand lan**. Kliyan an vin pran l nan kès la: **Kòmand**, apre **Kliyan pran l: touche rès la**.
+Nan yon kòmand ou ka **Enprime** resi kòmand lan, **Ajoute yon avans**, **Modifye detay yo** (dat li dwe pare ak nòt yo), **Make l pare** oswa **Anile kòmand lan**. Kliyan an vin pran l nan kès la: **Kòmand**, apre **Kliyan pran l: touche rès la**.
 
 ## Kote lajan an parèt
 

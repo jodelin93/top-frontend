@@ -27,6 +27,7 @@ An employee whose employee record is linked to their account clocks in themselve
 5. Click **Save**.
 
 > **Warning:** the time cannot be in the future, clock-out must be after clock-in, and a shift cannot be longer than 24 hours. You cannot record a new clock-in for an employee who is already clocked in: close their open clock-in first.
+> **Note:** nobody records hours for themselves: another manager records yours.
 
 ## The attendance report
 

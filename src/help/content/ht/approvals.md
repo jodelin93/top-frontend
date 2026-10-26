@@ -14,6 +14,7 @@ Lè yon moun eseye fè yon aksyon li pa gen dwa fè poukont li, fenèt **Bezwen 
 2. Si li aktive otantifikasyon de faktè, li tape **Kòd de faktè** a tou.
 3. Li klike sou **Apwouve**. Aksyon an kontinye nòmalman.
 4. Si gen plizyè aksyon pou apwouve (yon pri ak yon rabè, pa egzanp), fenèt la ap tounen pou chak.
+Jeran an dwe travay nan tout siksisal ou yo: yon jeran ki limite nan yon lòt siksisal pa ka apwouve pou ou.
 
 Pou abandone, klike sou **Anile**.
 

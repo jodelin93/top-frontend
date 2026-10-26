@@ -256,4 +256,12 @@ export const errors: Record<string, string> = {
   "This sale is being cancelled": "Vant sa a ap anile kounye a",
   "This payment was retried already": "Yo te deja eseye peman sa a ankò",
   "This customer has a history (sales, points, credit...): deactivate them, or erase their personal details, instead of deleting": "Kliyan sa a gen yon istorik (vant, pwen, kredi...) : dezaktive l, oswa efase enfòmasyon pèsonèl li, olye ou efase l",
+  "The approver does not work in all of the requester's branches": "Moun k ap apwouve a pa travay nan tout siksisal moun k ap mande a",
+  "Choose a register of the order's branch": "Chwazi yon kès nan siksisal kòmand lan",
+  "A received cost is more than 10% away from the order's cost. Someone with \"Approve purchase orders\" must authorise it.": "Yon pri resepsyon diferan plis pase 10% ak pri kòmand lan. Yon moun ki gen pèmisyon \"Apwouve kòmand acha\" dwe otorize l.",
+  "Stock in transit is changed through its transfer, not here": "Stòk ki an wout chanje pa transfè li, pa isit la",
+  "This report covers every sale: it needs the permission to view all sales": "Rapò sa a kouvri tout vant yo: ou bezwen pèmisyon pou wè tout vant yo",
+  "Ask another manager to record your own hours": "Mande yon lòt manadjè anrejistre pwòp èdtan ou yo",
+  "a SKU or barcode in this batch is already used by another product": "yon SKU oswa yon kòd ba nan lo sa a deja sèvi pou yon lòt pwodui",
+  "the database refused this batch": "baz done a refize lo sa a",
 };

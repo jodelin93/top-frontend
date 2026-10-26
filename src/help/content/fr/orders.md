@@ -13,7 +13,7 @@ La page **Commandes** liste les services préparés pour des clients qui ont ver
 2. Cherchez par numéro de commande, nom ou téléphone du client.
 3. Cliquez sur une commande pour voir ses lignes, chaque acompte (date, mode, qui l’a pris) et son historique.
 
-Depuis une commande, vous pouvez **Imprimer** le reçu de commande, **Ajouter un acompte**, **Marquer prête** ou **Annuler la commande**. Le client la retire en caisse : **Commandes**, puis **Retirer : encaisser le reste**.
+Depuis une commande, vous pouvez **Imprimer** le reçu de commande, **Ajouter un acompte**, **Modifier les détails** (date prévue et notes), **Marquer prête** ou **Annuler la commande**. Le client la retire en caisse : **Commandes**, puis **Retirer : encaisser le reste**.
 
 ## Où apparaît l’argent
 

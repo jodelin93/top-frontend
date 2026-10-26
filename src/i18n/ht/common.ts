@@ -144,6 +144,7 @@ export const common: Record<string, string> = {
   'Can\'t scan? Enter this key manually:': 'Ou pa ka eskane ? Antre kle sa a alamen :',
   'Verification code': 'Kòd verifikasyon',
   'Verify and turn on': 'Verifye epi aktive',
+  "Enter your current password to set up two-factor authentication.": "Antre modpas ou kounye a pou konfigire otantifikasyon de faktè a.",
   'Enter a current code from your authenticator app to turn two-factor off.': 'Antre yon kòd aktyèl ki nan aplikasyon otantifikasyon ou a pou dezaktive otantifikasyon de faktè a.',
   'Turning off...': 'Ap dezaktive...',
   'Stores': 'Magazen',
@@ -220,4 +221,6 @@ export const common: Record<string, string> = {
   "At least 8 characters. Saving it confirms your e-mail address; then sign in with it.": "Omwen 8 karaktè. Lè ou anrejistre l, sa konfime adrès imèl ou ; apre sa, konekte avè l.",
   "Your e-mail address is confirmed and your password is saved. Sign in with it.": "Adrès imèl ou konfime epi modpas ou anrejistre. Konekte avè l.",
   "Save my password": "Anrejistre modpas mwen",
+  "You do not have access to this page": "Ou pa gen aksè nan paj sa a",
+  "Ask an administrator for the permission, or go back to the menu.": "Mande yon administratè pèmisyon an, oswa retounen nan meni an.",
 };

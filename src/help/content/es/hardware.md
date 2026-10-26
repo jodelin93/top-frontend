@@ -65,7 +65,7 @@ Su técnico instala el puente una sola vez. Después, en la PC de la caja:
 
 > **Atención:** la vinculación es propia de cada navegador y de cada caja: vuelva a hacerla si cambia de PC o de navegador. **Desvincular** quita la vinculación.
 
-> **Consejo:** después de varios códigos incorrectos, el puente muestra un código nuevo. Después de 10 errores, hay que reiniciarlo en modo de vinculación.
+> **Consejo:** después de varios códigos incorrectos, el puente muestra un código nuevo. Después de 10 errores desde la misma página, esa página ya no puede vincularse (el POS sí); después de 50 errores en total, hay que reiniciar el puente en modo de vinculación.
 
 ## Cajón, lector y pantalla del cliente
 

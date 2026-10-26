@@ -12,10 +12,11 @@ Otantifikasyon de faktè ajoute yon kòd 6 chif, yon aplikasyon sou telefòn ou 
 Anvan, enstale yon aplikasyon otantifikasyon: pa egzanp Google Authenticator, Microsoft Authenticator oswa 1Password.
 
 1. Nan **Sekirite kont**, nan pati **Otantifikasyon de faktè**, klike sou **Aktive**.
-2. Louvri aplikasyon an sou telefòn ou epi eskane kòd QR ki parèt la.
-3. Si ou pa ka eskane, tape nan aplikasyon an kle ki parèt anba **Ou pa ka eskane ? Antre kle sa a alamen**.
-4. Tape kòd 6 chif aplikasyon an afiche a.
-5. Klike sou **Verifye epi aktive**.
+2. Antre modpas ou kounye a, epi klike sou **Kontinye**.
+3. Louvri aplikasyon an sou telefòn ou epi eskane kòd QR ki parèt la.
+4. Si ou pa ka eskane, tape nan aplikasyon an kle ki parèt anba **Ou pa ka eskane ? Antre kle sa a alamen**.
+5. Tape kòd 6 chif aplikasyon an afiche a.
+6. Klike sou **Verifye epi aktive**.
 
 **Estati** a chanje pou **Aktive**. Chak fwa ou konekte, y ap mande w kòd la apre modpas la (gade [Tape kòd la](topic:auth-mfa)).
 

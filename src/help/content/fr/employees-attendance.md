@@ -27,6 +27,7 @@ Un employé dont la fiche est liée à son compte pointe lui-même :
 5. Cliquez sur **Enregistrer**.
 
 > **Attention :** l'heure ne peut pas être dans le futur, la sortie doit être après l'arrivée et un service ne peut pas dépasser 24 heures. On ne peut pas saisir une nouvelle arrivée pour un employé déjà pointé : clôturez d'abord son pointage.
+> **Remarque :** personne n'enregistre ses propres heures : un autre responsable enregistre les vôtres.
 
 ## Le rapport de présence
 

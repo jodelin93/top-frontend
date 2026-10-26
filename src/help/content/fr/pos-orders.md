@@ -28,6 +28,7 @@ Cliquez sur **Commandes** dans la barre du haut (sur téléphone : **⋯** puis 
 
 - **Ajouter un acompte** : le client paie une autre partie (jamais plus que le reste à payer).
 - **Marquer prête** : la commande est préparée. Appelez le client. **Remettre en préparation** annule cela.
+- **Modifier les détails** : changez la date **Prête pour le** ou les notes.
 - **Imprimer** : le reçu de commande à nouveau, avec tous les acomptes.
 
 ## Remettre la commande

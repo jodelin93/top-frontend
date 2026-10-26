@@ -27,6 +27,7 @@ Yon anplwaye ki gen fich li konekte ak kont li pwente tèt li:
 5. Klike sou **Anrejistre**.
 
 > **Atansyon:** lè a pa ka nan lavni, sòti a dwe apre antre a epi yon sesyon travay pa ka depase 24 èdtan. Ou pa ka anrejistre yon nouvo antre pou yon anplwaye ki deja antre travay: fèmen pwentaj li an premye.
+> **Remak:** pèsonn pa anrejistre pwòp èdtan pa yo: se yon lòt manadjè ki anrejistre pa ou yo.
 
 ## Rapò prezans lan
 

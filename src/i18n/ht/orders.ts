@@ -119,4 +119,5 @@ export const orders: Record<string, string> = {
   "{method} can no longer be used: choose how to give that deposit back": "{method} pa disponib ankò : chwazi kijan pou remèt avans sa a",
   "Enter the reference of the refund ({method})": "Antre referans ranbousman an ({method})",
   "The order's deposits do not add up: reload the order and try again": "Avans kòmand lan pa koresponn : rechaje kòmand lan epi eseye ankò",
+  "Edit details": "Modifye detay yo",
 };

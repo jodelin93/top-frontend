@@ -52,8 +52,9 @@ export const authApi = {
   },
 
   // Enable MFA
-  enableMfa: async (): Promise<MfaSetupResponse> => {
-    const { data } = await apiClient.post('/auth/mfa/enable');
+  // The current password is asked again: a stolen session alone can't set up a second factor
+  enableMfa: async (currentPassword: string): Promise<MfaSetupResponse> => {
+    const { data } = await apiClient.post('/auth/mfa/enable', { currentPassword });
     return data;
   },
 

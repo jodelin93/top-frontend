@@ -14,6 +14,7 @@ When someone tries an action they are not allowed to do alone, the **Manager app
 2. If they turned on two-factor authentication, they also type the **Two-factor code**.
 3. They click **Approve**. The action continues as usual.
 4. If several actions need approval (a price and a discount, for example), the window comes back for each one.
+The manager must work in all of your branches: a manager limited to another branch cannot approve for you.
 
 To give up, click **Cancel**.
 

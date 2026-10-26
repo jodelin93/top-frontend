@@ -21,7 +21,7 @@ import { t } from '@/i18n';
 import { HelpButton } from '@/help/help-drawer';
 import { roleLabel } from '@/lib/server-texts';
 
-type Step = 'idle' | 'scan' | 'disable';
+type Step = 'idle' | 'password' | 'scan' | 'disable';
 
 export default function SecurityPage() {
   return (
@@ -42,6 +42,7 @@ function SecuritySettings() {
   const [step, setStep] = useState<Step>('idle');
   const [setup, setSetup] = useState<MfaSetupResponse | null>(null);
   const [code, setCode] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -65,7 +66,8 @@ function SecuritySettings() {
 
   const startSetup = () =>
     run(async () => {
-      setSetup(await authApi.enableMfa());
+      setSetup(await authApi.enableMfa(password));
+      setPassword('');
       setCode('');
       setMessage(null);
       setStep('scan');
@@ -146,11 +148,37 @@ function SecuritySettings() {
                     {t('Turn off')}
                   </Button>
                 ) : (
-                  <Button onClick={startSetup} disabled={busy}>
-                    {busy ? t('Starting...') : t('Turn on')}
+                  <Button onClick={() => { setStep('password'); setPassword(''); setMessage(null); }}>
+                    {t('Turn on')}
                   </Button>
                 )}
               </div>
+            )}
+
+            {step === 'password' && (
+              <form
+                className="space-y-4"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  startSetup();
+                }}
+              >
+                <p className="text-sm text-gray-700">{t('Enter your current password to set up two-factor authentication.')}</p>
+                <Input
+                  autoFocus
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  aria-label={t('Current password')}
+                />
+                <div className="flex justify-end gap-2">
+                  <Button type="button" variant="outline" onClick={() => setStep('idle')}>{t('Cancel')}</Button>
+                  <Button type="submit" disabled={busy || !password}>
+                    {busy ? t('Starting...') : t('Continue')}
+                  </Button>
+                </div>
+              </form>
             )}
 
             {step === 'scan' && setup && (

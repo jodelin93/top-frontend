@@ -65,7 +65,7 @@ L'installation du pont est faite une fois par votre technicien. Ensuite, sur le 
 
 > **Attention :** l'association est propre à chaque navigateur et à chaque caisse : refaites-la si vous changez de PC ou de navigateur. **Dissocier** retire l'association.
 
-> **Astuce :** après plusieurs codes faux, le pont affiche un nouveau code. Après 10 erreurs, il faut le redémarrer en mode association.
+> **Astuce :** après plusieurs codes faux, le pont affiche un nouveau code. Après 10 erreurs venant de la même page, cette page ne peut plus s'associer (le POS, si) ; après 50 erreurs en tout, il faut redémarrer le pont en mode association.
 
 ## Tiroir, lecteur et afficheur
 

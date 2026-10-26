@@ -65,7 +65,7 @@ Your technician installs the bridge once. Then, on the till PC:
 
 > **Warning:** pairing is specific to each browser and each till: do it again if you change PC or browser. **Unpair** removes the pairing.
 
-> **Tip:** after several wrong codes, the bridge shows a new code. After 10 errors, you must restart it in pairing mode.
+> **Tip:** after several wrong codes, the bridge shows a new code. After 10 errors from the same page, that page can no longer pair (the POS still can); after 50 errors in all, you must restart the bridge in pairing mode.
 
 ## Drawer, scanner and display
 

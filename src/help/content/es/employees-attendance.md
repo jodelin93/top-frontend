@@ -27,6 +27,7 @@ Un empleado cuya ficha está vinculada a su cuenta registra su propia entrada y 
 5. Haga clic en **Guardar**.
 
 > **Atención:** la hora no puede estar en el futuro, la salida debe ser posterior a la entrada y un turno no puede superar las 24 horas. No se puede registrar una nueva entrada para un empleado que ya tiene la entrada registrada: primero cierre su registro.
+> **Nota:** nadie registra sus propias horas: otro responsable registra las suyas.
 
 ## El reporte de asistencia
 

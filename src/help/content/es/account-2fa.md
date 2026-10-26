@@ -12,10 +12,11 @@ La autenticación de dos factores agrega un código de 6 dígitos, que muestra u
 Primero instale una aplicación de autenticación: por ejemplo, Google Authenticator, Microsoft Authenticator o 1Password.
 
 1. En **Seguridad de la cuenta**, sección **Autenticación de dos factores**, haga clic en **Activar**.
-2. Abra la aplicación en su teléfono y escanee el código QR que aparece.
-3. Si no puede escanearlo, escriba en la aplicación la clave que aparece debajo de **¿No puede escanear? Ingrese esta clave manualmente**.
-4. Escriba el código de 6 dígitos que muestra la aplicación.
-5. Haga clic en **Verificar y activar**.
+2. Introduzca su contraseña actual y haga clic en **Continuar**.
+3. Abra la aplicación en su teléfono y escanee el código QR que aparece.
+4. Si no puede escanearlo, escriba en la aplicación la clave que aparece debajo de **¿No puede escanear? Ingrese esta clave manualmente**.
+5. Escriba el código de 6 dígitos que muestra la aplicación.
+6. Haga clic en **Verificar y activar**.
 
 El **Estado** cambia a **Activado**. Cada vez que inicie sesión, se le pedirá el código después de la contraseña (vea [Ingresar el código](topic:auth-mfa)).
 

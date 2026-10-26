@@ -14,6 +14,8 @@ related: [purchasing-orders, purchasing-invoices, inventory-receive]
 5. Revise el **Costo unitario** y escriba el **Número de remisión / factura**.
 6. Haga clic en **Recibir**.
 
+> **Nota:** un **Costo unitario** que se aleja más de un 10 % del costo del pedido requiere a alguien con **Aprobar órdenes de compra**.
+
 Si no llegó todo, la orden pasa a **Recibido parcialmente**: el resto se recibirá en la próxima entrega. Cada recepción recibe un número (GRN-…) visible en **Recepciones de mercancía**.
 
 > **Atención:** recibir más de la cantidad pedida solo se acepta dentro de la tolerancia de la tienda. Si se supera, una persona con el permiso **Aprobar órdenes de compra** debe autorizarlo.

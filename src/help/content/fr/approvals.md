@@ -14,6 +14,7 @@ Quand une personne tente une action qu'elle n'a pas le droit de faire seule, la 
 2. S'il a activé la double authentification, il tape aussi le **Code à deux facteurs**.
 3. Il clique sur **Approuver**. L'action continue normalement.
 4. S'il y a plusieurs actions à approuver (un prix et une remise, par exemple), la fenêtre revient pour chacune.
+Le gérant doit travailler dans toutes vos succursales : un gérant limité à une autre succursale ne peut pas approuver pour vous.
 
 Pour renoncer, cliquez sur **Annuler**.
 

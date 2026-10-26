@@ -13,7 +13,7 @@ The **Orders** page lists the services prepared for customers who paid a deposit
 2. Search by order number, customer name or phone.
 3. Click an order to see its lines, every deposit (date, method, who took it) and its history.
 
-From an order you can **Print** the order receipt, **Add a deposit**, **Mark ready** or **Cancel the order**. The customer picks it up at the till: **Orders**, then **Pick up: take the balance**.
+From an order you can **Print** the order receipt, **Add a deposit**, **Edit details** (ready date and notes), **Mark ready** or **Cancel the order**. The customer picks it up at the till: **Orders**, then **Pick up: take the balance**.
 
 ## Where the money appears
 

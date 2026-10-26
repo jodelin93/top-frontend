@@ -14,6 +14,8 @@ related: [purchasing-orders, purchasing-invoices, inventory-receive]
 5. Verifye **Pri inite** a epi tape **Nimewo bòdwo livrezon / fakti** a.
 6. Klike sou **Resevwa**.
 
+> **Remak:** yon **Pri inite** ki diferan plis pase 10% ak pri kòmand lan bezwen yon moun ki gen **Apwouve kòmand acha**.
+
 Si se pa tout bagay ki rive, kòmand lan pase **Resevwa an pati**: w ap resevwa rès la nan pwochen livrezon an. Chak resepsyon resevwa yon nimewo (GRN-…) ou ka wè nan **Resepsyon machandiz**.
 
 > **Atansyon:** resevwa plis pase kantite ki te kòmande a aksepte sèlman nan tolerans magazen an. Pi lwen pase sa, yon moun ki gen pèmisyon **Apwouve kòmand acha** dwe otorize l.

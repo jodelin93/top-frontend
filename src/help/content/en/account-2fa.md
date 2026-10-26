@@ -12,10 +12,11 @@ Two-factor authentication adds a 6-digit code shown by an app on your phone. Eve
 First install an authenticator app, for example Google Authenticator, Microsoft Authenticator or 1Password.
 
 1. In **Account security**, in the **Two-factor authentication** section, click **Turn on**.
-2. Open the app on your phone and scan the QR code shown.
-3. If you cannot scan, type into the app the key shown under **Can't scan? Enter this key manually:**.
-4. Type the 6-digit code the app shows.
-5. Click **Verify and turn on**.
+2. Enter your current password, then click **Continue**.
+3. Open the app on your phone and scan the QR code shown.
+4. If you cannot scan, type into the app the key shown under **Can't scan? Enter this key manually:**.
+5. Type the 6-digit code the app shows.
+6. Click **Verify and turn on**.
 
 The **Status** changes to **On**. Each time you sign in, the code is asked for after your password (see [Enter the code](topic:auth-mfa)).
 

@@ -8,7 +8,7 @@ import { NotificationBell } from '@/components/notifications/notification-bell';
 import { LogOut, Menu, ShieldCheck, ShoppingCart, X } from 'lucide-react';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { canUseAdmin, hasAnyPermission, useAuthStore } from '@/stores/auth-store';
-import { adminNav, adminNavLabel } from '@/lib/admin-nav';
+import { adminNav, adminNavItem, adminNavLabel } from '@/lib/admin-nav';
 import { cn } from '@/lib/utils';
 import { roleLabel } from '@/lib/server-texts';
 import { t } from '@/i18n';
@@ -50,6 +50,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   };
 
   const pageTitle = adminNavLabel(pathname);
+  // A page opened by its address is shown only with its menu entry's permissions
+  // (the server refuses its data anyway)
+  const navItem = adminNavItem(pathname);
+  const pageAllowed = !navItem || hasAnyPermission(user, ...navItem.permissions);
 
   return (
     <ProtectedRoute>
@@ -171,7 +175,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <HelpButton className="h-10 w-10 text-gray-700" />
             <NotificationBell />
           </header>
-          <main className="min-w-0 flex-1 p-3 sm:p-4 md:overflow-auto md:p-6">{canManage ? children : null}</main>
+          <main className="min-w-0 flex-1 p-3 sm:p-4 md:overflow-auto md:p-6">
+            {!canManage ? null : pageAllowed ? (
+              children
+            ) : (
+              <div role="alert" className="mx-auto mt-10 max-w-md rounded-md border bg-white p-6 text-center text-sm text-gray-700">
+                <p className="font-semibold">{t('You do not have access to this page')}</p>
+                <p className="mt-1">{t('Ask an administrator for the permission, or go back to the menu.')}</p>
+                <Link href="/admin" className="mt-4 inline-block text-blue-600 hover:underline">
+                  {t('Back')}
+                </Link>
+              </div>
+            )}
+          </main>
         </div>
       </div>
     </ProtectedRoute>

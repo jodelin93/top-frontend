@@ -14,6 +14,8 @@ related: [purchasing-orders, purchasing-invoices, inventory-receive]
 5. Check the **Unit cost** and enter the **Delivery note / invoice number**.
 6. Click **Receive**.
 
+> **Note:** a **Unit cost** more than 10% away from the order's cost needs someone with **Approve purchase orders**.
+
 If not everything arrived, the order changes to **Partly received**: the rest will be received with the next delivery. Each receipt gets a number (GRN-…) shown in **Goods receipts**.
 
 > **Warning:** receiving more than the ordered quantity is only accepted within the store's tolerance. Above it, a person with the **Approve purchase orders** permission must authorize it.

@@ -65,7 +65,7 @@ Teknisyen ou a enstale pon an yon sèl fwa. Apre sa, sou PC kès la:
 
 > **Atansyon:** asosyasyon an se pou chak navigatè ak chak kès: refè l si ou chanje PC oswa navigatè. **Dekonekte** retire asosyasyon an.
 
-> **Konsèy:** apre plizyè kòd ki pa bon, pon an afiche yon nouvo kòd. Apre 10 erè, fòk ou relanse l an mòd asosyasyon.
+> **Konsèy:** apre plizyè kòd ki pa bon, pon an afiche yon nouvo kòd. Apre 10 erè ki soti nan menm paj la, paj sa a pa ka asosye ankò (POS la toujou kapab); apre 50 erè an tout, fòk ou relanse pon an an mòd asosyasyon.
 
 ## Tiwa, eskanè ak ekran kliyan
 
