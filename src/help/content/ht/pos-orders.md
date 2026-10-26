@@ -44,7 +44,7 @@ Resi a montre total la, yon liy **Avans peye** pou avans yo ak sa kliyan an peye
 
 Louvri kòmand lan epi klike sou **Anile kòmand lan**. Tape rezon an, apre chwazi:
 
-- **Remèt avans yo**: chwazi kijan. Kach la soti nan sesyon ou ki louvri a.
+- **Remèt avans yo**: chak avans remèt jan li te peye a (kach an kach, nan lajan yo te bay la; yon avans ak kat, ak kat). Kach la soti nan sesyon ou ki louvri a. Si yon mwayen peman pa disponib ankò, chwazi yon lòt.
 - **Kenbe avans yo**: magazen an kenbe yo.
 
 > **Nòt:** pou anile fò w gen pèmisyon « Anile kòmand epi remèt oswa kenbe avans yo », oswa yon manadjè dwe apwouve. Si w anile vant retrè a, kòmand lan tounen **Pare** ak avans li yo.

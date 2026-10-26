@@ -23,6 +23,6 @@ Nan yon kòmand ou ka **Enprime** resi kòmand lan, **Ajoute yon avans**, **Make
 
 ## Anile yon kòmand
 
-Klike sou **Anile kòmand lan**, tape rezon an epi chwazi **Remèt avans yo** oswa **Kenbe avans yo**. Yon ranbousman an kach soti nan yon sesyon ki louvri sou yon kès nan sikisal kòmand lan. Pou anile fò w gen pèmisyon « Anile kòmand epi remèt oswa kenbe avans yo », oswa yon manadjè dwe apwouve.
+Klike sou **Anile kòmand lan**, tape rezon an epi chwazi **Remèt avans yo** oswa **Kenbe avans yo**. Chak avans remèt jan li te peye a, nan lajan yo te bay la. Yon ranbousman an kach soti nan yon sesyon ki louvri sou yon kès nan sikisal kòmand lan. Pou anile fò w gen pèmisyon « Anile kòmand epi remèt oswa kenbe avans yo », oswa yon manadjè dwe apwouve.
 
 > **Nòt:** anplwaye yon sikisal wè sèlman kòmand sikisal pa yo. Kòmand yo se pou atik ki pa swiv nan stòk (sèvis).

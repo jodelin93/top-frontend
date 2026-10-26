@@ -27,6 +27,7 @@ Lè koneksyon an tonbe, endikatè anlè a pase soti **Sou entènèt** (vèt) pou
 | Fonksyon | Poukisa |
 | --- | --- |
 | Panye an atant | Yo kenbe yo sou sèvè a. |
+| Devi ki vann nan kès la | Sèvè a make devi a vann. |
 | Kat kado (vant ak peman) | Sèvè a verifye kòd la ak balans lan. |
 | Pwen, vant sou kont, avwa | Sèvè a verifye balans kliyan an. |
 | Chèche oswa kreye yon kliyan | Vant lan kontinye ak kliyan pasaj. |

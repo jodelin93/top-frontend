@@ -44,7 +44,7 @@ El recibo muestra el total, una línea **Anticipo pagado** para los anticipos y 
 
 Abra el pedido y haga clic en **Cancelar el pedido**. Escriba el motivo y elija:
 
-- **Devolver los anticipos**: elija cómo. El efectivo sale de su sesión abierta.
+- **Devolver los anticipos**: cada anticipo se devuelve como se pagó (efectivo en efectivo, en la moneda entregada; un anticipo con tarjeta, con tarjeta). El efectivo sale de su sesión abierta. Si un medio de pago ya no está disponible, elija otro.
 - **Retener los anticipos**: la tienda los conserva.
 
 > **Nota:** cancelar requiere el permiso «Cancelar pedidos y reembolsar o retener sus anticipos», o la aprobación de un gerente. Anular la venta de retiro devuelve el pedido a **Listo** con sus anticipos.

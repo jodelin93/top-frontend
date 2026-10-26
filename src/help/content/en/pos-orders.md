@@ -44,7 +44,7 @@ The receipt shows the total, a **Deposit paid** line for the deposits and what t
 
 Open the order and click **Cancel the order**. Type the reason, then choose:
 
-- **Give the deposits back**: choose how. Cash comes out of your open session.
+- **Give the deposits back**: each deposit goes back the way it was paid (cash in cash, in the currency it was handed over in; a card deposit by card). Cash comes out of your open session. If a way of paying is no longer available, choose another one.
 - **Keep the deposits**: the store keeps them.
 
 > **Note:** cancelling needs the permission "Cancel orders and refund or keep their deposits", or a manager's approval. Voiding the pickup sale puts the order back to **Ready** with its deposits.

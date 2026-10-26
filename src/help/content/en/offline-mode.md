@@ -27,6 +27,7 @@ When the connection drops, the indicator at the top changes from **Online** (gre
 | Feature | Why |
 | --- | --- |
 | Held carts | They are kept on the server. |
+| Estimates sold at the till | The server marks the estimate as sold. |
 | Gift cards (sale and payment) | The server checks the code and the balance. |
 | Points, sale on account, store credit | The server checks the customer's balance. |
 | Search for or create a customer | The sale continues as a walk-in customer. |

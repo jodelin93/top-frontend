@@ -27,4 +27,4 @@ Once uploaded, sales move to the **Uploaded** list with the temporary number and
 
 > **Tip:** if a till can no longer connect at all, a manager clicks **Export unsynced sales** in this window (approval required). An administrator imports the file in [Devices](topic:devices).
 
-Offline sales that exceed the real stock or the limits go to the [Review queue](topic:review-queue).
+Offline sales that exceed the real stock or the limits go to the [Review queue](topic:review-queue). A sale sent without the till's offline permission is not recorded: it shows **Needs review**, and an administrator records it by importing it in [Devices](topic:devices).

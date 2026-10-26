@@ -23,6 +23,6 @@ From an order you can **Print** the order receipt, **Add a deposit**, **Mark rea
 
 ## Cancel an order
 
-Click **Cancel the order**, type the reason and choose **Give the deposits back** or **Keep the deposits**. A cash refund comes out of an open session on a register of the order's branch. Cancelling needs the permission "Cancel orders and refund or keep their deposits", or a manager's approval.
+Click **Cancel the order**, type the reason and choose **Give the deposits back** or **Keep the deposits**. Each deposit goes back the way it was paid, in the currency it was handed over in. A cash refund comes out of an open session on a register of the order's branch. Cancelling needs the permission "Cancel orders and refund or keep their deposits", or a manager's approval.
 
 > **Note:** branch staff see only their branches' orders. Orders are for items not tracked in stock (services).

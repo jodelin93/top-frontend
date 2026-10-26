@@ -23,6 +23,6 @@ Desde un pedido puede **Imprimir** el recibo del pedido, **Agregar un anticipo**
 
 ## Cancelar un pedido
 
-Haga clic en **Cancelar el pedido**, escriba el motivo y elija **Devolver los anticipos** o **Retener los anticipos**. Un reembolso en efectivo sale de una sesión abierta en una caja de la sucursal del pedido. Cancelar requiere el permiso «Cancelar pedidos y reembolsar o retener sus anticipos», o la aprobación de un gerente.
+Haga clic en **Cancelar el pedido**, escriba el motivo y elija **Devolver los anticipos** o **Retener los anticipos**. Cada anticipo se devuelve como se pagó, en la moneda entregada. Un reembolso en efectivo sale de una sesión abierta en una caja de la sucursal del pedido. Cancelar requiere el permiso «Cancelar pedidos y reembolsar o retener sus anticipos», o la aprobación de un gerente.
 
 > **Nota:** el personal de una sucursal solo ve los pedidos de sus sucursales. Los pedidos son para artículos sin control de inventario (servicios).

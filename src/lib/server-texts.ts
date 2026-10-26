@@ -232,6 +232,14 @@ const errorRules = (): Rule[] => [
   [/^The deposits of order (\S+) changed: take the payment again$/, (m) => t('The deposits of order {number} changed: take the payment again', { number: m[1] })],
   [/^The deposit can't be more than the balance due \((.+)\)$/, (m) => t("The deposit can't be more than the balance due ({amount})", { amount: m[1] })],
   [
+    /^(.+) can no longer be used: choose how to give that deposit back$/,
+    (m) => t('{method} can no longer be used: choose how to give that deposit back', { method: m[1] }),
+  ],
+  [
+    /^Enter the reference of the refund \((.+)\)$/,
+    (m) => t('Enter the reference of the refund ({method})', { method: m[1] }),
+  ],
+  [
     /^(.+) goes through a payment terminal: take deposits in cash or with a manually confirmed payment$/,
     (m) => t('{method} goes through a payment terminal: take deposits in cash or with a manually confirmed payment', { method: m[1] }),
   ],

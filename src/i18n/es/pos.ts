@@ -602,4 +602,6 @@ export const pos: Record<string, string> = {
   'Group {name}: group prices and a {percent}% group discount apply.': 'Grupo {name}: se aplican los precios del grupo y un descuento de grupo del {percent}%.',
   'Group {name}: group prices apply.': 'Grupo {name}: se aplican los precios del grupo.',
   'Could not load the customer group prices. They are applied at checkout.': 'No se pudieron cargar los precios del grupo del cliente. Se aplicarán al cobrar.',
+  "A saved cart is finished online: the server holds its items. Try again once the connection is back.": "Un carrito guardado se termina en línea: el servidor guarda sus artículos. Vuelva a intentarlo cuando vuelva la conexión.",
+  "An estimate is sold online: the server marks it as sold. Try again once the connection is back.": "Un presupuesto se vende en línea: el servidor lo marca como vendido. Vuelva a intentarlo cuando vuelva la conexión.",
 };

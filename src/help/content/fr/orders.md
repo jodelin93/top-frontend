@@ -23,6 +23,6 @@ Depuis une commande, vous pouvez **Imprimer** le reçu de commande, **Ajouter un
 
 ## Annuler une commande
 
-Cliquez sur **Annuler la commande**, tapez le motif et choisissez **Rembourser les acomptes** ou **Conserver les acomptes**. Un remboursement en espèces sort d’une session ouverte sur une caisse de la succursale de la commande. Annuler demande la permission « Annuler des commandes et rembourser ou conserver leurs acomptes », ou l’approbation d’un responsable.
+Cliquez sur **Annuler la commande**, tapez le motif et choisissez **Rembourser les acomptes** ou **Conserver les acomptes**. Chaque acompte est rendu comme il a été payé, dans la devise remise. Un remboursement en espèces sort d’une session ouverte sur une caisse de la succursale de la commande. Annuler demande la permission « Annuler des commandes et rembourser ou conserver leurs acomptes », ou l’approbation d’un responsable.
 
 > **Note :** le personnel d’une succursale ne voit que les commandes de ses succursales. Les commandes sont pour les articles non suivis en stock (services).

@@ -27,4 +27,4 @@ Une fois envoyées, les ventes passent dans la liste **Envoyées** avec le numé
 
 > **Astuce :** si une caisse ne peut plus se connecter du tout, un gérant clique sur **Exporter les ventes non synchronisées** dans cette fenêtre (approbation demandée). Le fichier est importé par un administrateur dans [Appareils](topic:devices).
 
-Les ventes hors ligne qui dépassent le stock réel ou les limites arrivent dans la [File de contrôle](topic:review-queue).
+Les ventes hors ligne qui dépassent le stock réel ou les limites arrivent dans la [File de contrôle](topic:review-queue). Une vente envoyée sans l'autorisation hors ligne de la caisse n'est pas enregistrée : elle affiche **À vérifier**, et un administrateur l'enregistre en l'important dans [Appareils](topic:devices).

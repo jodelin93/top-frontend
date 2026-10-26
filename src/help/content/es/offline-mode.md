@@ -27,6 +27,7 @@ Cuando se cae la conexión, el indicador de arriba pasa de **En línea** (verde)
 | Función | Por qué |
 | --- | --- |
 | Ventas en espera | Se guardan en el servidor. |
+| Presupuestos vendidos en caja | El servidor marca el presupuesto como vendido. |
 | Tarjetas de regalo (venta y pago) | El servidor verifica el código y el saldo. |
 | Puntos, venta a cuenta, crédito en tienda | El servidor verifica el saldo del cliente. |
 | Buscar o crear un cliente | La venta continúa como cliente ocasional. |

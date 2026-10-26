@@ -27,4 +27,4 @@ Lè yo fin voye, vant yo pase nan lis **Voye** a ak nimewo pwovizwa a ak nimewo 
 
 > **Konsèy:** si yon kès pa ka konekte ditou ankò, yon manadjè klike sou **Ekspòte vant ki poko senkronize yo** nan fenèt sa a (y ap mande apwobasyon). Yon administratè enpòte fichye a nan [Aparèy](topic:devices).
 
-Vant san entènèt ki depase stòk reyèl la oswa limit yo ale nan [Lis kontwòl la](topic:review-queue).
+Vant san entènèt ki depase stòk reyèl la oswa limit yo ale nan [Lis kontwòl la](topic:review-queue). Yon vant ki voye san otorizasyon san entènèt kès la pa anrejistre: li montre **Pou verifye**, epi yon administratè anrejistre l lè li enpòte l nan [Aparèy yo](topic:devices).

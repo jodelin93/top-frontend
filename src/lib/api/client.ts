@@ -1,6 +1,9 @@
 import { t } from '@/i18n';
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { translateServerError } from '@/lib/server-texts';
+
+// One sign-in redirect at a time (several requests may get the 401 together)
+let redirectingToLogin = false;
 import { randomId } from '@/lib/uuid';
 
 // localStorage key of this browser's registered POS device id (see lib/pos/offline-db.ts)
@@ -92,9 +95,18 @@ apiClient.interceptors.response.use(
       localStorage.removeItem('access_token');
       localStorage.removeItem('temp_token');
       localStorage.removeItem('auth-storage');
-      // Outside React: a full reload also resets all in-memory state after session expiry
-      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-      window.location.href = '/auth/login';
+      // And what the user left on this till (cart, staff list, cached context): the
+      // next person must not find it. Then a full reload resets all in-memory state
+      if (!redirectingToLogin) {
+        redirectingToLogin = true;
+        void import('@/lib/session-cleanup')
+          .then((m) => m.clearLocalSessionData())
+          .catch(() => undefined)
+          .finally(() => {
+            // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+            window.location.href = '/auth/login';
+          });
+      }
     }
     // Store policy: this role must set up two-factor authentication first
     const code = (error.response?.data as { code?: string } | undefined)?.code;

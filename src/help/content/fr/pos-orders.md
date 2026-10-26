@@ -44,7 +44,7 @@ Le reçu montre le total, une ligne **Acompte versé** pour les acomptes et ce q
 
 Ouvrez la commande et cliquez sur **Annuler la commande**. Tapez le motif, puis choisissez :
 
-- **Rembourser les acomptes** : choisissez comment. Les espèces sortent de votre session ouverte.
+- **Rembourser les acomptes** : chaque acompte est rendu comme il a été payé (espèces en espèces, dans la devise remise ; un acompte par carte, par carte). Les espèces sortent de votre session ouverte. Si un moyen de paiement n'est plus disponible, choisissez-en un autre.
 - **Conserver les acomptes** : le magasin les garde.
 
 > **Note :** annuler demande la permission « Annuler des commandes et rembourser ou conserver leurs acomptes », ou l’approbation d’un responsable. L’annulation de la vente de retrait remet la commande à **Prête** avec ses acomptes.

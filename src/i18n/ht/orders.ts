@@ -114,4 +114,9 @@ export const orders: Record<string, string> = {
   'The ready date is in the past': 'Dat la deja pase',
   'Order not found': 'Kòmand pa jwenn',
   'Deposit paid': 'Avans peye',
+  "Given back the way each deposit was paid:": "Remèt jan chak avans te peye :",
+  "A way of paying used for a deposit can no longer be used: choose how to give it back": "Yon mwayen peman yo te itilize pou yon avans pa disponib ankò : chwazi kijan pou remèt li",
+  "{method} can no longer be used: choose how to give that deposit back": "{method} pa disponib ankò : chwazi kijan pou remèt avans sa a",
+  "Enter the reference of the refund ({method})": "Antre referans ranbousman an ({method})",
+  "The order's deposits do not add up: reload the order and try again": "Avans kòmand lan pa koresponn : rechaje kòmand lan epi eseye ankò",
 };

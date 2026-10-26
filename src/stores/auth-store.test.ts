@@ -95,3 +95,24 @@ describe('auth store (HttpOnly cookie session)', () => {
     expect(localStorage.getItem('pos_logout_pending')).toBeNull();
   });
 });
+
+describe('another person on the same browser', () => {
+  it('clears the previous session when a different user or store signs in, not on a profile refresh', async () => {
+    const { clearLocalSessionData } = await import('@/lib/session-cleanup');
+    const cleared = vi.mocked(clearLocalSessionData);
+    useAuthStore.setState({ user: null, isAuthenticated: false });
+    cleared.mockClear();
+
+    useAuthStore.getState().setUser(user);
+    expect(cleared).toHaveBeenCalledTimes(1);
+    // The same person refreshed (role change): their cart stays
+    useAuthStore.getState().setUser({ ...user, role: 'manager' });
+    expect(cleared).toHaveBeenCalledTimes(1);
+    // Someone else signs in on this till
+    useAuthStore.getState().setUser({ ...user, id: 'u2' });
+    expect(cleared).toHaveBeenCalledTimes(2);
+    // The same person in another store
+    useAuthStore.getState().setUser({ ...user, id: 'u2', tenantId: 't2' });
+    expect(cleared).toHaveBeenCalledTimes(3);
+  });
+});

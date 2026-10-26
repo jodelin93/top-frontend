@@ -550,6 +550,16 @@ function POSScreen() {
     enabled: online && !!pos.customer && dialog === 'payment',
   });
 
+  // What only the server can finish: such a sale is never queued offline
+  const onlineOnlyReason = (): string | null =>
+    giftCards.length > 0
+      ? t('Gift cards can only be sold online. Remove them to sell offline.')
+      : pos.heldSaleId
+        ? t('A saved cart is finished online: the server holds its items. Try again once the connection is back.')
+        : pos.estimate
+          ? t('An estimate is sold online: the server marks it as sold. Try again once the connection is back.')
+          : null;
+
   const saleInput = (forOffline = false): Omit<CreateSaleInput, 'payments'> => ({
     registerId: register!.id,
     customerId: pos.customer?.id,
@@ -588,8 +598,9 @@ function POSScreen() {
       setNotice(t('No cash session is open on this register. Click “Open shift” at the top before selling.'));
       return;
     }
-    if (giftCards.length > 0 && !online) {
-      setNotice(t('Gift cards can only be sold online. Remove them to sell offline.'));
+    const onlineOnly = onlineOnlyReason();
+    if (onlineOnly && !online) {
+      setNotice(onlineOnly);
       return;
     }
     if (pos.order && !online) {
@@ -729,6 +740,14 @@ function POSScreen() {
         if (!(error instanceof OfflineError) && !isNetworkError(error)) throw error;
         // An order's pickup needs the server (its deposits): never queued offline
         if (input.orderId) throw error;
+        // Nor gift cards, a saved cart or an estimate: the queued sale would leave
+        // them out while the payments were taken for them
+        const onlineOnly = onlineOnlyReason();
+        if (onlineOnly) {
+          setCheckoutError(onlineOnly);
+          if (payments.length === 0) setNotice(onlineOnly);
+          return;
+        }
         sale = await saveOffline(input, payments);
         offline = true;
       }

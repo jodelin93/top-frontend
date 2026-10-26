@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import type { PosContext } from '@/lib/api/sales';
 import { offlineCache, resetOfflineDbForTests } from '@/lib/pos/offline-db';
 import { usePOSStore } from '@/stores/pos-store';
+import { getQueryClient } from '@/lib/query-client';
 import { clearLocalSessionData, POS_CART_KEY, STAFF_CACHE_KEY } from './session-cleanup';
 
 beforeEach(async () => {
@@ -19,9 +20,12 @@ describe('clearLocalSessionData (sign-out / lost till)', () => {
     localStorage.setItem(STAFF_CACHE_KEY, JSON.stringify([{ id: 'u1', name: 'Ann' }]));
     await offlineCache.saveContext({ taxRate: 0.1 } as unknown as PosContext);
     await offlineCache.saveCatalog('r1', []);
+    // Answers cached for this user (profile, lists)
+    getQueryClient().setQueryData(['me', 'u1'], { id: 'u1', permissions: ['sales.void'] });
 
     await clearLocalSessionData();
 
+    expect(getQueryClient().getQueryData(['me', 'u1'])).toBeUndefined();
     expect(usePOSStore.getState().notes).toBe('');
     expect(usePOSStore.getState().salespersonId).toBeNull();
     expect(localStorage.getItem(POS_CART_KEY)).toBeNull();

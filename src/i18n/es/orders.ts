@@ -114,4 +114,9 @@ export const orders: Record<string, string> = {
   'The ready date is in the past': 'La fecha prevista ya pasó',
   'Order not found': 'Pedido no encontrado',
   'Deposit paid': 'Anticipo pagado',
+  "Given back the way each deposit was paid:": "Se devuelve como se pagó cada anticipo:",
+  "A way of paying used for a deposit can no longer be used: choose how to give it back": "Un medio de pago usado para un anticipo ya no se puede usar: elija cómo devolverlo",
+  "{method} can no longer be used: choose how to give that deposit back": "{method} ya no se puede usar: elija cómo devolver ese anticipo",
+  "Enter the reference of the refund ({method})": "Introduzca la referencia del reembolso ({method})",
+  "The order's deposits do not add up: reload the order and try again": "Los anticipos del pedido no cuadran: recargue el pedido e inténtelo de nuevo",
 };

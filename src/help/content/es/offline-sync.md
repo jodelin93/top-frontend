@@ -27,4 +27,4 @@ Una vez enviadas, las ventas pasan a la lista **Enviadas** con el número provis
 
 > **Consejo:** si una caja ya no puede conectarse en absoluto, un gerente hace clic en **Exportar ventas no sincronizadas** en esta ventana (se pide aprobación). Un administrador importa el archivo en [Dispositivos](topic:devices).
 
-Las ventas sin conexión que superan las existencias reales o los límites llegan a la [Cola de revisión](topic:review-queue).
+Las ventas sin conexión que superan las existencias reales o los límites llegan a la [Cola de revisión](topic:review-queue). Una venta enviada sin el permiso sin conexión de la caja no se registra: aparece como **Requiere revisión**, y un administrador la registra importándola en [Dispositivos](topic:devices).

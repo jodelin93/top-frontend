@@ -27,6 +27,7 @@ Quand la connexion tombe, l'indicateur en haut passe de **En ligne** (vert) à *
 | Fonction | Pourquoi |
 | --- | --- |
 | Paniers en attente | Ils sont gardés sur le serveur. |
+| Devis vendus en caisse | Le serveur marque le devis comme vendu. |
 | Cartes cadeaux (vente et paiement) | Le serveur vérifie le code et le solde. |
 | Points, vente en compte, avoir | Le serveur vérifie le solde du client. |
 | Rechercher ou créer un client | La vente continue en client de passage. |

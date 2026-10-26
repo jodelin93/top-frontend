@@ -1,5 +1,6 @@
 import { usePOSStore } from '@/stores/pos-store';
 import { offlineCache } from '@/lib/pos/offline-db';
+import { clearQueryCache } from '@/lib/query-client';
 
 // localStorage keys holding the last signed-in user's work (see the modules using them)
 export const POS_CART_KEY = 'pos-cart';
@@ -15,9 +16,11 @@ export function clearServiceWorkerCache() {
 }
 
 /**
- * Sign-out, or the till was marked lost: remove what the previous user left on
- * this browser - the persisted cart (customer, lines, notes), the cached staff
- * list, the cached POS context, and the service worker's page cache.
+ * Sign-out, an expired session, another person signing in, or the till was
+ * marked lost: remove what the previous user left on this browser - the
+ * persisted cart (customer, lines, notes), the cached staff list, the cached
+ * answers of the API (profile, lists), the cached POS context, and the service
+ * worker's page cache.
  *
  * The offline queue of pending sales (IndexedDB `pendingSales`) and the cached
  * catalog are kept on purpose: queued sales must still reach the server, and the
@@ -31,6 +34,7 @@ export async function clearLocalSessionData(): Promise<void> {
   } catch {
     // Storage unavailable: nothing persisted
   }
+  clearQueryCache();
   clearServiceWorkerCache();
   try {
     await offlineCache.clearContext();

@@ -509,4 +509,6 @@ export const pos: Record<string, string> = {
   'Group {name}: group prices and a {percent}% group discount apply.': 'Gwoup {name}: pri gwoup la ak yon rabè gwoup {percent}% aplike.',
   'Group {name}: group prices apply.': 'Gwoup {name}: pri gwoup la aplike.',
   'Could not load the customer group prices. They are applied at checkout.': 'Pa t kapab chaje pri gwoup kliyan an. Y ap aplike yo lè w ap touche.',
+  "A saved cart is finished online: the server holds its items. Try again once the connection is back.": "Yon panye ki te sere fini sou entènèt : sèvè a kenbe atik li yo. Eseye ankò lè koneksyon an tounen.",
+  "An estimate is sold online: the server marks it as sold. Try again once the connection is back.": "Yon devi vann sou entènèt : sèvè a make li vann. Eseye ankò lè koneksyon an tounen.",
 };

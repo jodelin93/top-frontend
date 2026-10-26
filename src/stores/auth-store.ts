@@ -140,7 +140,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       isAuthenticated: false,
       requiresMfa: false,
@@ -148,6 +148,10 @@ export const useAuthStore = create<AuthState>()(
       // After sign-in: the server has just set the session cookie
       setUser: (user) => {
         setLogoutPending(false);
+        // Someone else (or another store) on this browser: nothing of the previous
+        // session stays - cart, staff list, cached profile and lists
+        const previous = get().user;
+        if (!previous || previous.id !== user.id || previous.tenantId !== user.tenantId) void clearLocalSessionData();
         set({ user, isAuthenticated: true });
       },
 

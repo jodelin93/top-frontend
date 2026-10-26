@@ -37,7 +37,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   // Refresh the saved profile so role and permission changes apply without signing in again
   const { data: profile } = useQuery({
-    queryKey: ['me'],
+    // Per person: a profile cached for someone else is never merged into this one
+    queryKey: ['me', user?.id],
     queryFn: authApi.getCurrentUser,
     enabled: isAuthenticated && !requiresMfa,
     staleTime: 60_000,
@@ -45,10 +46,13 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   });
   useEffect(() => {
     if (!profile) return;
+    // Only this person's own profile (an answer for someone else is ignored)
+    if (!user || profile.id !== user.id) return;
     const changed =
-      profile.role !== user?.role ||
-      profile.tenantId !== user?.tenantId ||
-      (profile.permissions ?? []).join() !== (user?.permissions ?? []).join();
+      profile.role !== user.role ||
+      profile.tenantId !== user.tenantId ||
+      (profile.permissions ?? []).join() !== (user.permissions ?? []).join() ||
+      branchKey(profile.branchIds) !== branchKey(user.branchIds);
     if (changed) setUser({ ...user, ...profile });
   }, [profile, user, setUser]);
 
@@ -62,3 +66,6 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   return <>{children}</>;
 }
+
+// null: every branch; a list: those branches (in any order)
+const branchKey = (ids: string[] | null | undefined) => (ids ? [...ids].sort().join() : '*');

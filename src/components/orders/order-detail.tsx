@@ -97,7 +97,27 @@ export function OrderDetail({
   const active = isActiveOrder(order);
   const canCancel = hasPermission(user, 'orders.cancel');
   const cashRegister = registerId ?? (refundRegisterId || branchRegisters[0]?.id || null);
-  const chosenRefund = methods.find((m) => m.id === (refundMethodId || methods[0]?.id));
+  // A cancellation gives each deposit back the way it was paid (per method and
+  // currency handed over, as the server does); a method turned off since needs
+  // another way, chosen here
+  const refundParts = Object.values(
+    (order.payments ?? []).reduce<Record<string, { methodId: string; method?: PaymentMethod; currency: string | null; amount: number; tendered: number }>>(
+      (parts, p) => {
+        const key = `${p.paymentMethodId}:${p.tenderedCurrency ?? ''}`;
+        const part = (parts[key] ??= { methodId: p.paymentMethodId, method: p.paymentMethod, currency: p.tenderedCurrency, amount: 0, tendered: 0 });
+        const sign = p.type === 'deposit' ? 1 : -1;
+        part.amount += sign * Number(p.amount);
+        part.tendered += sign * Number(p.tenderedAmount ?? p.amount);
+        return parts;
+      },
+      {}
+    )
+  ).filter((part) => part.amount > 0.005);
+  const unavailable = refundParts.filter((part) => !methods.some((m) => m.id === part.methodId));
+  const fallbackRefund = unavailable.length ? methods.find((m) => m.id === (refundMethodId || methods[0]?.id)) : undefined;
+  const refundTypes = refundParts.map((part) => (methods.some((m) => m.id === part.methodId) ? part.method?.methodType : fallbackRefund?.methodType));
+  const refundsCash = refundTypes.includes('cash');
+  const refundsOther = refundTypes.some((type) => type !== 'cash');
 
   const addDeposit = async () => {
     const input = depositInput(
@@ -141,9 +161,9 @@ export function OrderDetail({
               reason: reason.trim(),
               deposits: outcome,
               ...(refunding && {
-                refundMethodId: chosenRefund?.id,
-                registerId: cashRegister ?? undefined,
-                reference: reference.trim() || undefined,
+                refundMethodId: fallbackRefund?.id,
+                registerId: refundsCash ? (cashRegister ?? undefined) : undefined,
+                reference: refundsOther ? reference.trim() || undefined : undefined,
               }),
             },
             headers
@@ -290,44 +310,67 @@ export function OrderDetail({
                 </label>
               </div>
               {outcome === 'refund' && (
-                <div className="flex flex-wrap gap-2">
-                  <Select
-                    value={chosenRefund?.id ?? ''}
-                    onChange={(e) => setRefundMethodId(e.target.value)}
-                    aria-label={t('Given back with')}
-                    className="w-40"
-                  >
-                    {methods.map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {text(m.name, m.code)}
-                      </option>
-                    ))}
-                  </Select>
-                  {!registerId && chosenRefund?.methodType === 'cash' && branchRegisters.length > 0 && (
-                    <Select
-                      value={cashRegister ?? ''}
-                      onChange={(e) => setRefundRegisterId(e.target.value)}
-                      aria-label={t('Register')}
-                      className="w-40"
-                    >
-                      {branchRegisters.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.name}
-                        </option>
+                <div className="space-y-2">
+                  <div>
+                    <p className="text-xs text-gray-600">{t('Given back the way each deposit was paid:')}</p>
+                    <ul className="text-sm">
+                      {refundParts.map((part) => (
+                        <li key={`${part.methodId}:${part.currency ?? ''}`} className="flex justify-between gap-2">
+                          <span>{text(part.method?.name, t('Payment'))}</span>
+                          <span className="tabular-nums">
+                            {part.currency && part.currency !== currency
+                              ? `${formatMoney(part.tendered, part.currency)} (${money(part.amount)})`
+                              : money(part.amount)}
+                          </span>
+                        </li>
                       ))}
-                    </Select>
+                    </ul>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {unavailable.length > 0 && (
+                      <Select
+                        value={fallbackRefund?.id ?? ''}
+                        onChange={(e) => setRefundMethodId(e.target.value)}
+                        aria-label={t('Given back with')}
+                        title={t('A way of paying used for a deposit can no longer be used: choose how to give it back')}
+                        className="w-40"
+                      >
+                        {methods.map((m) => (
+                          <option key={m.id} value={m.id}>
+                            {text(m.name, m.code)}
+                          </option>
+                        ))}
+                      </Select>
+                    )}
+                    {!registerId && refundsCash && branchRegisters.length > 0 && (
+                      <Select
+                        value={cashRegister ?? ''}
+                        onChange={(e) => setRefundRegisterId(e.target.value)}
+                        aria-label={t('Register')}
+                        className="w-40"
+                      >
+                        {branchRegisters.map((r) => (
+                          <option key={r.id} value={r.id}>
+                            {r.name}
+                          </option>
+                        ))}
+                      </Select>
+                    )}
+                    {refundsOther && (
+                      <Input
+                        value={reference}
+                        onChange={(e) => setReference(e.target.value)}
+                        placeholder={t('Reference')}
+                        aria-label={t('Reference')}
+                        className="min-w-24 flex-1"
+                      />
+                    )}
+                  </div>
+                  {unavailable.length > 0 && (
+                    <p className="text-xs text-amber-700">{t('A way of paying used for a deposit can no longer be used: choose how to give it back')}</p>
                   )}
-                  <Input
-                    value={reference}
-                    onChange={(e) => setReference(e.target.value)}
-                    placeholder={t('Reference')}
-                    aria-label={t('Reference')}
-                    className="min-w-24 flex-1"
-                  />
+                  {refundsCash && <p className="text-xs text-gray-600">{t('The cash comes out of your open cash session on this register.')}</p>}
                 </div>
-              )}
-              {outcome === 'refund' && chosenRefund?.methodType === 'cash' && (
-                <p className="text-xs text-gray-600">{t('The cash comes out of your open cash session on this register.')}</p>
               )}
             </>
           )}
