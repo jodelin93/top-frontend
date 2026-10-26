@@ -32,15 +32,17 @@ export interface AdminNavItem {
   href: string;
   label: string;
   icon: typeof Package;
-  // Shown when the user has any of these permissions
+  // Shown when the user has any of these permissions…
   permissions: string[];
+  // …and all of these
+  alsoNeeds?: string[];
 }
 
 export const adminNav: { section: string; items: AdminNavItem[] }[] = [
   {
     section: 'Sales',
     items: [
-      { href: '/admin/dashboard', label: 'Dashboard', icon: BarChart3, permissions: ['reports.view'] },
+      { href: '/admin/dashboard', label: 'Dashboard', icon: BarChart3, permissions: ['reports.view'], alsoNeeds: ['sales.view.all'] },
       { href: '/admin/reports', label: 'Reports', icon: FileBarChart, permissions: ['reports.view'] },
       { href: '/admin/sales', label: 'Sales', icon: Receipt, permissions: ['sales.view'] },
       { href: '/admin/estimates', label: 'Estimates', icon: FileText, permissions: ['estimates.manage'] },

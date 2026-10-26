@@ -26,7 +26,7 @@ La page **Rapports** (menu **Ventes**) est réservée aux personnes qui ont le d
 1. Cliquez sur le rapport voulu dans la liste de gauche (sur téléphone : dans la liste **Rapport** en haut).
 2. Choisissez la période (un rapport s’ouvre sur **Aujourd'hui**) : **Aujourd'hui**, **Hier**, **7 derniers jours**, **30 derniers jours**, **Ce mois-ci**, ou changez directement les dates. La date de début ne peut pas dépasser la date de fin, et une période couvre 400 jours au plus.
 
-> **Remarque :** les jours sont ceux du magasin, dans le fuseau horaire de la succursale (ou de la première succursale pour toutes les succursales), d'où que vous consultiez le rapport. Les rapports de ventes, paiements, retours, caisse et clients demandent l'autorisation de voir toutes les ventes.
+> **Remarque :** les jours sont ceux du magasin, dans le fuseau horaire de la succursale (ou de la première succursale pour toutes les succursales), d'où que vous consultiez le rapport. Le tableau de bord et les rapports de ventes, paiements, retours, caisse et clients demandent l'autorisation de voir toutes les ventes.
 3. Choisissez une succursale dans **Toutes les succursales** si besoin.
 4. Le tableau s'affiche avec une ligne **Total**. **Généré le …** indique l'heure du calcul.
 

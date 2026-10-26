@@ -35,6 +35,10 @@ export const hasPermission = (user: User | null, ...permissions: string[]) =>
 export const hasAnyPermission = (user: User | null, ...permissions: string[]) =>
   permissions.some((p) => user?.permissions?.includes(p));
 
+/** May the user open this admin menu entry? */
+export const canOpenAdminItem = (user: User | null, item: { permissions: string[]; alsoNeeds?: string[] }) =>
+  hasAnyPermission(user, ...item.permissions) && (item.alsoNeeds ?? []).every((p) => hasPermission(user, p));
+
 // Anything that makes the admin area useful to this user
 export const ADMIN_AREA_PERMISSIONS = [
   'reports.view',
@@ -59,7 +63,7 @@ export const ADMIN_AREA_PERMISSIONS = [
 export const canUseAdmin = (user: User | null) =>
   hasAnyPermission(user, ...ADMIN_AREA_PERMISSIONS) ||
   (!hasPermission(user, 'pos.sell') &&
-    adminNav.some(({ items }) => items.some((item) => hasAnyPermission(user, ...item.permissions))));
+    adminNav.some(({ items }) => items.some((item) => canOpenAdminItem(user, item))));
 
 /*
  * The session itself is an HttpOnly cookie set by the API (pos_session; the

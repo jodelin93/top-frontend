@@ -1,5 +1,5 @@
 import { adminNav } from '@/lib/admin-nav';
-import { canUseAdmin, hasAnyPermission, hasPermission, type User } from '@/stores/auth-store';
+import { canOpenAdminItem, canUseAdmin, hasPermission, type User } from '@/stores/auth-store';
 
 // Selling at the till (see top-backend/src/auth/permissions.ts)
 export const POS_SELL_PERMISSION = 'pos.sell';
@@ -20,7 +20,7 @@ export function firstAdminHref(user: User | null): string | null {
   if (!canUseAdmin(user)) return null;
   const allowed = adminNav
     .flatMap((section) => section.items)
-    .filter((item) => hasAnyPermission(user, ...item.permissions));
+    .filter((item) => canOpenAdminItem(user, item));
   const preferred = PREFERRED_START.find((href) =>
     allowed.some((item) => item.href === href)
   );

@@ -18,6 +18,7 @@ const accountant = user([
   'reports.view',
   'reports.export',
   'sales.view',
+  'sales.view.all',
   'expenses.create',
   'expenses.approve',
   'payments.reconcile',
@@ -46,6 +47,11 @@ describe('homePath', () => {
   it('sends an accountant to the admin dashboard', () => {
     expect(canSell(accountant)).toBe(false);
     expect(homePath(accountant)).toBe('/admin/dashboard');
+  });
+
+  it('skips the dashboard for a role limited to its own sales', () => {
+    const own = user(accountant!.permissions!.filter((p) => p !== 'sales.view.all'));
+    expect(homePath(own)).not.toBe('/admin/dashboard');
   });
 
   it('starts an inventory clerk on the stock, not on the review queue', () => {

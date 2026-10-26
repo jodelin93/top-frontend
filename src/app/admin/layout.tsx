@@ -7,7 +7,7 @@ import { LanguageSwitcher } from '@/components/language-switcher';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { LogOut, Menu, ShieldCheck, ShoppingCart, X } from 'lucide-react';
 import { ProtectedRoute } from '@/components/auth/protected-route';
-import { canUseAdmin, hasAnyPermission, useAuthStore } from '@/stores/auth-store';
+import { canOpenAdminItem, canUseAdmin, useAuthStore } from '@/stores/auth-store';
 import { adminNav, adminNavItem, adminNavLabel } from '@/lib/admin-nav';
 import { cn } from '@/lib/utils';
 import { roleLabel } from '@/lib/server-texts';
@@ -53,7 +53,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // A page opened by its address is shown only with its menu entry's permissions
   // (the server refuses its data anyway)
   const navItem = adminNavItem(pathname);
-  const pageAllowed = !navItem || hasAnyPermission(user, ...navItem.permissions);
+  const pageAllowed = !navItem || canOpenAdminItem(user, navItem);
 
   return (
     <ProtectedRoute>
@@ -99,7 +99,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <nav className="flex-1 space-y-1 overflow-y-auto p-2">
             {adminNav.map(({ section, items }) => {
-              const visible = items.filter((item) => hasAnyPermission(user, ...item.permissions));
+              const visible = items.filter((item) => canOpenAdminItem(user, item));
               if (visible.length === 0) return null;
               return (
                 <div key={section} className="pb-2">

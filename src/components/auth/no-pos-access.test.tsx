@@ -29,7 +29,7 @@ describe('NoPosAccess (till screen for users who do not sell)', () => {
   });
 
   it('sends an accountant on to the admin area, with a link as well', () => {
-    signIn(['reports.view', 'expenses.approve', 'payments.reconcile']);
+    signIn(['reports.view', 'sales.view.all', 'expenses.approve', 'payments.reconcile']);
     render(<NoPosAccess />);
     expect(router.replace).toHaveBeenCalledWith('/admin/dashboard');
     expect(screen.getByRole('link', { name: 'Go to administration' })).toHaveAttribute('href', '/admin/dashboard');

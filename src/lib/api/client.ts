@@ -87,8 +87,8 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     // Failed logins / MFA codes are shown on the form, not treated as an expired session
-    // (POST /auth/password answers 401 for a wrong current password: not a sign-out)
-    const isAuthAttempt = /\/auth\/(login|logout|mfa\/verify|password)$|\/tenants\/signup$/.test(error.config?.url ?? '');
+    // (POST /auth/password and /auth/mfa/enable answer 401 for a wrong current password: not a sign-out)
+    const isAuthAttempt = /\/auth\/(login|logout|mfa\/verify|mfa\/enable|password)$|\/tenants\/signup$/.test(error.config?.url ?? '');
     if (error.response?.status === 401 && !isAuthAttempt) {
       // Session ended or expired: forget the saved profile and go to the sign-in page
       // (the HttpOnly cookie is invalid now; the next sign-in replaces it)
