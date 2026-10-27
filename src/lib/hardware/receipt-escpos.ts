@@ -114,15 +114,16 @@ export function receiptToEscPos(
 
 /** A short test page for the Hardware screen: accents, sizes, barcode, cut */
 /**
- * A small test picture (a framed balance sign), centred on the paper: shows whether
- * the printer reads images in the chosen format before the logo goes on receipts
+ * A small test picture (a framed balance sign), centred by the printer like the logo:
+ * shows whether the printer reads images in the chosen format before the logo goes on
+ * receipts
  */
-export function testImage(paper: PaperWidth): RasterImage {
-  const widthDots = paper === 58 ? 384 : 576;
+export function testImage(): RasterImage {
+  const widthDots = 192;
   const heightDots = 48;
   const bytesPerRow = widthDots / 8;
   const data = new Uint8Array(bytesPerRow * heightDots);
-  const left = (widthDots - 192) / 2;
+  const left = 0;
   const set = (x: number, y: number) => (data[y * bytesPerRow + (x >> 3)] |= 0x80 >> (x & 7));
   for (let y = 0; y < heightDots; y++) {
     for (let x = left; x < left + 192; x++) {
@@ -137,7 +138,7 @@ export function testImage(paper: PaperWidth): RasterImage {
 export function testPageEscPos(paper: PaperWidth, storeName: string, imageMode: ImageMode = 'raster'): Uint8Array {
   const p = new EscPosBuilder(paper);
   // The test picture first, where the logo goes on a receipt
-  p.align('center').image(testImage(paper), imageMode);
+  p.align('center').image(testImage(), imageMode);
   p.align('center').bold().size('double').text(t('Test receipt'), Math.floor(p.width / 2)).size('normal').bold(false);
   p.text(storeName);
   p.text(formatDateTime(new Date().toISOString()));

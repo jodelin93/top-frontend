@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Sale } from '@/lib/api/sales';
 import { CMD, EscPosBuilder, barcodeModuleWidth, columns, encodeCp858, rasterize, toBase64, wrap } from './escpos';
-import { receiptToEscPos, repeatReceipt } from './receipt-escpos';
+import { receiptToEscPos, repeatReceipt, testPageEscPos } from './receipt-escpos';
 
 const has = (haystack: Uint8Array, needle: readonly number[]) => {
   outer: for (let i = 0; i + needle.length <= haystack.length; i++) {
@@ -78,6 +78,11 @@ describe('ESC/POS encoder', () => {
       0x0a,
       0x1b, 0x32, // normal line spacing again
     ]);
+    // The test page's picture goes at its own width (192 dots = 24 bytes a row), never
+    // padded to the paper width: narrower printers misread over-wide images
+    const page = [...testPageEscPos(80, 'Shop')];
+    const at = page.findIndex((b, i) => b === 0x1d && page[i + 1] === 0x76 && page[i + 2] === 0x30);
+    expect(page.slice(at, at + 6)).toEqual([0x1d, 0x76, 0x30, 0, 24, 0]);
     // The default stays the raster format (GS v 0)
     const raster = [...new EscPosBuilder(80).image(image).bytes()];
     expect(raster.slice(CMD.init.length + CMD.codePage858.length, CMD.init.length + CMD.codePage858.length + 3)).toEqual([0x1d, 0x76, 0x30]);

@@ -113,7 +113,12 @@ export function loadReceiptLogo(url: string | null | undefined): Promise<LogoIma
   return Promise.race([pending, new Promise<null>((resolve) => setTimeout(() => resolve(null), LOAD_TIMEOUT_MS))]);
 }
 
-/** The loaded logo as printer dots for this paper, centred on the paper width */
+/**
+ * The loaded logo as printer dots for this paper: only the logo itself (at most 60%
+ * of the paper), centred by the printer (the receipt sets centred alignment first).
+ * Not padded to the full paper width: printers that print fewer dots per line than
+ * the paper suggests (512 on many 80 mm models) print an over-wide image as garbage.
+ */
 export function logoRaster(url: string, image: LogoImage, paper: PaperWidth): RasterImage | null {
   const key = `${paper}:${url}`;
   if (rasters.has(key)) return rasters.get(key) ?? null;
@@ -123,13 +128,14 @@ export function logoRaster(url: string, image: LogoImage, paper: PaperWidth): Ra
     const height = 'naturalHeight' in image ? image.naturalHeight : image.height;
     const place = logoPlacement(width, height, paper);
     const canvas = document.createElement('canvas');
-    canvas.width = place.paperDots;
+    // A whole number of bytes per row
+    canvas.width = Math.ceil(place.width / 8) * 8;
     canvas.height = place.height;
     const context = canvas.getContext('2d');
     if (context) {
       context.fillStyle = '#fff';
       context.fillRect(0, 0, canvas.width, canvas.height);
-      context.drawImage(image, place.x, 0, place.width, place.height);
+      context.drawImage(image, 0, 0, place.width, place.height);
       raster = ditherToRaster(context.getImageData(0, 0, canvas.width, canvas.height).data, canvas.width, canvas.height);
     }
   } catch {
