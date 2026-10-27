@@ -37,7 +37,8 @@ export function receiptToEscPos(
 
   // ---- Seller ----
   p.align('center');
-  if (o.showLogo && options.logo) p.image(options.logo, options.imageMode);
+  // A blank line under the logo: the store name printed right after it touches the picture
+  if (o.showLogo && options.logo) p.image(options.logo, options.imageMode).feed(1);
   p.bold().size('double').text(receiptName(s, branch), Math.floor(p.width / 2)).size('normal').bold(false);
   if (o.showBusinessDetails) {
     if (s?.businessLegalName && s.businessLegalName !== s.storeName) p.text(s.businessLegalName);
@@ -138,7 +139,7 @@ export function testImage(): RasterImage {
 export function testPageEscPos(paper: PaperWidth, storeName: string, imageMode: ImageMode = 'raster'): Uint8Array {
   const p = new EscPosBuilder(paper);
   // The test picture first, where the logo goes on a receipt
-  p.align('center').image(testImage(), imageMode);
+  p.align('center').image(testImage(), imageMode).feed(1);
   p.align('center').bold().size('double').text(t('Test receipt'), Math.floor(p.width / 2)).size('normal').bold(false);
   p.text(storeName);
   p.text(formatDateTime(new Date().toISOString()));

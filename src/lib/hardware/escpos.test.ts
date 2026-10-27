@@ -83,6 +83,9 @@ describe('ESC/POS encoder', () => {
     const page = [...testPageEscPos(80, 'Shop')];
     const at = page.findIndex((b, i) => b === 0x1d && page[i + 1] === 0x76 && page[i + 2] === 0x30);
     expect(page.slice(at, at + 6)).toEqual([0x1d, 0x76, 0x30, 0, 24, 0]);
+    // A blank line after the picture (two strips of 24 rows) so the title does not touch it
+    const after = at + 2 * (8 + 24 * 24);
+    expect(page.slice(after, after + 3)).toEqual([0x1b, 0x64, 1]);
     // The default stays the raster format (GS v 0)
     const raster = [...new EscPosBuilder(80).image(image).bytes()];
     expect(raster.slice(CMD.init.length + CMD.codePage858.length, CMD.init.length + CMD.codePage858.length + 3)).toEqual([0x1d, 0x76, 0x30]);
