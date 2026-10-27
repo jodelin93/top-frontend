@@ -19,6 +19,7 @@ The JodaPrint agent is installed and activated once on each till computer. Then:
 2. Under **Receipt printer (JodaPrint)**, check the status **Connected · version …**.
 3. Choose the receipt printer in the list and its **Paper width** (80 mm or 58 mm). The printer with the alias "receipt" in the JodaPrint dashboard is chosen by default.
 4. Click **Print a test receipt**.
+5. The test receipt starts with a small framed picture. If it prints as symbols instead, choose **Logo format** > **Column (older printers)** and print the test again: the store logo then prints the same way.
 
 | Status | Meaning |
 | --- | --- |

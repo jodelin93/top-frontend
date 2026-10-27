@@ -62,6 +62,26 @@ describe('ESC/POS encoder', () => {
     expect([...rasterize(rgba, 8, 1).data]).toEqual([0b10101010]);
     expect(toBase64(Uint8Array.from([0x1b, 0x40]))).toBe('G0A=');
   });
+
+  it('sends an image as 24-dot columns (ESC * 33) for printers that misread raster images', () => {
+    // 2 dots wide, 24 high: the top-left dot and the bottom-right dot are black
+    const data = new Uint8Array(24);
+    data[0] = 0b10000000;
+    data[23] = 0b01000000;
+    const image = { widthDots: 2, heightDots: 24, data };
+    const bytes = [...new EscPosBuilder(80).image(image, 'column').bytes()].slice(CMD.init.length + CMD.codePage858.length);
+    expect(bytes).toEqual([
+      0x1b, 0x33, 24, // line spacing of one band
+      0x1b, 0x2a, 33, 2, 0, // 24-dot double density, 2 columns
+      0x80, 0x00, 0x00, // column 1: top dot
+      0x00, 0x00, 0x01, // column 2: bottom dot
+      0x0a,
+      0x1b, 0x32, // normal line spacing again
+    ]);
+    // The default stays the raster format (GS v 0)
+    const raster = [...new EscPosBuilder(80).image(image).bytes()];
+    expect(raster.slice(CMD.init.length + CMD.codePage858.length, CMD.init.length + CMD.codePage858.length + 3)).toEqual([0x1d, 0x76, 0x30]);
+  });
 });
 
 const sale = (overrides: Partial<Sale> = {}): Sale =>

@@ -5,7 +5,7 @@ import { text } from '@/lib/api/crud';
 import { formatDate, formatDateTime, formatMoney } from '@/lib/format';
 import { receiptName, receiptOptions, receiptSettings } from '@/components/pos/receipt';
 import { t } from '@/i18n';
-import { EscPosBuilder, type PaperWidth, type RasterImage } from './escpos';
+import { EscPosBuilder, type ImageMode, type PaperWidth, type RasterImage } from './escpos';
 import { lineQuantityText } from '@/lib/pos/quantity';
 
 /**
@@ -17,7 +17,7 @@ import { lineQuantityText } from '@/lib/pos/quantity';
 export function receiptToEscPos(
   sale: Sale,
   settings: StoreSettings | undefined,
-  options: { paper: PaperWidth; copyNumber?: number | null; logo?: RasterImage | null }
+  options: { paper: PaperWidth; copyNumber?: number | null; logo?: RasterImage | null; imageMode?: ImageMode }
 ): Uint8Array {
   const s = receiptSettings(sale, settings);
   const o = receiptOptions(s);
@@ -37,7 +37,7 @@ export function receiptToEscPos(
 
   // ---- Seller ----
   p.align('center');
-  if (o.showLogo && options.logo) p.image(options.logo);
+  if (o.showLogo && options.logo) p.image(options.logo, options.imageMode);
   p.bold().size('double').text(receiptName(s, branch), Math.floor(p.width / 2)).size('normal').bold(false);
   if (o.showBusinessDetails) {
     if (s?.businessLegalName && s.businessLegalName !== s.storeName) p.text(s.businessLegalName);
@@ -113,8 +113,31 @@ export function receiptToEscPos(
 }
 
 /** A short test page for the Hardware screen: accents, sizes, barcode, cut */
-export function testPageEscPos(paper: PaperWidth, storeName: string): Uint8Array {
+/**
+ * A small test picture (a framed balance sign), centred on the paper: shows whether
+ * the printer reads images in the chosen format before the logo goes on receipts
+ */
+export function testImage(paper: PaperWidth): RasterImage {
+  const widthDots = paper === 58 ? 384 : 576;
+  const heightDots = 48;
+  const bytesPerRow = widthDots / 8;
+  const data = new Uint8Array(bytesPerRow * heightDots);
+  const left = (widthDots - 192) / 2;
+  const set = (x: number, y: number) => (data[y * bytesPerRow + (x >> 3)] |= 0x80 >> (x & 7));
+  for (let y = 0; y < heightDots; y++) {
+    for (let x = left; x < left + 192; x++) {
+      const frame = y < 3 || y >= heightDots - 3 || x < left + 3 || x >= left + 189;
+      const bar = x >= left + 48 && x < left + 144 && ((y >= 12 && y < 20) || (y >= 28 && y < 36));
+      if (frame || bar) set(x, y);
+    }
+  }
+  return { widthDots, heightDots, data };
+}
+
+export function testPageEscPos(paper: PaperWidth, storeName: string, imageMode: ImageMode = 'raster'): Uint8Array {
   const p = new EscPosBuilder(paper);
+  // The test picture first, where the logo goes on a receipt
+  p.align('center').image(testImage(paper), imageMode);
   p.align('center').bold().size('double').text(t('Test receipt'), Math.floor(p.width / 2)).size('normal').bold(false);
   p.text(storeName);
   p.text(formatDateTime(new Date().toISOString()));

@@ -160,4 +160,7 @@ export const documentsHardware: Record<string, string> = {
   'Scanner': 'Eskanè',
   'Typed': 'Tape',
   'Average {avg} ms, slowest {max} ms between keys': 'Mwayèn {avg} ms, pi lan {max} ms ant touch yo',
+  "Logo format": "Fòma logo a",
+  "Standard (most printers)": "Estanda (pifò enprimant)",
+  "Column (older printers)": "An kolòn (enprimant ki pi ansyen)",
 };

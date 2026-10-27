@@ -186,4 +186,7 @@ export const documentsHardware: Record<string, string> = {
   Scanner: 'Scanner',
   Typed: 'Saisi',
   'Average {avg} ms, slowest {max} ms between keys': 'Moyenne {avg} ms, maximum {max} ms entre les touches',
+  "Logo format": "Format du logo",
+  "Standard (most printers)": "Standard (la plupart des imprimantes)",
+  "Column (older printers)": "En colonnes (imprimantes plus anciennes)",
 };

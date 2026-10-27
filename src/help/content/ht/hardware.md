@@ -19,6 +19,7 @@ Ajan JodaPrint la enstale epi aktive yon sèl fwa sou chak òdinatè kès. Apre 
 2. Anba **Enprimant resi (JodaPrint)**, verifye estati **Konekte · vèsyon …**.
 3. Chwazi enprimant resi a nan lis la ak **Lajè papye a** (80 mm oswa 58 mm). Enprimant ki gen alyas « receipt » nan tablo bò JodaPrint la chwazi pa defo.
 4. Klike sou **Enprime yon resi tès**.
+5. Resi tès la kòmanse ak yon ti imaj ki gen yon kad. Si li soti an senbòl, chwazi **Fòma logo a** > **An kolòn (enprimant ki pi ansyen)** epi enprime tès la ankò: logo magazen an ap enprime menm jan an.
 
 | Estati | Sa li vle di |
 | --- | --- |

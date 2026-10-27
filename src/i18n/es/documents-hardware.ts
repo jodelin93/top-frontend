@@ -191,4 +191,7 @@ export const documentsHardware: Record<string, string> = {
   Typed: 'Tecleado',
   'Average {avg} ms, slowest {max} ms between keys':
     'Promedio {avg} ms, máximo {max} ms entre teclas',
+  "Logo format": "Formato del logo",
+  "Standard (most printers)": "Estándar (la mayoría de las impresoras)",
+  "Column (older printers)": "En columnas (impresoras más antiguas)",
 };

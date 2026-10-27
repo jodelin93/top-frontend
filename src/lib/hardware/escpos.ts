@@ -125,6 +125,9 @@ export interface RasterImage {
  */
 // Rows per image strip (what receipt printer drivers send)
 export const IMAGE_STRIP_ROWS = 24;
+
+/** How images (the logo) are sent: see EscPosBuilder.image */
+export type ImageMode = 'raster' | 'column';
 // Printable dots per line at 203 dpi
 const PRINT_DOTS: Record<PaperWidth, number> = { 58: 384, 80: 576 };
 
@@ -204,11 +207,14 @@ export class EscPosBuilder {
   }
 
   /**
-   * Raster bit image (GS v 0), e.g. the store logo, sent in strips of 24 rows one after
-   * the other. Many receipt printers (the common POS80 models among them) print a
-   * single tall block as garbage characters; their own drivers send 24-row strips.
+   * A bit image, e.g. the store logo. "raster" (GS v 0) sends it in strips of 24 rows
+   * one after the other: many receipt printers (the common POS80 models among them)
+   * print a single tall block as garbage characters. "column" (ESC * 33, 24-dot
+   * double density) is the older format every ESC/POS printer reads: printers that
+   * print raster images as symbols get the logo this way.
    */
-  image(image: RasterImage): this {
+  image(image: RasterImage, mode: ImageMode = 'raster'): this {
+    if (mode === 'column') return this.columnImage(image);
     const bytesPerRow = Math.ceil(image.widthDots / 8);
     for (let row = 0; row < image.heightDots; row += IMAGE_STRIP_ROWS) {
       const rows = Math.min(IMAGE_STRIP_ROWS, image.heightDots - row);
@@ -217,6 +223,29 @@ export class EscPosBuilder {
       );
     }
     return this;
+  }
+
+  /** ESC * 33: bands of 24 dot rows, three bytes per dot column (top dot = high bit) */
+  private columnImage(image: RasterImage): this {
+    const bytesPerRow = Math.ceil(image.widthDots / 8);
+    const width = image.widthDots;
+    const dot = (x: number, y: number) =>
+      y < image.heightDots && (image.data[y * bytesPerRow + (x >> 3)] & (0x80 >> (x & 7))) !== 0;
+    // Bands touch each other: line spacing of exactly 24 dots while the image prints
+    this.raw([ESC, 0x33, IMAGE_STRIP_ROWS]);
+    for (let top = 0; top < image.heightDots; top += IMAGE_STRIP_ROWS) {
+      const band: number[] = [ESC, 0x2a, 33, width & 0xff, (width >> 8) & 0xff];
+      for (let x = 0; x < width; x++) {
+        for (let k = 0; k < 3; k++) {
+          let byte = 0;
+          for (let bit = 0; bit < 8; bit++) if (dot(x, top + k * 8 + bit)) byte |= 0x80 >> bit;
+          band.push(byte);
+        }
+      }
+      this.raw(band).raw([0x0a]);
+    }
+    // Back to the printer's normal line spacing
+    return this.raw([ESC, 0x32]);
   }
 
   cut(): this {

@@ -15,7 +15,7 @@
 import { JodaPrint, JodaPrintError, type AgentInfo, type Job, type Printer, type PrinterRef } from '@jodaprint/sdk';
 import apiClient from '@/lib/api/client';
 import type { BridgeResult } from './bridge-client';
-import type { PaperWidth } from './escpos';
+import type { ImageMode, PaperWidth } from './escpos';
 import { toBase64 } from './escpos';
 
 const STORAGE_KEY = 'pos_jodaprint';
@@ -28,6 +28,8 @@ export interface AgentSettings {
   // Receipt printer: an alias from the JodaPrint dashboard, or a printer id
   printer: { alias: string } | { id: string };
   widthMm: PaperWidth;
+  // How the logo is sent: "column" for printers that print raster images as symbols
+  imageMode: ImageMode;
   // Label printer (product labels): an alias or a printer id
   labelPrinter: { alias: string } | { id: string };
 }
@@ -49,6 +51,7 @@ export type { AgentInfo };
 const DEFAULT_SETTINGS: AgentSettings = {
   printer: { alias: DEFAULT_ALIAS },
   widthMm: 80,
+  imageMode: 'raster',
   labelPrinter: { alias: DEFAULT_LABEL_ALIAS },
 };
 

@@ -10,7 +10,7 @@ import { ErrorMessage } from '@/components/admin/page-header';
 import type { Sale } from '@/lib/api/sales';
 import type { StoreSettings } from '@/lib/api/settings';
 import { getErrorMessage } from '@/lib/api/client';
-import { directPaperWidth } from '@/lib/hardware/direct-print';
+import { directImageMode, directPaperWidth } from '@/lib/hardware/direct-print';
 import { loadReceiptLogo, logoRaster, type LogoImage } from '@/lib/hardware/receipt-logo';
 import { printDocument, retryPrint, type PrintOutcome, type PrintRequest } from '@/lib/hardware/print-manager';
 import { receiptToEscPos, repeatReceipt } from '@/lib/hardware/receipt-escpos';
@@ -56,8 +56,10 @@ export function useReceiptPrinter() {
             const receipt = receiptToEscPos(sale, options.settings, {
               paper,
               copyNumber,
-              // The store logo as printer dots (the browser receipt shows it as an image)
+              // The store logo as printer dots (the browser receipt shows it as an image),
+              // in the format this till's printer reads
               logo: logo ? logoRaster(logo.url, logo.image, paper) : null,
+              imageMode: directImageMode(),
             });
             return repeatReceipt(receipt, copies);
           }

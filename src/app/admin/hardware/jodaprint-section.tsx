@@ -10,7 +10,7 @@ import { Select } from '@/components/ui/select';
 import { ErrorMessage, Field } from '@/components/admin/page-header';
 import { useStoreSettings } from '@/hooks/use-store-settings';
 import { hardwareApi } from '@/lib/hardware/documents-api';
-import type { PaperWidth } from '@/lib/hardware/escpos';
+import type { ImageMode, PaperWidth } from '@/lib/hardware/escpos';
 import {
   agentConfig,
   agentConnection,
@@ -122,7 +122,7 @@ export function JodaPrintSection() {
     setBusy(true);
     setError(null);
     setNotice(null);
-    const result = await agentPrint(testPageEscPos(settings?.widthMm ?? 80, store?.storeName ?? ''), { commandId: randomId() });
+    const result = await agentPrint(testPageEscPos(settings?.widthMm ?? 80, store?.storeName ?? '', settings?.imageMode ?? 'raster'), { commandId: randomId() });
     if (result.status === 'printed') setNotice(t('Test receipt printed.'));
     else setError(t('The printer did not print: {error}', { error: result.error ?? result.status }));
     setBusy(false);
@@ -229,6 +229,20 @@ export function JodaPrintSection() {
               >
                 <option value="80">80 mm</option>
                 <option value="58">58 mm</option>
+              </Select>
+            </Field>
+            <Field label={t('Logo format')} htmlFor="jodaprint-image-mode">
+              <Select
+                id="jodaprint-image-mode"
+                value={settings.imageMode ?? 'raster'}
+                onChange={(e) => {
+                  saveAgentSettings({ imageMode: e.target.value as ImageMode });
+                  setSettings(getAgentSettings());
+                }}
+                className="w-56"
+              >
+                <option value="raster">{t('Standard (most printers)')}</option>
+                <option value="column">{t('Column (older printers)')}</option>
               </Select>
             </Field>
             <Button onClick={testPrint} disabled={busy || receiptPrinters.length === 0}>

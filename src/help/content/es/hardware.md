@@ -19,6 +19,7 @@ El agente JodaPrint se instala y se activa una vez en cada computadora de caja. 
 2. En **Impresora de recibos (JodaPrint)**, verifique el estado **Conectado · versión …**.
 3. Elija la impresora de recibos en la lista y su **Ancho del papel** (80 mm o 58 mm). La impresora con el alias «receipt» en el panel de JodaPrint se elige por defecto.
 4. Haga clic en **Imprimir un recibo de prueba**.
+5. El recibo de prueba empieza con una pequeña imagen enmarcada. Si sale como símbolos, elija **Formato del logo** > **En columnas (impresoras más antiguas)** e imprima la prueba de nuevo: el logo de la tienda se imprime entonces de la misma forma.
 
 | Estado | Significado |
 | --- | --- |

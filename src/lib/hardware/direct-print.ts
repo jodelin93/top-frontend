@@ -6,7 +6,7 @@
  * When neither answers, documents go to the browser print dialog.
  */
 import { bridgeKick, bridgePrint, getPairing, isBridgeAvailable, type BridgeResult } from './bridge-client';
-import type { PaperWidth } from './escpos';
+import type { ImageMode, PaperWidth } from './escpos';
 import {
   agentKick,
   agentPrint,
@@ -52,6 +52,11 @@ export async function directPrinterId(): Promise<string | null> {
 export function directPaperWidth(): PaperWidth | null {
   if (lastChannel === 'agent') return getAgentSettings().widthMm;
   return lastChannel === 'bridge' ? (getPairing()?.widthMm ?? null) : null;
+}
+
+/** How this till's receipt printer takes the logo (the bridge: always raster) */
+export function directImageMode(): ImageMode {
+  return lastChannel === 'agent' ? (getAgentSettings().imageMode ?? 'raster') : 'raster';
 }
 
 /** Open the cash drawer once; null when this till has no direct connection */

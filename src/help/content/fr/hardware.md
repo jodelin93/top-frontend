@@ -19,6 +19,7 @@ L'agent JodaPrint est installé et activé une fois sur chaque ordinateur de cai
 2. Sous **Imprimante de reçus (JodaPrint)**, vérifiez le statut **Connecté · version …**.
 3. Choisissez l'imprimante de reçus dans la liste et sa **Largeur du papier** (80 mm ou 58 mm). L'imprimante qui porte l'alias « receipt » dans le tableau de bord JodaPrint est choisie d'office.
 4. Cliquez sur **Imprimer un ticket de test**.
+5. Le ticket de test commence par une petite image encadrée. Si elle sort en symboles, choisissez **Format du logo** > **En colonnes (imprimantes plus anciennes)** et imprimez de nouveau le test : le logo du magasin s'imprime alors de la même façon.
 
 | Statut | Signification |
 | --- | --- |
