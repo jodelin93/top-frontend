@@ -543,7 +543,8 @@ export const inventoryApi = {
     notes?: string;
     // One per form: a retry (double click, lost answer) receives once
     idempotencyKey?: string;
-    // Damaged units go to the warehouse's quarantine / damaged location when there is one;
+    // Damaged units go to the warehouse's quarantine / damaged location when there is one
+    // and the store keeps damaged goods apart (keepDamagedApart);
     // a variant may appear twice (once per condition)
     items: { variantId: string; quantity: number; cost?: number; condition?: 'good' | 'damaged' }[];
   }) => {

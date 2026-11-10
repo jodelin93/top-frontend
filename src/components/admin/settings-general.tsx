@@ -225,6 +225,7 @@ const INVENTORY_KEYS = [
   'purchaseOverReceiptTolerance',
   'purchaseInvoiceVarianceTolerance',
   'countVarianceTolerance',
+  'keepDamagedApart',
 ] as const;
 
 const TRANSFER_APPROVAL_LABELS: Record<StoreSettings['transferApprovalMode'], string> = {
@@ -243,7 +244,7 @@ export function SettingsInventoryPurchasing() {
   const v = form.values;
   const { currencyCode, transferApprovalMode = 'never' } = form.settings;
   const number = (value: string) => (value === '' ? 0 : Number(value));
-  const percent = (key: (typeof INVENTORY_KEYS)[number], label: string, hint: string, max: number) => (
+  const percent = (key: Exclude<(typeof INVENTORY_KEYS)[number], 'keepDamagedApart'>, label: string, hint: string, max: number) => (
     <Field label={label} htmlFor={key} hint={hint}>
       <div className="flex items-center gap-2">
         <Input
@@ -309,6 +310,16 @@ export function SettingsInventoryPurchasing() {
               onChange={(e) => form.set('countVarianceTolerance', Math.round(number(e.target.value)))}
             />
           </Field>
+          <div className="sm:col-span-2">
+            <CheckboxField
+              label={t('Keep damaged goods apart')}
+              hint={t(
+                "Damaged units received or returned go to the warehouse's damaged or quarantine location, where they cannot be sold. When off, they stay at the location they were received at."
+              )}
+              checked={v.keepDamagedApart ?? false}
+              onChange={(e) => form.set('keepDamagedApart', e.target.checked)}
+            />
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 rounded-md border p-3 text-sm sm:flex-row sm:items-center sm:justify-between">

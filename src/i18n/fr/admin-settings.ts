@@ -561,6 +561,9 @@ export const adminSettings: Record<string, string> = {
   'Stock count variance tolerance (units)': "Tolérance d'écart d'inventaire (unités)",
   'Count differences larger than this need "Approve stock count variances".':
     'Les écarts de comptage supérieurs nécessitent « Approuver les écarts d’inventaire ».',
+  "Keep damaged goods apart": "Garder les marchandises endommagées à part",
+  "Damaged units received or returned go to the warehouse's damaged or quarantine location, where they cannot be sold. When off, they stay at the location they were received at.":
+    "Les unités reçues ou retournées endommagées vont dans l'emplacement endommagé ou de quarantaine de l'entrepôt, où elles ne peuvent pas être vendues. Désactivé : elles restent à l'emplacement où elles ont été reçues.",
   'Transfers never need approval before dispatch.': "Les transferts n'ont jamais besoin d'approbation avant l'expédition.",
   'Transfers worth more than {amount} at cost need approval before dispatch.':
     "Les transferts valant plus de {amount} au coût doivent être approuvés avant l'expédition.",

@@ -473,6 +473,9 @@ export const adminSettings: Record<string, string> = {
   'An invoice price above the order price by more than this % needs approval.': 'Yon pri sou fakti ki depase pri kòmand lan plis pase % sa a bezwen apwobasyon.',
   'Stock count variance tolerance (units)': 'Tolerans diferans konte stòk (inite)',
   'Count differences larger than this need "Approve stock count variances".': 'Diferans konte ki pi gwo pase sa a bezwen « Apwouve diferans konte stòk ».',
+  "Keep damaged goods apart": "Mete machandiz ki domaje yo apa",
+  "Damaged units received or returned go to the warehouse's damaged or quarantine location, where they cannot be sold. When off, they stay at the location they were received at.":
+    "Inite ki rive oswa ki retounen domaje ale nan anplasman domaje oswa karantèn depo a, kote yo pa ka vann. Lè li fèmen, yo rete nan anplasman kote yo te resevwa yo a.",
   'Transfers never need approval before dispatch.': 'Transfè yo pa janm bezwen apwobasyon anvan yo voye.',
   'Transfers worth more than {amount} at cost need approval before dispatch.': 'Transfè ki vo plis pase {amount} a pri revyen bezwen apwobasyon anvan yo voye.',
   'Every transfer needs approval before dispatch.': 'Chak transfè bezwen apwobasyon anvan yo voye.',

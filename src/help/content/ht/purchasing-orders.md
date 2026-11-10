@@ -12,7 +12,7 @@ related: [purchasing-receive, purchasing-suppliers, approvals]
 ## Kreye bouyon an
 
 1. Nan **Kòmand acha**, klike sou **Nouvo kòmand**.
-2. Chwazi **Founisè** a ak anplasman **Livre nan** lan.
+2. Chwazi **Founisè** a ak anplasman **Livre nan** lan. Aplikasyon an pwopoze yon anplasman ou ka vann ladan l; pa chwazi **Domaje** ni **Karantèn**, se pou machandiz ki domaje sèlman.
 3. Verifye **Livrezon prevwa** a (kalkile ak delè founisè a; li pa ka nan tan pase).
 4. Chèche chak pwodui epi klike sou **Ajoute**. Tape **Kantite** a ak **Pri inite** a, epi si sa nesesè yon rabè (**Rabè %**) oswa yon **Taks**.
 5. Ranpli **Taks kòmand**, **Livrezon** (frè transpò) ak **Referans founisè**.

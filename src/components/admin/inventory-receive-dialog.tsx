@@ -26,6 +26,7 @@ import {
 } from '@/components/admin/inventory-variant-picker';
 import { getErrorMessage } from '@/lib/api/client';
 import { inventoryApi } from '@/lib/api/inventory';
+import { useStoreSettings } from '@/hooks/use-store-settings';
 import { plural, t } from '@/i18n';
 import { addQty, QUANTITY_TEXT } from '@/lib/pos/quantity';
 import { randomId } from '@/lib/uuid';
@@ -72,6 +73,7 @@ export function InventoryReceiveDialog({
 }) {
   const queryClient = useQueryClient();
   const { options: locations, labelFor } = useStockLocationOptions();
+  const { data: settings } = useStoreSettings();
   const [locationId, setLocationId] = useState(defaultLocationId);
   const [reference, setReference] = useState('');
   const [notes, setNotes] = useState('');
@@ -134,9 +136,10 @@ export function InventoryReceiveDialog({
             {t(
               "Record a delivery without a purchase order. Quantities are added to the chosen location; a unit cost updates the product's cost (moving average or FIFO, per the store's costing method). To receive against a purchase order, use Purchasing."
             )}{' '}
-            {t(
-              "Damaged units go to the warehouse's quarantine or damaged location when there is one, so they are not sold."
-            )}
+            {settings?.keepDamagedApart &&
+              t(
+                "Damaged units go to the warehouse's quarantine or damaged location when there is one, so they are not sold."
+              )}
           </DialogDescription>
         </DialogHeader>
 

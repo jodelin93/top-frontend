@@ -20,7 +20,7 @@ Paj **Paramèt** la mande dwa **Jere paramèt magazen an** (pwopriyetè, adminis
 
 Pi ba nan menm onglè a:
 
-- blòk **Envantè ak acha**: limit apwobasyon (kòmand acha, envantè), tolerans ak **Paramèt transfè**;
+- blòk **Envantè ak acha**: limit apwobasyon (kòmand acha, envantè), tolerans, **Mete machandiz ki domaje yo apa** (dekoche: machandiz domaje yo rete nan anplasman kote yo te resevwa yo a) ak **Paramèt transfè**;
 - [Etikèt balans](topic:settings-weighted-barcodes) yo;
 - kat [To echanj](topic:settings-exchange-rate) la.
 

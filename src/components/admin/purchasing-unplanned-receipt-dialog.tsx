@@ -51,7 +51,7 @@ export function UnplannedReceiptDialog({ onClose, onDone }: { onClose: () => voi
   const { data: suppliers = [] } = useSuppliers();
   const { options: locations } = useLocationOptions();
   const [supplierId, setSupplierId] = useState('');
-  const [locationId, setLocationId] = useState(locations.find((l) => !l.isSellable)?.id ?? locations[0]?.id ?? '');
+  const [locationId, setLocationId] = useState(locations.find((l) => l.isSellable)?.id ?? locations[0]?.id ?? '');
   const [reference, setReference] = useState('');
   const [lines, setLines] = useState<Line[]>([]);
   const [error, setError] = useState<string | null>(null);

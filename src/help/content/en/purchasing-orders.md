@@ -12,7 +12,7 @@ related: [purchasing-receive, purchasing-suppliers, approvals]
 ## Create the draft
 
 1. In **Purchase orders**, click **New order**.
-2. Choose the **Supplier** and the **Deliver to** location.
+2. Choose the **Supplier** and the **Deliver to** location. The app suggests a sellable location; avoid **Damaged** and **Quarantine**, which are only for damaged goods.
 3. Check the **Expected delivery** (calculated from the supplier's lead time; it cannot be in the past).
 4. Search for each product and click **Add**. Enter the **Quantity** and the **Unit cost**, and if needed a discount (**Disc. %**) or a **Tax**.
 5. Fill in the **Order tax**, **Shipping** (freight costs) and the **Supplier reference**.

@@ -12,7 +12,7 @@ related: [purchasing-receive, purchasing-suppliers, approvals]
 ## Crear el borrador
 
 1. En **Órdenes de compra**, haga clic en **Nueva orden**.
-2. Elija el **Proveedor** y la ubicación **Entregar en**.
+2. Elija el **Proveedor** y la ubicación **Entregar en**. La aplicación propone una ubicación vendible; evite **Dañado** y **Cuarentena**, que son solo para mercancía dañada.
 3. Revise la **Entrega prevista** (calculada con el plazo del proveedor; no puede estar en el pasado).
 4. Busque cada producto y haga clic en **Agregar**. Escriba la **Cantidad** y el **Costo unitario** y, si hace falta, un descuento (**Desc. %**) o un **Impuesto**.
 5. Complete el **Impuesto de la orden**, el **Envío** (gastos de transporte) y la **Referencia del proveedor**.

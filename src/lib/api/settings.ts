@@ -31,6 +31,8 @@ export interface StoreSettings {
   // % a supplier invoice price may exceed the order price before it needs approval
   purchaseInvoiceVarianceTolerance: number;
   countVarianceTolerance: number;
+  // Damaged goods go to a damaged / quarantine location (off = they stay where received)
+  keepDamagedApart?: boolean;
   // Transfers needing inventory.transfer.approve before dispatch:
   // never, above transferApprovalThreshold (value at cost, store currency), or always
   transferApprovalMode: TransferApprovalMode;

@@ -12,7 +12,7 @@ related: [purchasing-receive, purchasing-suppliers, approvals]
 ## Créer le brouillon
 
 1. Dans **Bons de commande**, cliquez sur **Nouvelle commande**.
-2. Choisissez le **Fournisseur** et l'emplacement **Livrer à**.
+2. Choisissez le **Fournisseur** et l'emplacement **Livrer à**. L'application propose un emplacement vendable ; évitez **Endommagé** et **Quarantaine**, réservés aux marchandises abîmées.
 3. Vérifiez la **Livraison prévue** (calculée avec le délai du fournisseur ; elle ne peut pas être dans le passé).
 4. Cherchez chaque produit et cliquez sur **Ajouter**. Saisissez la **Quantité** et le **Coût unitaire**, et si besoin une remise (**Rem. %**) ou une **Taxe**.
 5. Complétez la **Taxe de commande**, la **Livraison** (frais de transport) et la **Référence fournisseur**.

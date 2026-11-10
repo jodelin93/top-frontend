@@ -71,7 +71,7 @@ export function PurchaseOrderFormDialog({
   const [supplierReference, setSupplierReference] = useState(order?.supplierReference ?? '');
   const [reason, setReason] = useState('');
   const [locationId, setLocationId] = useState(
-    order?.locationId ?? locations.find((l) => !l.isSellable)?.id ?? locations[0]?.id ?? ''
+    order?.locationId ?? locations.find((l) => l.isSellable)?.id ?? locations[0]?.id ?? ''
   );
   const [expected, setExpected] = useState(order?.expectedDeliveryDate?.slice(0, 10) ?? '');
   // A new or changed expected delivery date can't already be over

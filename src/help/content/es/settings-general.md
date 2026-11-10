@@ -20,7 +20,7 @@ La página **Configuración** requiere el permiso **Administrar la configuració
 
 Más abajo en la misma pestaña:
 
-- el bloque **Inventario y compras**: umbrales de aprobación (órdenes de compra, conteos de inventario), tolerancias y **Configuración de transferencias**;
+- el bloque **Inventario y compras**: umbrales de aprobación (órdenes de compra, conteos de inventario), tolerancias, **Mantener aparte la mercancía dañada** (desactivado: la mercancía dañada se queda en la ubicación donde se recibió) y **Configuración de transferencias**;
 - las [Etiquetas de balanza](topic:settings-weighted-barcodes);
 - la tarjeta [Tipos de cambio](topic:settings-exchange-rate).
 

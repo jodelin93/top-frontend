@@ -18,4 +18,4 @@ Utilisez cette fonction pour une livraison sans bon de commande. Pour une comman
 
 ![La fenêtre Réceptionner du stock](shot:inventory-receive)
 
-> **Astuce :** le coût unitaire saisi met à jour le coût du produit (coût moyen pondéré ou PEPS, selon la méthode du magasin). Les unités endommagées vont dans l'emplacement de quarantaine ou des articles endommagés de l'entrepôt ; s'il n'en a pas, un emplacement non vendable **Damaged** est créé. Les retours rapportés endommagés y vont aussi.
+> **Astuce :** le coût unitaire saisi met à jour le coût du produit (coût moyen pondéré ou PEPS, selon la méthode du magasin). Les unités endommagées restent à l'emplacement choisi, sauf si **Garder les marchandises endommagées à part** est coché dans **Paramètres › Général** (bloc **Stock et achats**) : elles vont alors dans l'emplacement de quarantaine ou des articles endommagés de l'entrepôt (un emplacement non vendable **Damaged** est créé s'il n'en a pas), comme les retours rapportés endommagés.

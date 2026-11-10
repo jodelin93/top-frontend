@@ -3,7 +3,8 @@ import type { Paginated, Sale } from './sales';
 import type { PaymentMethod } from './settings';
 
 export type ReturnStatus = 'completed' | 'refund_pending' | 'refund_failed';
-// damaged: kept, at the damaged / quarantine location (never sold again as new)
+// damaged: kept, at the damaged / quarantine location when the store keeps damaged
+// goods apart (keepDamagedApart), else back at the return's location
 export type ReturnDisposition = 'restock' | 'damaged' | 'dispose';
 // goodwill: money back without goods; exchange: goods back and a replacement sale
 export type ReturnType = 'return' | 'goodwill' | 'exchange';

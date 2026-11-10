@@ -65,7 +65,7 @@ export function ReorderSuggestionsTab({ onOrderCreated }: { onOrderCreated: (poN
           <ReorderGroupCard
             key={group.supplier?.id ?? 'none'}
             group={group}
-            defaultLocationId={locationId || (locations.find((l) => !l.isSellable)?.id ?? locations[0]?.id ?? '')}
+            defaultLocationId={locationId || (locations.find((l) => l.isSellable)?.id ?? locations[0]?.id ?? '')}
             onCreated={async (poNumber) => {
               onOrderCreated(poNumber);
               await refetch();

@@ -18,4 +18,4 @@ Use this feature for a delivery without a purchase order. For a supplier order, 
 
 ![The Receive stock window](shot:inventory-receive)
 
-> **Tip:** the unit cost you enter updates the product cost (weighted average cost or FIFO, depending on the store's method). Damaged units go to the warehouse's quarantine or damaged location; if it has none, a non-sellable **Damaged** location is created. Returns brought back damaged go there too.
+> **Tip:** the unit cost you enter updates the product cost (weighted average cost or FIFO, depending on the store's method). Damaged units stay at the location you chose, unless **Keep damaged goods apart** is on in **Settings › General** (block **Inventory & purchasing**): then they go to the warehouse's quarantine or damaged location (a non-sellable **Damaged** location is created if it has none), and so do returns brought back damaged.

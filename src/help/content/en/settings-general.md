@@ -20,7 +20,7 @@ The **Settings** page needs the **Manage store settings** permission (owner, adm
 
 Further down in the same tab:
 
-- the **Inventory & purchasing** block: approval thresholds (purchase orders, stock counts), tolerances and **Transfer settings**;
+- the **Inventory & purchasing** block: approval thresholds (purchase orders, stock counts), tolerances, **Keep damaged goods apart** (off: damaged goods stay at the location they were received at) and **Transfer settings**;
 - the [Scale labels](topic:settings-weighted-barcodes);
 - the [Exchange rate](topic:settings-exchange-rate) card.
 

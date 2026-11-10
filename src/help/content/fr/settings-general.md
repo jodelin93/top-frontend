@@ -20,7 +20,7 @@ La page **Paramètres** demande le droit **Gérer les paramètres du magasin** (
 
 Plus bas dans le même onglet :
 
-- le bloc **Stock et achats** : seuils d'approbation (bons de commande, inventaires), tolérances et **Paramètres des transferts** ;
+- le bloc **Stock et achats** : seuils d'approbation (bons de commande, inventaires), tolérances, **Garder les marchandises endommagées à part** (décoché : les marchandises endommagées restent à l'emplacement où elles ont été reçues) et **Paramètres des transferts** ;
 - les [Étiquettes de balance](topic:settings-weighted-barcodes) ;
 - la carte [Taux de change](topic:settings-exchange-rate).
 
