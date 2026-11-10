@@ -35,7 +35,7 @@ import { hasPermission, useAuthStore } from '@/stores/auth-store';
 import { useCurrency, useStoreSettings } from '@/hooks/use-store-settings';
 import { getErrorMessage } from '@/lib/api/client';
 import { text } from '@/lib/api/crud';
-import { inventoryApi, LocationStockStatus, StockMovement, stockRowUnit } from '@/lib/api/inventory';
+import { inventoryApi, LocationStockStatus, StockMovement, StockRow, stockRowUnit } from '@/lib/api/inventory';
 import { formatQuantity } from '@/lib/pos/quantity';
 import { formatDate, formatDateTime, formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
@@ -151,6 +151,9 @@ function StockTab({ link }: { link: StockLink }) {
   const [result, setResult] = useState<InventoryResult | null>(null);
   const debouncedSearch = useDebouncedValue(search.trim());
   const threshold = settings?.lowStockThreshold ?? 5;
+  // Low stock only where stock can be sold (not quarantine / damaged / transit)
+  const isLowRow = (row: StockRow) =>
+    (row.stockStatus ?? 'sellable') === 'sellable' && row.quantityOnHand <= (row.reorderPoint ?? threshold);
   const smallScreen = useSmallScreen();
 
   const { data: rows = [], isLoading, error } = useQuery({
@@ -293,13 +296,11 @@ function StockTab({ link }: { link: StockLink }) {
                   ? t('No stock matches your filters.')
                   : t('No products yet.')
             }
-            itemClassName={(row) =>
-              row.quantityOnHand <= (row.reorderPoint ?? threshold) ? 'border-red-200 bg-red-50/60' : undefined
-            }
+            itemClassName={(row) => (isLowRow(row) ? 'border-red-200 bg-red-50/60' : undefined)}
           >
             {(row) => {
               const reorderAt = row.reorderPoint ?? threshold;
-              const isLow = row.quantityOnHand <= reorderAt;
+              const isLow = isLowRow(row);
               const variantName = text(row.variantName);
               const unit = stockRowUnit(row);
               const qty = (value: number) => formatQuantity(Number(value), unit);
@@ -383,7 +384,7 @@ function StockTab({ link }: { link: StockLink }) {
             ) : (
               rows.map((row) => {
                 const reorderAt = row.reorderPoint ?? threshold;
-                const isLow = row.quantityOnHand <= reorderAt;
+                const isLow = isLowRow(row);
                 const variantName = text(row.variantName);
                 // Measured items: "12.350 kg"
                 const unit = stockRowUnit(row);

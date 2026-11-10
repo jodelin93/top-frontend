@@ -19,7 +19,7 @@ Onglè **Stòk** la afiche, pou chak pwodui ak chak anplasman, kantite **Disponi
 2. Chwazi yon anplasman nan **Tout anplasman yo** pou w wè yon sèl magazen oswa depo.
 3. Tcheke **Ka vann sèlman** pou kache anplasman kote yo pa ka vann (karantèn, domaje).
 
-> **Konsèy:** se sèlman stòk ki nan yon anplasman kote yo ka vann ki ka vann. Stòk ki an karantèn oswa ki domaje rete apa epi li gen yon etikèt jòn.
+> **Konsèy:** se sèlman stòk ki nan yon anplasman kote yo ka vann ki ka vann. Stòk ki an karantèn oswa ki domaje rete apa epi li gen yon etikèt jòn. Anplasman sa yo montre sèlman pwodui ki vrèman ladan yo, epi yo pa janm make kòm stòk ki ba.
 
 ## Jwenn stòk ki ba
 

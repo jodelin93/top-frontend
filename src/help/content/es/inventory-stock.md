@@ -19,7 +19,7 @@ La pestaña **Existencias** muestra, para cada producto y cada ubicación, las c
 2. Elija una ubicación en **Todas las ubicaciones** para ver una sola tienda o un solo almacén.
 3. Marque **Solo vendibles** para ocultar las ubicaciones no vendibles (cuarentena, dañado).
 
-> **Consejo:** solo se pueden vender las existencias de una ubicación vendible. Las existencias en cuarentena o dañadas se guardan aparte y llevan una etiqueta amarilla.
+> **Consejo:** solo se pueden vender las existencias de una ubicación vendible. Las existencias en cuarentena o dañadas se guardan aparte y llevan una etiqueta amarilla. Esas ubicaciones solo muestran los productos que realmente están en ellas y nunca se marcan con existencias bajas.
 
 ## Detectar existencias bajas
 

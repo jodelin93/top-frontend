@@ -19,7 +19,7 @@ L'onglet **Stock** affiche, pour chaque produit et chaque emplacement, les quant
 2. Choisissez un emplacement dans **Tous les emplacements** pour voir un seul magasin ou entrepôt.
 3. Cochez **Vendable uniquement** pour cacher les emplacements non vendables (quarantaine, endommagé).
 
-> **Astuce :** seul le stock d'un emplacement vendable peut être vendu. Le stock en quarantaine ou endommagé est gardé à part et porte une étiquette jaune.
+> **Astuce :** seul le stock d'un emplacement vendable peut être vendu. Le stock en quarantaine ou endommagé est gardé à part et porte une étiquette jaune. Ces emplacements ne listent que les produits qui s'y trouvent vraiment, et ne sont jamais marqués en stock bas.
 
 ## Repérer le stock bas
 

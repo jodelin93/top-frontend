@@ -19,7 +19,7 @@ The **Stock** tab shows, for each product and each location, the **On hand**, **
 2. Choose a location in **All locations** to see a single store or warehouse.
 3. Check **Sellable only** to hide non-sellable locations (quarantine, damaged).
 
-> **Tip:** only stock in a sellable location can be sold. Quarantined or damaged stock is kept apart and has a yellow tag.
+> **Tip:** only stock in a sellable location can be sold. Quarantined or damaged stock is kept apart and has a yellow tag. Those locations list only the products actually in them, and they are never marked low stock.
 
 ## Spot low stock
 
