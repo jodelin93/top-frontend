@@ -11,7 +11,7 @@ Todas las tareas de inventario se hacen en **Administración** > **Inventario**.
 
 La pestaña **Existencias** muestra, para cada producto y cada ubicación, las cantidades **En existencia**, **Reservado**, **Disponible** y **En tránsito**, con las fechas del **Último conteo** y de la **Última recepción**.
 
-> **Consejo:** los productos vendidos sin existencias (servicios como la impresión) no aparecen aquí: desmarque el seguimiento de existencias en el producto para dejarlo fuera de existencias, conteos y alertas de existencias bajas.
+> **Consejo:** los productos vendidos sin existencias (servicios como la impresión) no aparecen aquí: desmarque el seguimiento de existencias en el producto para dejarlo fuera de existencias, conteos y alertas de existencias bajas. Un producto vendido solo en algunas sucursales (**Surtido por sucursal**) aparece en 0 solo en las ubicaciones de esas sucursales; donde realmente tiene existencias, siempre aparece.
 
 ![La pestaña Existencias](shot:inventory-stock)
 

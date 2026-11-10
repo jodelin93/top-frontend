@@ -11,7 +11,7 @@ All stock tasks are done in **Admin** > **Inventory**. The tabs are **Stock**, *
 
 The **Stock** tab shows, for each product and each location, the **On hand**, **Reserved**, **Available** and **In transit** quantities, with the **Last counted** and **Last received** dates.
 
-> **Tip:** products sold without stock (services such as printing) are not listed here: untick **Track stock** on the product to leave it out of stock, counts and low-stock alerts.
+> **Tip:** products sold without stock (services such as printing) are not listed here: untick **Track stock** on the product to leave it out of stock, counts and low-stock alerts. A product sold only at some branches (**Branch assortment**) is listed at 0 only at the locations of those branches; where it is actually in stock, it is always listed.
 
 ![The Stock tab](shot:inventory-stock)
 

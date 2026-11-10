@@ -11,7 +11,7 @@ Toutes les tâches de stock se font dans **Administration** > **Inventaire**. Le
 
 L'onglet **Stock** affiche, pour chaque produit et chaque emplacement, les quantités **En stock**, **Réservé**, **Disponible** et **En transit**, avec les dates du **Dernier comptage** et de la **Dernière réception**.
 
-> **Astuce :** les produits vendus sans stock (des services comme l'impression) ne sont pas listés ici : décochez le suivi du stock sur le produit pour le retirer du stock, des comptages et des alertes de stock bas.
+> **Astuce :** les produits vendus sans stock (des services comme l'impression) ne sont pas listés ici : décochez le suivi du stock sur le produit pour le retirer du stock, des comptages et des alertes de stock bas. Un produit vendu seulement dans certaines succursales (**Assortiment par succursale**) n'est listé à 0 que dans les emplacements de ces succursales ; là où il est vraiment en stock, il est toujours listé.
 
 ![L'onglet Stock](shot:inventory-stock)
 

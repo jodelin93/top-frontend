@@ -11,7 +11,7 @@ Tout travay sou stòk fèt nan **Administrasyon** > **Envantè**. Onglè yo se *
 
 Onglè **Stòk** la afiche, pou chak pwodui ak chak anplasman, kantite **Disponib nan stòk**, **Rezève**, **Disponib** ak **Sou wout**, ak dat **Dènye konte** ak **Dènye resepsyon**.
 
-> **Konsèy:** pwodui ki vann san stòk (sèvis tankou enpresyon) pa parèt isit la: retire swivi stòk la sou pwodui a pou l pa parèt nan stòk, konte ak alèt stòk ki ba.
+> **Konsèy:** pwodui ki vann san stòk (sèvis tankou enpresyon) pa parèt isit la: retire swivi stòk la sou pwodui a pou l pa parèt nan stòk, konte ak alèt stòk ki ba. Yon pwodui ki vann sèlman nan kèk siksisal (**Pwodui pa siksisal**) parèt ak 0 sèlman nan anplasman siksisal sa yo; kote li vrèman an stòk, li toujou parèt.
 
 ![Onglè Stòk la](shot:inventory-stock)
 
