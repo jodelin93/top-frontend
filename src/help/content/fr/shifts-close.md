@@ -40,6 +40,8 @@ Quand l'écart dépasse la tolérance, la fenêtre **Approbation du gérant requ
 
 La fenêtre **Session clôturée** affiche le **RAPPORT Z** : heures, caissier et gérant, ventes par mode de paiement, ventes annulées, calcul du tiroir en USD et HTG, mouvements d'espèces, comptage, écart, tolérance et motif.
 
+> **Astuce :** un échange apparaît deux fois. Les nouveaux articles sont une vente payée par **Crédit d'échange : marchandise retournée, pas de l'argent** ; le bloc **Retours** montre l'article rapporté, la part **Gardé en crédit d'échange** et l'argent rendu, puis **Ventes nettes (ventes − retours)**. Exemple : un article acheté hier 3 000 et échangé aujourd'hui contre un article à 2 000 donne une vente de 2 000, un retour de 3 000 (2 000 gardés en crédit d'échange, 1 000 en espèces) et des ventes nettes de −1 000 ; le tiroir ne perd que les 1 000 rendus.
+
 1. Cliquez sur **Imprimer le rapport Z**.
 2. Cliquez sur **Terminé**.
 

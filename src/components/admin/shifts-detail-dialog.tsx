@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/data-cards';
 import { ErrorMessage } from '@/components/admin/page-header';
 import { CloseShiftDialog } from '@/components/shifts/close-shift-dialog';
-import { ZReportView } from '@/components/shifts/z-report';
+import { refundLabel, salePaymentLabel, sessionReturns, ZReportView } from '@/components/shifts/z-report';
 import { ShiftLedgerPanel } from '@/components/admin/shifts-ledger';
 import { ShiftCorrectionsPanel } from '@/components/admin/shifts-corrections';
 import { getErrorMessage } from '@/lib/api/client';
@@ -191,6 +191,7 @@ function ShiftSummaryView({ shift, currency }: { shift: ShiftDetail; currency: s
   const money = (v: number | null | undefined) => formatMoney(v, currency);
   const smallScreen = useSmallScreen();
   const variance = shift.variance;
+  const returned = sessionReturns(shift.sales);
   // Per-sale rows live in the drawer ledger
   const movements = shift.movements.filter((m) => m.type !== 'sale');
   return (
@@ -276,8 +277,18 @@ function ShiftSummaryView({ shift, currency }: { shift: ShiftDetail; currency: s
                 <Line label={t('Voided ({count})', { count: shift.sales.voidedCount })} value={money(shift.sales.voidedTotal)} />
               )}
               {shift.sales.byPaymentMethod.map((m) => (
-                <Line key={m.paymentMethodId} label={`${m.name} (${m.count})`} value={money(m.amount)} />
+                <Line key={m.paymentMethodId} label={salePaymentLabel(m)} value={money(m.amount)} />
               ))}
+            </div>
+          )}
+          {returned && (
+            <div className="space-y-1 rounded-md border p-3 text-sm">
+              <div className="mb-1 font-semibold">{t('Returns')}</div>
+              <Line label={t('Returns ({count})', { count: returned.returns.count })} value={`-${money(returned.returns.total)}`} />
+              {returned.returns.byPaymentMethod.map((m) => (
+                <Line key={m.paymentMethodId} label={refundLabel(m)} value={`-${money(m.amount)}`} />
+              ))}
+              <Line label={t('Net sales (sales − returns)')} value={money(returned.net)} />
             </div>
           )}
           {shift.sales?.orderDeposits && (shift.sales.orderDeposits.received > 0 || shift.sales.orderDeposits.refunded > 0) && (

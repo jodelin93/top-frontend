@@ -40,6 +40,8 @@ Cuando la diferencia supera la tolerancia, se abre la ventana **Se requiere la a
 
 La ventana **Turno cerrado** muestra el **INFORME Z**: horarios, cajero y gerente, ventas por método de pago, ventas anuladas, cálculo del cajón en USD y HTG, movimientos de efectivo, conteo, diferencia, tolerancia y motivo.
 
+> **Consejo:** un cambio aparece dos veces. Los artículos nuevos son una venta pagada con **Crédito de cambio: mercancía devuelta, no dinero**; el bloque **Devoluciones** muestra el artículo devuelto, la parte **Guardado como crédito de cambio** y el dinero devuelto, y luego **Ventas netas (ventas − devoluciones)**. Ejemplo: un artículo comprado ayer por 3 000 y cambiado hoy por otro de 2 000 da una venta de 2 000, una devolución de 3 000 (2 000 guardados como crédito de cambio, 1 000 en efectivo) y ventas netas de −1 000; el cajón solo pierde los 1 000 devueltos.
+
 1. Haga clic en **Imprimir informe Z**.
 2. Haga clic en **Listo**.
 

@@ -40,6 +40,8 @@ Lè diferans lan depase tolerans lan, fenèt **Bezwen apwobasyon yon manadjè** 
 
 Fenèt **Sesyon kès la fèmen** an montre **RAPÒ Z** la: lè, kesye ak manadjè, vant pa mwayen peman, vant ki anile, kalkil tiwa a an USD ak HTG, mouvman lajan kach, konte, diferans, tolerans ak rezon.
 
+> **Konsèy:** yon echanj parèt de fwa. Nouvo atik yo se yon vant ki peye ak **Kredi echanj: machandiz ki retounen, se pa lajan**; blòk **Retou** a montre atik ki tounen an, pati ki **Kenbe kòm kredi echanj** ak lajan ou remèt, epi **Vant nèt (vant − retou)**. Egzanp: yon atik yo te achte yè 3 000 epi yo chanje jodi a pou youn ki 2 000 bay yon vant 2 000, yon retou 3 000 (2 000 kenbe kòm kredi echanj, 1 000 an kach) ak vant nèt −1 000; tiwa a pèdi sèlman 1 000 ou remèt la.
+
 1. Klike sou **Enprime Rapò Z**.
 2. Klike sou **Fini**.
 

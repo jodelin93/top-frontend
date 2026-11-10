@@ -64,6 +64,8 @@ export interface ForeignCount {
 export interface PaymentMethodTotal {
   paymentMethodId: string;
   name: string;
+  // e.g. EXCHANGE_CREDIT: the returned goods' value paying an exchange (not money)
+  code?: string;
   methodType: string;
   count: number;
   amount: number;
@@ -77,6 +79,8 @@ export interface ShiftSalesSummary {
   byPaymentMethod: PaymentMethodTotal[];
   // Deposits taken on orders in the session (not sales: counted at pickup); absent on older reports
   orderDeposits?: { received: number; refunded: number; byPaymentMethod: PaymentMethodTotal[] };
+  // Returns made in the session and how they were refunded (absent on old closings)
+  returns?: { count: number; total: number; byPaymentMethod: PaymentMethodTotal[] };
 }
 
 export interface CashMovement {

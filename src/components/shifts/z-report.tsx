@@ -1,9 +1,31 @@
 'use client';
 
-import { MOVEMENT_LABELS, movementAmount, ZReport } from '@/lib/api/shifts';
+import { MOVEMENT_LABELS, movementAmount, PaymentMethodTotal, ShiftSalesSummary, ZReport } from '@/lib/api/shifts';
+import { EXCHANGE_CREDIT_CODE } from '@/lib/api/stored-value';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import { t } from '@/i18n';
+
+/** A sale paid with exchange credit was paid with returned goods, not money */
+export function salePaymentLabel(m: PaymentMethodTotal) {
+  return m.code === EXCHANGE_CREDIT_CODE
+    ? t('Exchange credit: returned goods, not money ({count})', { count: m.count })
+    : `${m.name} (${m.count})`;
+}
+
+/** How a return was refunded: exchange credit is the part that paid the new items */
+export function refundLabel(m: PaymentMethodTotal) {
+  return m.code === EXCHANGE_CREDIT_CODE
+    ? t('Kept as exchange credit ({count})', { count: m.count })
+    : `${m.name} (${m.count})`;
+}
+
+/** Returns of the session and net sales; nothing when there were none */
+export function sessionReturns(sales: ShiftSalesSummary | null | undefined) {
+  const returns = sales?.returns;
+  if (!sales || !returns || returns.count === 0) return null;
+  return { returns, net: Math.round((sales.total - returns.total) * 100) / 100 };
+}
 
 /**
  * Printable shift summary. Printing uses the `.print-receipt` rules in globals.css.
@@ -22,6 +44,7 @@ export function ZReportView({
   const money = (value: number | null | undefined) => formatMoney(value ?? 0, c);
   const cash = report.cash;
   const variance = report.variance.variance;
+  const returned = sessionReturns(report.sales);
 
   return (
     <div className="print-receipt space-y-3 font-mono text-xs">
@@ -55,9 +78,19 @@ export function ZReportView({
           <Row label={t('Voided ({count})', { count: report.sales.voidedCount })} value={money(report.sales.voidedTotal)} />
         )}
         {report.sales.byPaymentMethod.map((m) => (
-          <Row key={m.paymentMethodId} label={`${m.name} (${m.count})`} value={money(m.amount)} />
+          <Row key={m.paymentMethodId} label={salePaymentLabel(m)} value={money(m.amount)} />
         ))}
       </Section>
+
+      {returned && (
+        <Section title={t('Returns')}>
+          <Row label={t('Returns ({count})', { count: returned.returns.count })} value={`-${money(returned.returns.total)}`} />
+          {returned.returns.byPaymentMethod.map((m) => (
+            <Row key={m.paymentMethodId} label={refundLabel(m)} value={`-${money(m.amount)}`} />
+          ))}
+          <Row label={t('Net sales (sales − returns)')} value={money(returned.net)} />
+        </Section>
+      )}
 
       {report.sales.orderDeposits && (report.sales.orderDeposits.received > 0 || report.sales.orderDeposits.refunded > 0) && (
         <Section title={t('Order deposits')}>

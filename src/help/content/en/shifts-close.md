@@ -40,6 +40,8 @@ When the variance is above the tolerance, the **Manager approval needed** window
 
 The **Shift closed** window shows the **Z-REPORT**: times, cashier and manager, sales by payment method, voided sales, drawer calculation in USD and HTG, cash movements, count, variance, tolerance and reason.
 
+> **Tip:** an exchange appears twice. The new items are a sale paid with **Exchange credit: returned goods, not money**; the **Returns** block shows the item brought back, the part **Kept as exchange credit** and any money given back, then **Net sales (sales − returns)**. Example: an item bought yesterday for 3,000 swapped today for one at 2,000 shows a 2,000 sale, a 3,000 return (2,000 kept as exchange credit, 1,000 in cash) and net sales of −1,000; the drawer only loses the 1,000 given back.
+
 1. Click **Print Z-report**.
 2. Click **Done**.
 
