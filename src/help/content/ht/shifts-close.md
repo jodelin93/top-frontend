@@ -14,7 +14,7 @@ Nan fen travay la, konte tiwa a epi fèmen sesyon an.
 3. Kite bwat **Konte avèg** la koche: ou konte san ou pa wè montan yo tann nan, sa fè konte a pi onèt.
 4. Klike sou **Kòmanse konte**.
 
-> **Atansyon:** depi konte a kòmanse, kès la pa vann ankò: sesyon an pase nan **Ap konte**. Pou vann ankò, klike sou **Retounen vann**. Pou retounen nan konte a pita: **Kontinye fèmen**.
+> **Atansyon:** depi konte a kòmanse, kès la pa vann ankò: sesyon an pase nan **Ap konte**. Pou vann ankò, klike sou **Retounen vann**. Pou retounen nan konte a pita: **Kontinye fèmen**. Pandan konte a, kès sa a refize ranbousman an kach (retou, echanj, avans kòmand); ranbousman sou kat oswa an kredi toujou mache.
 
 ## Konte
 

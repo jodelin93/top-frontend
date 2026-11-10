@@ -14,7 +14,7 @@ En fin de service, comptez le tiroir et clôturez la session.
 3. Laissez cochée la case **Comptage à l'aveugle** : vous comptez sans voir le montant attendu, ce qui rend le comptage plus honnête.
 4. Cliquez sur **Commencer le comptage**.
 
-> **Attention :** dès que le comptage commence, la caisse ne vend plus : la session passe à **Comptage en cours**. Pour vendre à nouveau, cliquez sur **Reprendre les ventes**. Pour revenir au comptage plus tard : **Poursuivre la clôture**.
+> **Attention :** dès que le comptage commence, la caisse ne vend plus : la session passe à **Comptage en cours**. Pour vendre à nouveau, cliquez sur **Reprendre les ventes**. Pour revenir au comptage plus tard : **Poursuivre la clôture**. Pendant le comptage, les remboursements en espèces (retours, échanges, acomptes de commande) sont refusés sur cette caisse ; les remboursements par carte ou en avoir restent possibles.
 
 ## Compter
 

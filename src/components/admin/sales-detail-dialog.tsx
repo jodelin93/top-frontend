@@ -169,7 +169,8 @@ function SaleDetail({ saleId }: { saleId: string }) {
                   </Link>
                 </Button>
               )}
-              {sale.status === 'completed' && (
+              {/* The new items of an exchange are undone with a return (a void would lose the credit) */}
+              {sale.status === 'completed' && sale.saleType !== 'exchange' && (
                 <Button
                   type="button"
                   variant="outline"

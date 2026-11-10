@@ -14,7 +14,7 @@ At the end of your shift, count the drawer and close the shift.
 3. Leave the **Blind count** box checked: you count without seeing the expected amount, which makes the count more honest.
 4. Click **Start count**.
 
-> **Warning:** as soon as the count starts, the till stops selling: the shift changes to **Counting**. To sell again, click **Back to selling**. To return to the count later: **Continue closing**.
+> **Warning:** as soon as the count starts, the till stops selling: the shift changes to **Counting**. To sell again, click **Back to selling**. To return to the count later: **Continue closing**. Cash refunds (returns, exchanges, order deposits) are refused on this register during the count; refunds to a card or store credit still work.
 
 ## Count
 

@@ -155,6 +155,8 @@ export interface Sale {
   currencyCode: string;
   notes: string | null;
   status: SaleStatus;
+  // 'exchange': the new items of an exchange (paid with the returned goods' credit)
+  saleType?: 'regular' | 'return' | 'exchange';
   // Provisional number printed while offline (OFFLINE-XXXXXXXX), kept after sync
   offlineNumber?: string | null;
   deviceId?: string | null;

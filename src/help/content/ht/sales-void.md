@@ -27,6 +27,7 @@ Vant lan pase nan estati **Anile**. Peman sou kont, ak kat kado oswa ak kredi yo
 | Vant lan te deja gen yon retou oswa yon ranbousman | Non (bouton an pa parèt ankò) | Fè yon retou pou rès la. |
 | Vant san sesyon, ki fèt gen plis pase 24 èdtan | Non | Fè yon retou. |
 | Vant ki peye ak yon tèminal kat ki konekte | Non | Fè yon retou pou ranbouse kat la. |
+| Nouvo atik yon echanj | Non (bouton an pa parèt) | Fè yon retou: si ou anile l, kredi echanj lan ta pèdi. |
 
 Si yo refize anilasyon an, rezon an parèt an wouj anba chan **Rezon** an.
 

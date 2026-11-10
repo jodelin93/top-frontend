@@ -27,6 +27,7 @@ La venta pasa al estado **Anulada**. Los pagos a cuenta, con tarjeta de regalo o
 | La venta ya tuvo una devolución o un reembolso | No (el botón ya no aparece) | Haga una devolución por el resto. |
 | Venta sin turno, hecha hace más de 24 horas | No | Haga una devolución. |
 | Venta pagada con una terminal de tarjetas conectada | No | Haga una devolución para reembolsar la tarjeta. |
+| Los artículos nuevos de un cambio | No (el botón no aparece) | Haga una devolución: anularla haría perder el crédito del cambio. |
 
 Si la anulación es rechazada, el motivo aparece en rojo debajo del campo **Motivo**.
 

@@ -27,6 +27,7 @@ The sale changes to **Voided**. On-account, gift card or store credit payments a
 | The sale already had a return or refund | No (the button no longer appears) | Do a return for the rest. |
 | Sale with no shift, made more than 24 hours ago | No | Do a return. |
 | Sale paid on a linked card terminal | No | Do a return to refund the card. |
+| The new items of an exchange | No (the button does not appear) | Do a return: a void would lose the exchange credit. |
 
 If the void is refused, the reason shows in red under the **Reason** field.
 

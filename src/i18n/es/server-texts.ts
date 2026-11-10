@@ -383,6 +383,8 @@ export const serverTexts: Record<string, string> = {
   "This report covers the whole store and cannot be filtered by branch": "Este informe abarca toda la tienda y no se puede filtrar por sucursal",
   "This report covers the whole store and needs access to every branch": "Este informe abarca toda la tienda y requiere acceso a todas las sucursales",
   "This sale already has a return or refund: use a return instead of a void": "Esta venta ya tiene una devolución o un reembolso: use una devolución en lugar de anularla",
+  "Cash is being counted on this register: finish or cancel the count before refunding cash": "Se está contando el efectivo de esta caja: termine o cancele el conteo antes de reembolsar en efectivo",
+  "This sale completes an exchange: use a return instead of a void": "Esta venta completa un cambio: use una devolución en lugar de anularla",
   "This sale is more than a day old: use a return instead of a void": "Esta venta tiene más de un día: use una devolución en lugar de anularla",
   "This sale was paid by card through a payment terminal: use a return to refund it": "Esta venta se pagó con tarjeta en una terminal de pago: use una devolución para reembolsarla",
   "This sale would take the customer over their credit limit. A manager's approval is needed.": "Esta venta haría que el cliente superara su límite de crédito. Se necesita la aprobación de un gerente.",

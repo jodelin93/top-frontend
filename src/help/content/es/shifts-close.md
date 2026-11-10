@@ -14,7 +14,7 @@ Al final del turno, cuente el cajón y cierre el turno.
 3. Deje marcada la casilla **Conteo a ciegas**: usted cuenta sin ver el monto esperado, lo que hace el conteo más confiable.
 4. Haga clic en **Iniciar conteo**.
 
-> **Atención:** en cuanto empieza el conteo, la caja deja de vender: el turno pasa a **Conteo en curso**. Para vender de nuevo, haga clic en **Volver a vender**. Para retomar el conteo más tarde: **Continuar el cierre**.
+> **Atención:** en cuanto empieza el conteo, la caja deja de vender: el turno pasa a **Conteo en curso**. Para vender de nuevo, haga clic en **Volver a vender**. Para retomar el conteo más tarde: **Continuar el cierre**. Durante el conteo, esta caja rechaza los reembolsos en efectivo (devoluciones, cambios, anticipos de pedidos); los reembolsos a tarjeta o en crédito siguen funcionando.
 
 ## Contar
 

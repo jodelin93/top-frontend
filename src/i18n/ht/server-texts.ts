@@ -383,6 +383,8 @@ export const serverTexts: Record<string, string> = {
   "This report covers the whole store and cannot be filtered by branch": "Rapò sa a kouvri tout magazen an, ou pa ka filtre l pa siksisal",
   "This report covers the whole store and needs access to every branch": "Rapò sa a kouvri tout magazen an epi li mande aksè nan tout siksisal yo",
   "This sale already has a return or refund: use a return instead of a void": "Vant sa a deja gen yon retou oswa yon ranbousman: fè yon retou olye ou anile l",
+  "Cash is being counted on this register: finish or cancel the count before refunding cash": "Y ap konte lajan kès sa a: fini oswa anile konte a anvan ou ranbouse an kach",
+  "This sale completes an exchange: use a return instead of a void": "Vant sa a fini yon echanj: fè yon retou olye ou anile l",
   "This sale is more than a day old: use a return instead of a void": "Vant sa a gen plis pase yon jou: fè yon retou olye ou anile l",
   "This sale was paid by card through a payment terminal: use a return to refund it": "Vant sa a te peye ak kat sou yon tèminal peman: fè yon retou pou ranbouse l",
   "This sale would take the customer over their credit limit. A manager's approval is needed.": "Vant sa a ta fè kliyan an depase limit kredi l. Li bezwen apwobasyon yon manadjè.",

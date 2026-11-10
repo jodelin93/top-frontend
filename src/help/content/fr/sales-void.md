@@ -27,6 +27,7 @@ La vente passe au statut **Annulée**. Les paiements en compte, en carte cadeau 
 | La vente a déjà eu un retour ou un remboursement | Non (le bouton n'apparaît plus) | Faites un retour pour le reste. |
 | Vente sans session, faite il y a plus de 24 heures | Non | Faites un retour. |
 | Vente payée par un terminal de carte relié | Non | Faites un retour pour rembourser la carte. |
+| Les nouveaux articles d'un échange | Non (le bouton n'apparaît pas) | Faites un retour : une annulation ferait perdre le crédit de l'échange. |
 
 Si l'annulation est refusée, la raison s'affiche en rouge sous le champ **Motif**.
 
